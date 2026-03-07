@@ -17,10 +17,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg,
-            lighten($primary-teal, 20%) 0%,
-            $primary-teal 100%);
-    padding: $spacing-xl;
+background: linear-gradient(135deg,
+        #1f3a5f 0%,
+        #2c5282 100%);
+            padding: $spacing-xl;
 }
 
 /* =========================
@@ -56,14 +56,14 @@
             font-size: 48px;
             width: 48px;
             height: 48px;
-            color: $primary-teal;
+color: #1f3a5f;
         }
 
         .logo-text {
             h1 {
                 font-size: $font-size-3xl;
                 font-weight: $font-weight-bold;
-                color: $primary-teal;
+color: #1f3a5f;
                 line-height: 1;
             }
 
@@ -105,10 +105,8 @@
 .portal-badge {
     @include flex-center;
     gap: $spacing-sm;
-    background: linear-gradient(135deg,
-            $primary-teal-light 0%,
-            $primary-teal 100%);
-    color: $text-white;
+background: #eef3f9;
+color: #1f3a5f;
     padding: $spacing-md;
     border-radius: $border-radius-md;
     margin-bottom: $spacing-xl;
@@ -162,7 +160,7 @@
         margin-top: $spacing-xs;
 
         .link-button {
-            color: $primary-teal;
+color: #2c5282;
             font-size: $font-size-sm;
             cursor: pointer;
 
@@ -182,6 +180,13 @@
         border-radius: $border-radius-md;
         letter-spacing: 0.5px;
         position: relative;
+        background: #1f3a5f;
+color: white;
+
+&:disabled {
+    background: #d6dee8;
+    color: #8a97a6;
+}
     }
 
     .security-info {
@@ -199,7 +204,7 @@
             color: $text-secondary;
 
             mat-icon {
-                color: $success-green;
+color: #2c5282;
                 font-size: 16px;
             }
         }
@@ -236,6 +241,44 @@
     .footer-note {
         font-weight: $font-weight-medium;
     }
+}
+
+/* =========================
+   REGISTRO
+========================= */
+.register-section {
+    margin-top: $spacing-lg;
+    text-align: center;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+}
+
+.register-section span {
+    margin-right: 6px;
+}
+
+.register-section a {
+    color: #1f3a5f;
+    font-weight: $font-weight-semibold;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Línea animada elegante */
+.register-section a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0%;
+    height: 2px;
+    background: #1f3a5f;
+    transition: width 0.3s ease;
+}
+
+.register-section a:hover::after {
+    width: 100%;
 }
 
 /* =========================
