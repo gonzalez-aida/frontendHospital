@@ -103,27 +103,34 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let cita of paginatedCitas">
-            <td class="patient-name">
-              {{ cita.paciente.nombre }} {{ cita.paciente.apPaterno }} {{ cita.paciente.apMaterno }}
-            </td>
-            <td>{{ calcularEdad(cita.paciente.fechaNacimiento) }}</td>
-            <td>{{ cita.paciente.nss }}</td>
-            <td>{{ cita.fecha }}</td>
-            <td>{{ cita.hora }}</td>
-            <td>
-              <button mat-flat-button color="warn" class="cancel-btn"
-                (click)="openCancelDialog(cita)">
-                Cancelar
-              </button>
-            </td>
-          </tr>
+<tr *ngFor="let cita of paginatedCitas">
+  <td class="patient-name">
+    {{ cita.nombrePaciente }}
+  </td>
 
-          <tr *ngIf="citas.length === 0">
-            <td colspan="6" style="text-align:center; padding:30px;">
-              No hay citas programadas.
-            </td>
-          </tr>
+  <td>
+    {{ calcularEdad(cita.fechaNacimiento) }}
+  </td>
+
+  <td>
+    {{ cita.nss }}
+  </td>
+
+  <td>
+    {{ cita.fecha }}
+  </td>
+
+  <td>
+    {{ cita.hora }}
+  </td>
+
+  <td>
+    <button mat-flat-button color="warn" class="cancel-btn"
+      (click)="openCancelDialog(cita)">
+      Cancelar
+    </button>
+  </td>
+</tr>
         </tbody>
       </table>
 

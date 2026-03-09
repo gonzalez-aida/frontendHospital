@@ -23,13 +23,15 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   selectedSection: string = 'citas';
   darkMode: boolean = false;
 
-  // Citas
+  nombreMedico: string = '';
+
+  // ================= CITAS =================
   pageSize = 5;
   pageIndex = 0;
   citas: Cita[] = [];
   medicoId!: number;
 
-  // Pacientes
+  // ================= PACIENTES =================
   pacientes: Patient[] = [];
   pageSizePacientes = 5;
   pageIndexPacientes = 0;
@@ -42,26 +44,37 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     private patientService: PatientService
   ) {}
 
+  // ================= INIT =================
+
   ngOnInit(): void {
-    // Cargar citas
+
     this.authService.obtenerPerfilMedico().subscribe({
       next: (medico: Medico) => {
         this.medicoId = medico.idMedico;
-        this.citaService.obtenerCitasPorMedico(this.medicoId).subscribe({
-          next: (data: Cita[]) => this.citas = data,
+
+        this.nombreMedico =
+    medico.nombre + ' ' +
+    medico.apPaterno + ' ' +
+    medico.apMaterno;
+
+        // ✅ SOLO UNA LLAMADA
+        this.citaService.obtenerMisCitas().subscribe({
+          next: (data: Cita[]) => {
+            this.citas = data;
+          },
           error: (err) => console.error('Error al obtener citas del médico', err)
         });
       },
       error: (err) => console.error('Error al obtener perfil del médico', err)
     });
 
-    // Cargar pacientes
     this.cargarPacientes();
   }
 
   ngAfterViewInit() {}
 
   // ================= LOGOUT Y DARK MODE =================
+
   logout(): void {
     this.authService.logout();
   }
@@ -75,11 +88,12 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   // ================= CITAS =================
+
   openCancelDialog(cita: Cita) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: { 
-        nombre: `${cita.paciente.nombre} ${cita.paciente.apPaterno} ${cita.paciente.apMaterno}` 
+        nombre: cita.nombrePaciente
       }
     });
 
@@ -90,13 +104,14 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     });
   }
 
-  get paginatedCitas() {
+  get paginatedCitas(): Cita[] {
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
     return this.citas.slice(start, end);
   }
 
   // ================= PACIENTES =================
+
   cargarPacientes(page: number = 1, pageSize: number = this.pageSizePacientes): void {
     this.patientService.getPatients(page, pageSize).subscribe({
       next: (res: PaginatedResponse<Patient>) => {
@@ -124,47 +139,51 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         doc.text(`Email: ${paciente.email}`, 10, 40);
         doc.text(`Género: ${paciente.gender}`, 10, 50);
         doc.text(`Tipo de sangre: ${paciente.bloodType}`, 10, 60);
+
         if (paciente.emergencyContact) {
-          doc.text(`Contacto de emergencia: ${paciente.emergencyContact.name} (${paciente.emergencyContact.relationship}) - ${paciente.emergencyContact.phone}`, 10, 70);
+          doc.text(
+            `Contacto de emergencia: ${paciente.emergencyContact.name} (${paciente.emergencyContact.relationship}) - ${paciente.emergencyContact.phone}`,
+            10,
+            70
+          );
         }
+
         doc.save(`Expediente_${paciente.firstName}.pdf`);
       },
       error: (err) => console.error('Error al generar expediente', err)
     });
   }
 
-    // ================= FORMULARIO CONSULTA =================
+  // ================= FORMULARIO CONSULTA =================
 
-  // Datos temporales del formulario
-consulta = {
-  pacienteNombre: '',
-  pacienteApPaterno: '',
-  pacienteApMaterno: '',
-  fechaNacimiento: '',
-  sexo: '',
-  tipoSangre: '',
-  telefono: '',
-  correo: '',
-  telefonoEmergencia: '',
-  antHeredofamiliares: '',
-  antPatologicos: '',
-  antQuirurgicos: '',
-  antAlergicos: '',
-  enfCronicas: '',
-  antGinecoObstetricos: '',
-  observaciones: ''
-};
+  consulta = {
+    pacienteNombre: '',
+    pacienteApPaterno: '',
+    pacienteApMaterno: '',
+    fechaNacimiento: '',
+    sexo: '',
+    tipoSangre: '',
+    telefono: '',
+    correo: '',
+    telefonoEmergencia: '',
+    antHeredofamiliares: '',
+    antPatologicos: '',
+    antQuirurgicos: '',
+    antAlergicos: '',
+    enfCronicas: '',
+    antGinecoObstetricos: '',
+    observaciones: ''
+  };
 
-// Tipos de sangre
-tiposSangre = ['A_POS','A_NEG','B_POS','B_NEG','AB_POS','AB_NEG','O_POS','O_NEG'];
+  tiposSangre = ['A_POS','A_NEG','B_POS','B_NEG','AB_POS','AB_NEG','O_POS','O_NEG'];
 
-// Método para guardar la consulta (temporal)
-guardarConsulta() {
-  console.log('Datos de la consulta:', this.consulta);
-  alert('Consulta guardada (temporal, sin conexión al backend)');
-}
+  guardarConsulta() {
+    console.log('Datos de la consulta:', this.consulta);
+    alert('Consulta guardada (temporal, sin conexión al backend)');
+  }
 
   // ================= PAGINACIÓN =================
+
   handlePageEvent(event: PageEvent) {
     if (this.selectedSection === 'citas') {
       this.pageSize = event.pageSize;
@@ -176,30 +195,35 @@ guardarConsulta() {
   }
 
   // ================= MÉTRICAS =================
+
   calcularEdad(fechaNacimiento: Date | string): number {
+    if (!fechaNacimiento) return 0;
+
     const nacimiento = new Date(fechaNacimiento);
     const hoy = new Date();
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
     const mes = hoy.getMonth() - nacimiento.getMonth();
+
     if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
       edad--;
     }
+
     return edad;
   }
 
-  get totalCitasHoy() {
+  get totalCitasHoy(): number {
     return this.citas.length;
   }
 
-  get citasPendientes() {
+  get citasPendientes(): number {
     return this.citas.filter(c => c.estado === 'pendiente').length;
   }
 
-  get citasCanceladas() {
+  get citasCanceladas(): number {
     return this.citas.filter(c => c.estado === 'cancelada').length;
   }
 
-  get proximaCita() {
+  get proximaCita(): string {
     return this.citas.length > 0 ? this.citas[0].hora : '--';
   }
 }

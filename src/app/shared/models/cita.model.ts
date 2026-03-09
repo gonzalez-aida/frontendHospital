@@ -15,5 +15,9 @@ export interface Cita {
   tipo: string;
   motivo: string;
   estado: string;
-  paciente: Paciente;
+
+  nombrePaciente: string;
+  nss: string;
+  curp: string;
+  fechaNacimiento: string; 
 }

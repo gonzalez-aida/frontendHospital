@@ -318,3 +318,21 @@ mat-paginator {
 }
 
 
+.table-scroll {
+  max-height: 350px;   // ajusta si quieres más alto
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Header fijo (muy profesional) */
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #eef3f9;
+  z-index: 5;
+}
+
+/* Dark mode header fijo */
+.dark-mode .table-scroll thead th {
+  background: #243041;
+}

@@ -47,7 +47,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     this.authService.obtenerPerfilMedico().subscribe({
       next: (medico: Medico) => {
         this.medicoId = medico.idMedico;
-        this.citaService.obtenerCitasPorMedico(this.medicoId).subscribe({
+        this.citaService.obtenerCitasPorPaciente(this.medicoId).subscribe({
           next: (data: Cita[]) => this.citas = data,
           error: (err) => console.error('Error al obtener citas del médico', err)
         });
@@ -75,20 +75,20 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   // ================= CITAS =================
-  openCancelDialog(cita: Cita) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { 
-        nombre: `${cita.paciente.nombre} ${cita.paciente.apPaterno} ${cita.paciente.apMaterno}` 
-      }
-    });
+openCancelDialog(cita: Cita) {
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    width: '400px',
+    data: { 
+      nombre: cita.nombrePaciente
+    }
+  });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.citas = this.citas.filter(c => c !== cita);
-      }
-    });
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.citas = this.citas.filter(c => c !== cita);
+    }
+  });
+}
 
   get paginatedCitas() {
     const start = this.pageIndex * this.pageSize;

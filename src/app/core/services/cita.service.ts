@@ -20,9 +20,9 @@ export class CitaService {
   }
 
   // 🔹 Trae todas las citas de los pacientes de un médico
-  obtenerCitasPorMedico(idMedico: number): Observable<Cita[]> {
-    return this.http.get<Cita[]>(`${this.apiUrl}/medico/${idMedico}`, { withCredentials: true });
-  }
+obtenerMisCitas(): Observable<Cita[]> {
+  return this.http.get<Cita[]>(`${this.apiUrl}/citas-medico`, { withCredentials: true });
+}
 
   // 🔹 Traer todas las citas (temporal si no hay endpoint de médico)
   obtenerTodasLasCitas(): Observable<Cita[]> {

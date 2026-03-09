@@ -43,7 +43,7 @@
     <header class="top-header">
       <div>
         <h1>Gestión de Citas</h1>
-        <p>Dr. Moscatti • Cardiología</p>
+<p>Dr. {{ nombreMedico || '...' }}</p>
       </div>
 
       <div class="header-right">
@@ -87,54 +87,73 @@
 
     </section>
 
-    <!-- TABLA CITAS -->
-    <div class="table-container" *ngIf="selectedSection === 'citas'">
+<!-- TABLA CITAS -->
+<div class="table-container" *ngIf="selectedSection === 'citas'">
 
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre Completo</th>
-            <th>Edad</th>
-            <th>NSS</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
+  <div class="table-scroll">
+    <table>
 
-        <tbody>
-          <tr *ngFor="let cita of paginatedCitas">
-            <td class="patient-name">
-              {{ cita.paciente.nombre }} {{ cita.paciente.apPaterno }} {{ cita.paciente.apMaterno }}
-            </td>
-            <td>{{ calcularEdad(cita.paciente.fechaNacimiento) }}</td>
-            <td>{{ cita.paciente.nss }}</td>
-            <td>{{ cita.fecha }}</td>
-            <td>{{ cita.hora }}</td>
-            <td>
-              <button mat-flat-button color="warn" class="cancel-btn"
-                (click)="openCancelDialog(cita)">
-                Cancelar
-              </button>
-            </td>
-          </tr>
+    <thead>
+      <tr>
+        <th>Nombre Completo</th>
+        <th>Edad</th>
+        <th>NSS</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
 
-          <tr *ngIf="citas.length === 0">
-            <td colspan="6" style="text-align:center; padding:30px;">
-              No hay citas programadas.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <tbody>
+      <tr *ngFor="let cita of paginatedCitas">
+        <td class="patient-name">
+          {{ cita.nombrePaciente }}
+        </td>
 
-      <mat-paginator
-        [length]="citas.length"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 20]"
-        (page)="handlePageEvent($event)">
-      </mat-paginator>
+        <td>
+          {{ calcularEdad(cita.fechaNacimiento) }}
+        </td>
 
-    </div>
+        <td>
+          {{ cita.nss }}
+        </td>
+
+        <td>
+          {{ cita.fecha }}
+        </td>
+
+        <td>
+          {{ cita.hora }}
+        </td>
+
+        <td>
+          <button mat-flat-button
+                  color="warn"
+                  class="cancel-btn"
+                  (click)="openCancelDialog(cita)">
+            Cancelar
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="citas.length === 0">
+        <td colspan="6" style="text-align:center; padding:30px;">
+          No hay citas programadas.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <mat-paginator
+    [length]="citas.length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="handlePageEvent($event)">
+  </mat-paginator>
+
+</div>
+
 
     <!-- TABLA PACIENTES -->
     <div class="table-container" *ngIf="selectedSection === 'pacientes'">
