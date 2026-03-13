@@ -9,24 +9,61 @@
     <mat-horizontal-stepper linear>
 
       <!-- ========================= -->
-      <!-- DATOS PERSONALES -->
+      <!-- PASO 1 - DATOS PERSONALES -->
       <!-- ========================= -->
       <mat-step [stepControl]="datosPersonalesForm">
         <form [formGroup]="datosPersonalesForm">
 
           <ng-template matStepLabel>Datos personales</ng-template>
 
+          <!-- Nombre -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre">
+            <mat-error *ngIf="datosPersonalesForm.get('nombre')?.invalid && datosPersonalesForm.get('nombre')?.touched">
+              El nombre es obligatorio y solo permite letras
+            </mat-error>
           </mat-form-field>
 
+          <!-- Apellido Paterno -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Apellido</mat-label>
-            <input matInput formControlName="apellido">
+            <mat-label>Apellido Paterno</mat-label>
+            <input matInput formControlName="apPaterno">
+            <mat-error *ngIf="datosPersonalesForm.get('apPaterno')?.invalid && datosPersonalesForm.get('apPaterno')?.touched">
+              Campo obligatorio
+            </mat-error>
           </mat-form-field>
 
-          <!-- FECHA -->
+          <!-- Apellido Materno -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Apellido Materno</mat-label>
+            <input matInput formControlName="apMaterno">
+            <mat-error *ngIf="datosPersonalesForm.get('apMaterno')?.invalid && datosPersonalesForm.get('apMaterno')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <!-- NSS -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>NSS</mat-label>
+            <input matInput formControlName="nss" placeholder="Ej. 12345678901">
+            <mat-hint>Debe contener exactamente 11 dígitos</mat-hint>
+            <mat-error *ngIf="datosPersonalesForm.get('nss')?.invalid && datosPersonalesForm.get('nss')?.touched">
+              El NSS debe tener 11 números
+            </mat-error>
+          </mat-form-field>
+
+          <!-- CURP -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>CURP</mat-label>
+            <input matInput formControlName="curp" placeholder="Ej. GARC850101HDFRRL09">
+            <mat-hint>18 caracteres en formato oficial</mat-hint>
+            <mat-error *ngIf="datosPersonalesForm.get('curp')?.invalid && datosPersonalesForm.get('curp')?.touched">
+              Formato de CURP inválido
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Fecha -->
           <div class="fecha-grid">
             <mat-form-field appearance="outline">
               <mat-label>Día</mat-label>
@@ -50,10 +87,6 @@
                 <mat-option *ngFor="let a of anios" [value]="a">{{ a }}</mat-option>
               </mat-select>
             </mat-form-field>
-          </div>
-
-          <div class="fecha-error" *ngIf="!fechaValida() && datosPersonalesForm.valid">
-            Fecha inválida
           </div>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -81,21 +114,28 @@
       </mat-step>
 
       <!-- ========================= -->
-      <!-- CONTACTO -->
+      <!-- PASO 2 - CONTACTO -->
       <!-- ========================= -->
       <mat-step [stepControl]="contactoForm">
         <form [formGroup]="contactoForm">
 
           <ng-template matStepLabel>Contacto</ng-template>
 
+          <!-- Email -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
-            <input matInput formControlName="email">
+            <input matInput formControlName="correo" placeholder="ejemplo@correo.com">
+            <mat-error *ngIf="contactoForm.get('correo')?.invalid && contactoForm.get('correo')?.touched">
+              Ingresa un correo válido
+            </mat-error>
           </mat-form-field>
 
+          <!-- Contraseña -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Contraseña</mat-label>
-            <input matInput [type]="hidePassword ? 'password':'text'" formControlName="password">
+            <input matInput 
+                   [type]="hidePassword ? 'password':'text'" 
+                   formControlName="contrasena">
 
             <button mat-icon-button matSuffix
                     (click)="hidePassword=!hidePassword"
@@ -112,19 +152,96 @@
             </div>
           </div>
 
+          <!-- Teléfono -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefono">
+            <mat-error *ngIf="contactoForm.get('telefono')?.invalid && contactoForm.get('telefono')?.touched">
+              Debe contener 10 números
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Teléfono Emergencia -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Teléfono de Emergencia</mat-label>
+            <input matInput formControlName="telefonoEmergencia">
+            <mat-error *ngIf="contactoForm.get('telefonoEmergencia')?.invalid && contactoForm.get('telefonoEmergencia')?.touched">
+              Debe contener 10 números
+            </mat-error>
           </mat-form-field>
 
           <button mat-button matStepperPrevious>Regresar</button>
+          <button mat-raised-button color="primary" matStepperNext>
+            Siguiente
+          </button>
 
-          <button mat-raised-button color="primary"
-                  (click)="registrar()"
-                  [disabled]="loading ||
-                              !fechaValida() ||
-                              datosPersonalesForm.invalid ||
-                              contactoForm.invalid">
+        </form>
+      </mat-step>
+
+      <!-- ========================= -->
+      <!-- PASO 3 - DIRECCIÓN -->
+      <!-- ========================= -->
+      <mat-step [stepControl]="direccionForm">
+        <form [formGroup]="direccionForm">
+
+          <ng-template matStepLabel>Dirección</ng-template>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Calle</mat-label>
+            <input matInput formControlName="calle">
+            <mat-error *ngIf="direccionForm.get('calle')?.invalid && direccionForm.get('calle')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>No. Exterior</mat-label>
+            <input matInput formControlName="numExterior">
+            <mat-error *ngIf="direccionForm.get('numExterior')?.invalid && direccionForm.get('numExterior')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>No. Interior</mat-label>
+            <input matInput formControlName="numInterior">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Colonia</mat-label>
+            <input matInput formControlName="colonia">
+            <mat-error *ngIf="direccionForm.get('colonia')?.invalid && direccionForm.get('colonia')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>CP</mat-label>
+            <input matInput formControlName="cp" placeholder="76000">
+            <mat-hint>5 dígitos</mat-hint>
+            <mat-error *ngIf="direccionForm.get('cp')?.invalid && direccionForm.get('cp')?.touched">
+              Debe contener 5 números
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Localidad</mat-label>
+            <input matInput formControlName="localidad">
+            <mat-error *ngIf="direccionForm.get('localidad')?.invalid && direccionForm.get('localidad')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Estado</mat-label>
+            <input matInput formControlName="estado">
+            <mat-error *ngIf="direccionForm.get('estado')?.invalid && direccionForm.get('estado')?.touched">
+              Campo obligatorio
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-button matStepperPrevious>Regresar</button>
+          <button mat-raised-button color="primary" (click)="registrar()">
             Registrarse
           </button>
 
@@ -146,7 +263,6 @@
 
   </div>
 </div>
-
 
 <!-- ============================= -->
 <!-- OVERLAY ÉXITO -->

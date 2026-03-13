@@ -1,7 +1,7 @@
 export interface User {
   idUsuario: number;
   correo: string;
-  rol: 'MEDICO' | 'PACIENTE';
+  rol: 'MEDICO' | 'PACIENTE' | 'ADMIN';
 }
 
 export interface LoginRequest {
@@ -16,7 +16,7 @@ export interface LoginResponse {
 }
 
 export interface ExchangeResponse {
-  rol: 'MEDICO' | 'PACIENTE';
+  rol: 'MEDICO' | 'PACIENTE' | 'ADMIN';
   idUsuario: number;
   correo: string;
 }

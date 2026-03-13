@@ -1,0 +1,596 @@
+<div class="dashboard-container" [class.dark-mode]="darkMode">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>H+ Medical</h2>
+      <span>Panel Médico</span>
+    </div>
+
+    <nav>
+      <a [class.active]="selectedSection === 'citas'" (click)="changeSection('citas')">
+        <mat-icon>event</mat-icon> Citas
+      </a>
+
+      <a [class.active]="selectedSection === 'pacientes'" (click)="changeSection('pacientes')">
+        <mat-icon>people</mat-icon> Pacientes
+      </a>
+
+      <a [class.active]="selectedSection === 'formulario'" (click)="changeSection('formulario')">
+        <mat-icon>assignment</mat-icon> Formulario Consulta
+      </a>
+
+      <a [class.active]="selectedSection === 'perfil'" (click)="changeSection('perfil')">
+        <mat-icon>person</mat-icon> Perfil
+      </a>
+    </nav>
+
+    <button mat-raised-button color="warn" (click)="logout()" class="logout-btn">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+
+    <!-- HEADER -->
+    <header class="top-header">
+      <div>
+<h1>{{ tituloSeccion }}</h1>
+        <p>Dr. {{ nombreMedico || '...' }}</p>
+      </div>
+
+      <div class="header-right">
+        <button mat-icon-button (click)="toggleDarkMode()">
+          <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+
+        <div class="status-indicator"></div>
+        <span>En línea</span>
+        <mat-icon>account_circle</mat-icon>
+      </div>
+    </header>
+
+    <!-- TARJETAS -->
+    <section class="medical-stats" *ngIf="selectedSection === 'citas'">
+
+<!-- PENDIENTES -->
+<div class="stat-card"
+     (click)="filtrarPorEstado('pendiente')"
+     [class.active-filter]="filtroEstado === 'pendiente'">
+  <h3>{{ citasPendientes }}</h3>
+  <p>Citas Pendientes</p>
+</div>
+
+<!-- COMPLETADAS -->
+<div class="stat-card"
+     (click)="filtrarPorEstado('completada')"
+     [class.active-filter]="filtroEstado === 'completada'">
+  <h3>{{ citasCompletadas }}</h3>
+  <p>Citas Completadas</p>
+</div>
+
+<!-- CANCELADAS -->
+<div class="stat-card"
+     (click)="filtrarPorEstado('cancelada')"
+     [class.active-filter]="filtroEstado === 'cancelada'">
+  <h3>{{ citasCanceladas }}</h3>
+  <p>Citas Canceladas</p>
+</div>
+
+      <div class="stat-card highlight premium-next">
+        <div class="next-content">
+          <div>
+            <h3>{{ proximaCita }}</h3>
+            <p>Próxima Cita</p>
+          </div>
+          <mat-icon>schedule</mat-icon>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TABLA CITAS -->
+    <div class="table-container" *ngIf="selectedSection === 'citas'">
+
+      <div class="table-scroll">
+        <table>
+
+          <thead>
+            <tr>
+              <th>Nombre Completo</th>
+              <th>Edad</th>
+              <th>NSS</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let cita of paginatedCitas">
+              <td class="patient-name">
+                {{ cita.nombrePaciente }}
+              </td>
+
+              <td>
+                {{ calcularEdad(cita.fechaNacimiento) }}
+              </td>
+
+              <td>
+                {{ cita.nss }}
+              </td>
+
+              <td>
+                {{ cita.fecha }}
+              </td>
+
+              <td>
+                {{ cita.hora }}
+              </td>
+
+<td class="acciones-cell">
+
+  <!-- 🔹 Mostrar botones si NO está cancelada ni completada -->
+  <div *ngIf="cita.estado?.toLowerCase() !== 'cancelada' 
+              && cita.estado?.toLowerCase() !== 'completada'"
+       class="acciones-wrapper">
+
+<button mat-flat-button
+        color="primary"
+        class="btn-accion"
+        (click)="atenderCita(cita)">
+  <mat-icon>medical_services</mat-icon>
+  Atender Cita
+</button>
+
+    <button mat-flat-button
+            color="warn"
+            class="btn-accion"
+            (click)="openCancelDialog(cita)">
+      <mat-icon>close</mat-icon>
+      Cancelar
+    </button>
+
+  </div>
+
+  <!-- 🔹 Si ya está completada o cancelada -->
+  <div *ngIf="cita.estado?.toLowerCase() === 'cancelada' 
+              || cita.estado?.toLowerCase() === 'completada'">
+
+    <span class="estado-label"
+          [class.completada]="cita.estado?.toLowerCase() === 'completada'"
+          [class.cancelada]="cita.estado?.toLowerCase() === 'cancelada'">
+
+      {{ cita.estado | titlecase }}
+
+    </span>
+
+  </div>
+
+</td>
+            </tr>
+
+<tr *ngIf="paginatedCitas.length === 0">
+                <td colspan="6" style="text-align:center; padding:30px;">
+                No hay citas programadas.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="citas.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+        (page)="handlePageEvent($event)">
+      </mat-paginator>
+
+    </div>
+
+
+    <!-- TABLA PACIENTES -->
+    <div class="table-container" *ngIf="selectedSection === 'pacientes'">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre Completo</th>
+            <th>NSS</th>
+            <th>Contacto / Teléfono</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let paciente of paginatedPacientes">
+            <td>{{ paciente.firstName }} {{ paciente.lastName }}</td>
+            <td>{{ paciente.nationalHealthId || '-' }}</td>
+            <td>{{ paciente.phone }}</td>
+            <td>
+              <button mat-flat-button color="primary" (click)="descargarExpediente(paciente.id)">
+                Visualizar Expediente
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="pacientes.length === 0">
+            <td colspan="4" style="text-align:center; padding:30px;">
+              No hay pacientes registrados.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <mat-paginator [length]="totalPacientes" [pageSize]="pageSizePacientes" [pageSizeOptions]="[5, 10, 20]"
+        (page)="handlePageEvent($event)">
+      </mat-paginator>
+
+    </div>
+
+    <!-- FORMULARIO DE CONSULTA -->
+    <div class="form-consulta-container" *ngIf="selectedSection === 'formulario'">
+
+<h2>
+  Consulta Médica
+  <span *ngIf="citaSeleccionada">
+    - {{ citaSeleccionada.nombrePaciente }}
+  </span>
+</h2>
+
+      <div class="form-scroll">
+        <form class="consulta-form" (ngSubmit)="guardarConsulta()" #consultaForm="ngForm">
+
+<!-- ================= DATOS DEL PACIENTE ================= -->
+<fieldset>
+  <legend>Datos del Paciente</legend>
+
+  <div class="form-row">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nombre</mat-label>
+      <input matInput 
+             [value]="nombrePacientePartes[0]" 
+             readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Apellido Paterno</mat-label>
+      <input matInput 
+             [value]="nombrePacientePartes[1]" 
+             readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Apellido Materno</mat-label>
+      <input matInput 
+             [value]="nombrePacientePartes[2]" 
+             readonly>
+    </mat-form-field>
+
+  </div>
+
+  <div class="form-row">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Fecha de Nacimiento</mat-label>
+      <input matInput 
+             [value]="citaSeleccionada?.fechaNacimiento" 
+             readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>NSS</mat-label>
+      <input matInput 
+             [value]="citaSeleccionada?.nss" 
+             readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>CURP</mat-label>
+      <input matInput 
+             [value]="citaSeleccionada?.curp" 
+             readonly>
+    </mat-form-field>
+
+  </div>
+</fieldset>
+
+<!-- ================= MOTIVO DE CONSULTA ================= -->
+<fieldset>
+  <legend>Motivo de Consulta</legend>
+
+  <mat-form-field appearance="fill" class="campo-ancho">
+    <mat-label>Motivo</mat-label>
+    <textarea matInput
+              rows="3"
+              [(ngModel)]="consulta.motivo"
+              name="motivo"
+              required>
+    </textarea>
+  </mat-form-field>
+</fieldset>
+
+
+<!-- ================= SIGNOS VITALES ================= -->
+    <fieldset>
+      <legend>Signos Vitales</legend>
+
+      <div class="form-row">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Presión Arterial</mat-label>
+          <input matInput [(ngModel)]="consulta.presionArterial" name="presionArterial">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Frecuencia Cardíaca</mat-label>
+          <input matInput [(ngModel)]="consulta.frecuenciaCardiaca" name="frecuenciaCardiaca">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Temperatura (°C)</mat-label>
+          <input matInput type="number" [(ngModel)]="consulta.temperatura" name="temperatura">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Peso (kg)</mat-label>
+          <input matInput type="number" [(ngModel)]="consulta.peso" name="peso">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Estatura (m)</mat-label>
+          <input matInput type="number" [(ngModel)]="consulta.estatura" name="estatura">
+        </mat-form-field>
+
+      </div>
+    </fieldset>
+
+    <!-- ================= DIAGNÓSTICO ================= -->
+    <fieldset>
+      <legend>Diagnóstico</legend>
+
+      <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+        <mat-label>Descripción del Diagnóstico</mat-label>
+        <textarea matInput rows="4"
+                  [(ngModel)]="consulta.diagnostico"
+                  name="diagnostico">
+        </textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+        <mat-label>Observaciones Médicas</mat-label>
+        <textarea matInput rows="4"
+                  [(ngModel)]="consulta.observacionesMedicas"
+                  name="observacionesMedicas">
+        </textarea>
+      </mat-form-field>
+    </fieldset>
+
+    <!-- ================= RECETA ================= -->
+<fieldset>
+  <legend>Receta Médica</legend>
+
+  <mat-form-field appearance="fill" class="campo-medicamentos">
+    <mat-label>Medicamentos (dosis, frecuencia, duración)</mat-label>
+    <textarea 
+      matInput 
+      rows="5"
+      [(ngModel)]="consulta.receta"
+      name="receta"
+      placeholder="Ejemplo:
+Paracetamol 500mg - 1 cada 8 horas por 5 días
+Ibuprofeno 400mg - 1 cada 12 horas por 3 días">
+    </textarea>
+  </mat-form-field>
+
+</fieldset>
+
+    <!-- ================= BOTONES ================= -->
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="submit">
+        Guardar Consulta
+      </button>
+    </div>
+
+  </form>
+      </div>
+
+    </div>
+
+<!-- ================= PERFIL MEDICO ================= -->
+<div class="profile-container" *ngIf="selectedSection === 'perfil'">
+
+  <!-- HEADER -->
+<div class="profile-header-card" [class.edit-mode]="modoEdicion">
+  
+    <div class="avatar">
+      {{ medico?.nombre?.charAt(0) }}{{ medico?.apPaterno?.charAt(0) }}
+    </div>
+
+    <div class="header-info">
+      <h2>
+        Dr. {{ medico?.nombre }} {{ medico?.apPaterno }} {{ medico?.apMaterno }}
+      </h2>
+
+      <p class="sub-info">
+        {{ medico?.especialidad }} · Cédula {{ medico?.cedulaProfesional }}
+      </p>
+
+      <p class="sub-info">
+        {{ medico?.unidadMedica?.nombre }}
+      </p>
+
+      <span class="status-badge"
+            [class.active]="medico?.activo"
+            [class.inactive]="!medico?.activo">
+        {{ medico?.activo ? 'Activo' : 'Inactivo' }}
+      </span>
+    </div>
+
+    <div class="header-actions">
+      <button mat-stroked-button color="primary"
+              (click)="toggleEdicion()">
+        <mat-icon>edit</mat-icon>
+        {{ modoEdicion ? 'Cancelar' : 'Editar Perfil' }}
+      </button>
+    </div>
+
+  </div>
+
+<!-- INFORMACIÓN PROFESIONAL -->
+<div class="section-card" [class.edit-mode]="modoEdicion">
+    <h3>Información Profesional</h3>
+
+    <div class="info-grid">
+
+      <!-- Nombre -->
+      <div>
+        <label>Nombre</label>
+        <ng-container *ngIf="!modoEdicion; else editNombre">
+          <p>{{ medico?.nombre }}</p>
+        </ng-container>
+        <ng-template #editNombre>
+          <input [(ngModel)]="medico.nombre" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Apellido Paterno -->
+      <div>
+        <label>Apellido Paterno</label>
+        <ng-container *ngIf="!modoEdicion; else editApPaterno">
+          <p>{{ medico?.apPaterno }}</p>
+        </ng-container>
+        <ng-template #editApPaterno>
+          <input [(ngModel)]="medico.apPaterno" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Apellido Materno -->
+      <div>
+        <label>Apellido Materno</label>
+        <ng-container *ngIf="!modoEdicion; else editApMaterno">
+          <p>{{ medico?.apMaterno }}</p>
+        </ng-container>
+        <ng-template #editApMaterno>
+          <input [(ngModel)]="medico.apMaterno" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Especialidad -->
+      <div>
+        <label>Especialidad</label>
+        <ng-container *ngIf="!modoEdicion; else editEspecialidad">
+          <p>{{ medico?.especialidad }}</p>
+        </ng-container>
+        <ng-template #editEspecialidad>
+          <input [(ngModel)]="medico.especialidad" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Cédula -->
+      <div>
+        <label>Cédula Profesional</label>
+        <ng-container *ngIf="!modoEdicion; else editCedula">
+          <p>{{ medico?.cedulaProfesional }}</p>
+        </ng-container>
+        <ng-template #editCedula>
+          <input [(ngModel)]="medico.cedulaProfesional" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Turno -->
+      <div>
+        <label>Turno</label>
+        <ng-container *ngIf="!modoEdicion; else editTurno">
+          <p>{{ medico?.turno | titlecase }}</p>
+        </ng-container>
+        <ng-template #editTurno>
+          <select [(ngModel)]="medico.turno" class="edit-input">
+            <option value="matutino">Matutino</option>
+            <option value="vespertino">Vespertino</option>
+            <option value="nocturno">Nocturno</option>
+            <option value="jornada_acumulada">Jornada Acumulada</option>
+          </select>
+        </ng-template>
+      </div>
+
+      <!-- Consultorio -->
+      <div>
+        <label>Consultorio</label>
+        <ng-container *ngIf="!modoEdicion; else editConsultorio">
+          <p>{{ medico?.consultorio }}</p>
+        </ng-container>
+        <ng-template #editConsultorio>
+          <input [(ngModel)]="medico.consultorio" class="edit-input">
+        </ng-template>
+      </div>
+
+      <!-- Número empleado (solo lectura) -->
+      <div>
+        <label>Número de Empleado</label>
+        <p>{{ medico?.numEmpleado }}</p>
+      </div>
+
+    </div>
+
+    <!-- BOTÓN GUARDAR -->
+    <div *ngIf="modoEdicion" class="edit-actions">
+<button mat-raised-button
+        color="primary"
+        (click)="guardarPerfil()"
+        [disabled]="guardando">
+
+  <span *ngIf="!guardando">Guardar Cambios</span>
+
+  <span *ngIf="guardando">
+    Guardando...
+  </span>
+
+</button>
+    </div>
+
+  </div>
+
+  <!-- UNIDAD MÉDICA (Solo lectura) -->
+  <div class="section-card">
+
+    <h3>Unidad Médica</h3>
+
+    <div class="info-grid">
+
+      <div>
+        <label>Clave</label>
+        <p>{{ medico?.unidadMedica?.clave }}</p>
+      </div>
+
+      <div>
+        <label>Nivel</label>
+        <p>Nivel {{ medico?.unidadMedica?.nivel }}</p>
+      </div>
+
+      <div>
+        <label>Delegación</label>
+        <p>{{ medico?.unidadMedica?.delegacion }}</p>
+      </div>
+
+      <div>
+        <label>Municipio</label>
+        <p>{{ medico?.unidadMedica?.municipio }}</p>
+      </div>
+
+      <div>
+        <label>Estado</label>
+        <p>{{ medico?.unidadMedica?.estado }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+  </main>
+
+
+</div>

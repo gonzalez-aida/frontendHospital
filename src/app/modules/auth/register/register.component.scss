@@ -2,43 +2,93 @@
   box-sizing: border-box;
 }
 
-/* CONTENEDOR */
+/* =========================
+   CONTENEDOR
+========================= */
 .register-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 40px;
-  background: linear-gradient(135deg, #4dd0e1, #00838f);
+  background: linear-gradient(135deg, #1f3a5f, #2c5282);
 }
 
 .register-card {
   background: white;
   padding: 40px;
-  border-radius: 12px;
+  border-radius: 14px;
   width: 100%;
   max-width: 600px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
 .register-title {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
+.register-title h2 {
+  color: #1f3a5f;
+}
+
+.register-title p {
+  color: #6b7c93;
+}
+
+/* =========================
+   STEPPER PERSONALIZADO
+========================= */
+::ng-deep .mat-step-header .mat-step-icon {
+  background-color: #d6dee8;
+  color: #1f3a5f;
+}
+
+::ng-deep .mat-step-header.mat-active .mat-step-icon {
+  background-color: #1f3a5f;
+  color: white;
+}
+
+::ng-deep .mat-step-header.mat-completed .mat-step-icon {
+  background-color: #2c5282;
+  color: white;
+}
+
+::ng-deep .mat-step-label {
+  color: #1f3a5f;
+  font-weight: 500;
+}
+
+/* =========================
+   INPUTS
+========================= */
 .full-width {
   width: 100%;
 }
 
+::ng-deep .mat-form-field-outline {
+  color: #cbd5e0;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
+  color: #1f3a5f;
+}
+
+/* =========================
+   FECHA GRID
+========================= */
 .fecha-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(80px, 1fr));
   gap: 10px;
 }
 
+/* =========================
+   PASSWORD BAR
+========================= */
 .password-bar {
   height: 6px;
-  background: #eee;
+  background: #eef3f9;
   border-radius: 5px;
   margin-top: -10px;
   margin-bottom: 15px;
@@ -51,40 +101,62 @@
   transition: width .3s ease;
 }
 
-.fecha-error {
-  color: #e53935;
-  font-size: 13px;
-  margin-bottom: 10px;
+/* =========================
+   BOTONES
+========================= */
+::ng-deep .mat-raised-button.mat-primary {
+  background: #1f3a5f;
+  color: white;
 }
 
+::ng-deep .mat-raised-button.mat-primary:hover {
+  background: #2c5282;
+}
+
+::ng-deep .mat-button {
+  color: #1f3a5f;
+}
+
+/* =========================
+   LOGIN LINK
+========================= */
 .login-link {
   text-align: center;
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
 }
 
+.login-link span {
+  color: #6b7c93;
+}
+
 .login-btn {
   border-radius: 25px;
-  padding: 8px 20px;
+  padding: 8px 22px;
   display: flex;
   align-items: center;
   gap: 8px;
+  border: 1px solid #1f3a5f;
+  color: #1f3a5f;
 }
 
-/* ============================= */
-/* OVERLAY ÉXITO */
-/* ============================= */
+.login-btn:hover {
+  background: #eef3f9;
+}
 
+/* =========================
+   OVERLAY ÉXITO
+========================= */
 .success-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.45);
+  background: rgba(31,58,95,0.65);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,14 +166,14 @@
 .success-card {
   background: white;
   padding: 45px 55px;
-  border-radius: 14px;
+  border-radius: 16px;
   text-align: center;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.25);
   animation: fadeInScale .5s ease;
 }
 
 .success-card h2 {
-  color: #2e7d32;
+  color: #1f3a5f;
   margin-top: 20px;
 }
 
@@ -109,7 +181,7 @@
   width: 85px;
   height: 85px;
   border-radius: 50%;
-  background: #43a047;
+  background: #1f3a5f;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -126,6 +198,9 @@
   animation: drawCheck .5s .35s ease forwards;
 }
 
+/* =========================
+   ANIMACIONES
+========================= */
 @keyframes fadeInScale {
   from { opacity: 0; transform: scale(.9); }
   to { opacity: 1; transform: scale(1); }

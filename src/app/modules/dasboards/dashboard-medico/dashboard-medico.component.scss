@@ -1,0 +1,596 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  transition: all 0.3s ease;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 260px;
+  background: #1f3a5f;
+  color: white;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.appointments-table {
+  width: 100%;
+  table-layout: fixed; // importante
+}
+
+.appointments-table th,
+.appointments-table td {
+  width: auto;
+}
+
+.logo h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.logo span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.sidebar nav {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: all 0.25s ease;
+}
+
+.sidebar nav a:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateX(4px);
+}
+
+.sidebar nav a.active {
+  background: white;
+  color: #1f3a5f;
+  font-weight: 600;
+  opacity: 1;
+}
+
+.logout-btn {
+  margin-top: auto;
+}
+
+/* ================= CONTENT ================= */
+
+.content {
+  flex: 1;
+  padding: 40px;
+    width: 100%;
+
+}
+
+
+/* ================= HEADER ================= */
+
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-header h1 {
+  margin: 0;
+  color: #1f3a5f;
+  font-weight: 600;
+}
+
+.top-header p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  background: #4caf50;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(76,175,80,0.6);
+}
+
+/* ================= TARJETAS ================= */
+
+.medical-stats {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 26px;
+  color: #2c5282;
+}
+
+.stat-card p {
+  margin-top: 6px;
+  color: #777;
+}
+
+/* ================= TABLA ================= */
+
+.table-container {
+  margin-top: 35px;
+  background: white;
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+
+/* 🔥 ESTA ES LA LÍNEA QUE FALTA */
+.table-container table {
+  width: 100%;
+}
+
+thead {
+  background: #eef3f9;
+}
+
+th {
+  text-align: left;
+  padding: 16px;
+  font-size: 13px;
+  color: #555;
+}
+
+td {
+  padding: 20px 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+tr {
+  transition: all 0.2s ease;
+}
+
+tr:hover {
+  background: #f7faff;
+}
+
+.patient-name {
+  font-weight: 600;
+  color: #2c5282;
+}
+
+.cancel-btn {
+  border-radius: 25px;
+}
+
+/* ================= DARK MODE ================= */
+
+.dark-mode {
+  background: #121821;
+}
+
+.dark-mode .sidebar {
+  background: #18212f;
+}
+
+.dark-mode .content {
+  color: #e4e6eb;
+}
+
+.dark-mode .top-header h1 {
+  color: #ffffff;
+}
+
+.dark-mode .stat-card,
+.dark-mode .table-container {
+  background: #1e293b;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.dark-mode th {
+  background: #243041;
+  color: #bbb;
+}
+
+.dark-mode td {
+  border-top: 1px solid #2f3c4f;
+}
+
+.dark-mode tr:hover {
+  background: #253246;
+}
+
+.dark-mode .patient-name {
+  color: #90caf9;
+}
+
+.premium-next {
+  background: linear-gradient(135deg, #2c5282, #1f3a5f);
+  color: white;
+}
+
+.premium-next h3,
+.premium-next p {
+  color: white;
+}
+
+.next-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.premium-next mat-icon {
+  font-size: 40px;
+  opacity: 0.3;
+}
+
+mat-paginator {
+  margin-top: 15px;
+}
+
+/* ================= FORMULARIO CONSULTA ================= */
+
+.form-consulta-container {
+  padding: 20px;
+  height: calc(100vh - 100px); // ajusta según tu header
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+    .form-scroll {
+    flex: 1;               // ocupa todo el espacio disponible
+    overflow-y: auto;      // scroll vertical interno
+    padding-right: 10px;   // evita que el scroll tape contenido
+  }
+
+
+  fieldset {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+
+    legend {
+      font-weight: bold;
+      padding: 0 10px;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+
+    mat-form-field {
+      flex: 1 1 200px;
+    }
+
+    .full-width {
+      flex: 1 1 100%;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+}
+
+
+.table-scroll {
+  max-height: 350px;   // ajusta si quieres más alto
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Header fijo (muy profesional) */
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #eef3f9;
+  z-index: 5;
+}
+
+/* Dark mode header fijo */
+.dark-mode .table-scroll thead th {
+  background: #243041;
+}
+
+/* ================= PERFIL MEDICO ================= */
+
+.profile-container {
+  margin-top: 20px;
+}
+
+/* HEADER */
+
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px 35px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1f3a5f, #2c5282);
+  color: white;
+  margin-bottom: 25px;
+}
+
+.avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background: white;
+  color: #1f3a5f;
+  font-size: 26px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-info h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sub-info {
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #2e7d32;
+}
+
+.status-badge.inactive {
+  background: #c62828;
+}
+
+/* TARJETAS */
+
+.section-card {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+.section-card h3 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #1f3a5f;
+}
+
+/* GRID INFO */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.info-grid label {
+  font-size: 12px;
+  color: #777;
+  display: block;
+}
+
+.info-grid p {
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* INPUTS EDICIÓN */
+
+.edit-input {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #2c5282;
+  box-shadow: 0 0 0 2px rgba(44,82,130,0.15);
+}
+
+/* BOTÓN GUARDAR */
+
+.edit-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ================= ANIMACIÓN MODO EDICIÓN ================= */
+
+.section-card {
+  transition: all 0.3s ease;
+}
+
+.profile-header-card {
+  transition: all 0.3s ease;
+}
+
+/* Cuando está en modo edición */
+.section-card.edit-mode {
+  box-shadow: 0 12px 35px rgba(44, 82, 130, 0.15);
+  transform: translateY(-2px);
+}
+
+.section-card.edit-mode label {
+  color: #2c5282;
+  font-weight: 600;
+}
+
+.section-card.edit-mode .edit-input {
+  background: #f7faff;
+}
+
+.profile-header-card.edit-mode {
+  transform: scale(1.01);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+::ng-deep .snackbar-success {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+::ng-deep .snackbar-error {
+  background: linear-gradient(135deg, #c62828, #8e0000);
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* ================= Estilo de las cards ================= */
+
+.stat-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.active-filter {
+  border: 2px solid #1976d2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.estado-label {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.completada {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.cancelada {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* ================= BOTONES ACCIONES CITAS ================= */
+
+.acciones-cell {
+  text-align: center;
+}
+
+.acciones-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* Estilo base botón */
+.btn-accion {
+  border-radius: 25px !important;
+  padding: 6px 18px !important;
+  font-weight: 500;
+  font-size: 13px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+/* Hover elegante */
+.btn-accion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Personalización Completar */
+.btn-accion[color="primary"] {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+}
+
+/* Personalización Cancelar */
+.btn-accion[color="warn"] {
+  background: linear-gradient(135deg, #e53935, #c62828);
+}
+
+/* Ícono más pequeño */
+.btn-accion mat-icon {
+  font-size: 16px;
+}
+
+.campo-ancho {
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.campo-ancho-diagnostico {
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.campo-medicamentos {
+  width: 100%;
+  margin-bottom: 25px;
+}

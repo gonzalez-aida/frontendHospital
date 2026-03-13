@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-callback',
@@ -16,7 +16,7 @@ export class CallbackComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const code = this.route.snapshot.queryParamMap.get('code');
@@ -29,10 +29,15 @@ export class CallbackComponent implements OnInit {
     this.authService.exchangeCode(code).subscribe({
       next: (data) => {
         if (data.rol === 'MEDICO') {
-          this.router.navigate(['/dashboard']);
-        } else if (data.rol === 'PACIENTE') {
-          this.router.navigate(['/dashboard']);
-        } else {
+          this.router.navigate(['/dashboard-medico']);
+        }
+        else if (data.rol === 'PACIENTE') {
+          this.router.navigate(['/dashboard-paciente']);
+        }
+        else if (data.rol === 'ADMIN') {
+          window.location.href = 'https://www.sat.gob.mx';
+        }
+        else {
           this.router.navigate(['/auth/login']);
         }
       },

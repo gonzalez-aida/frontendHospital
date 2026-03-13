@@ -3,23 +3,30 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
-    providedIn: 'root'
+providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) { }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        if (this.authService.isAuthenticated) {
-            return true;
-        }
+constructor(
+private authService: AuthService,
+private router: Router
+) {}
 
-        // Redirigir al login con la URL de retorno
-        this.router.navigate(['/auth/login'], {
-            queryParams: { returnUrl: state.url }
-        });
-        return false;
-    }
+canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+
+// Verificamos si el usuario está autenticado
+if (this.authService.isAuthenticated()) {
+  return true;
+}
+
+// Si no está autenticado lo mandamos al login
+this.router.navigate(['/auth/login'], {
+  queryParams: { returnUrl: state.url }
+});
+
+return false;
+
+
+}
+
 }
