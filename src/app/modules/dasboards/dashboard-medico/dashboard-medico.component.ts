@@ -10,6 +10,7 @@ import { Cita } from '../../../shared/models/cita.model';
 import { PatientService, PaginatedResponse } from '../../../core/services/patient.service';
 import { Patient } from '../../../shared/models/patient.model';
 import { jsPDF } from 'jspdf';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,25 +25,32 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   darkMode: boolean = false;
 
   nombreMedico: string = '';
+  medico!: Medico;
+  modoEdicion: boolean = false;
+  guardando: boolean = false;
+  citaSeleccionada!: Cita;
 
   // ================= CITAS =================
   pageSize = 5;
   pageIndex = 0;
   citas: Cita[] = [];
+  filtroEstado: string = 'pendiente';
   medicoId!: number;
 
   // ================= PACIENTES =================
   pacientes: Patient[] = [];
   pageSizePacientes = 5;
   pageIndexPacientes = 0;
+  totalPacientes = 0;
 
   constructor(
     private authService: AuthService,
     public connectivityService: ConnectivityService,
     private dialog: MatDialog,
     private citaService: CitaService,
-    private patientService: PatientService
-  ) {}
+    private patientService: PatientService,
+    private snackBar: MatSnackBar
+  ) { }
 
   // ================= INIT =================
 
@@ -50,17 +58,22 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
     this.authService.obtenerPerfilMedico().subscribe({
       next: (medico: Medico) => {
+        this.medico = medico;
         this.medicoId = medico.idMedico;
 
         this.nombreMedico =
-    medico.nombre + ' ' +
-    medico.apPaterno + ' ' +
-    medico.apMaterno;
+          medico.nombre + ' ' +
+          medico.apPaterno + ' ' +
+          medico.apMaterno;
+
+           this.cargarPacientes();
 
         // ✅ SOLO UNA LLAMADA
         this.citaService.obtenerMisCitas().subscribe({
           next: (data: Cita[]) => {
-            this.citas = data;
+            this.citas = data.filter(c =>
+              c.estado?.toLowerCase() !== 'archivada'
+            );
           },
           error: (err) => console.error('Error al obtener citas del médico', err)
         });
@@ -68,10 +81,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
       error: (err) => console.error('Error al obtener perfil del médico', err)
     });
 
-    this.cargarPacientes();
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
 
   // ================= LOGOUT Y DARK MODE =================
 
@@ -90,44 +102,172 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   // ================= CITAS =================
 
   openCancelDialog(cita: Cita) {
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { 
-        nombre: cita.nombrePaciente
-      }
+      data: { nombre: cita.nombrePaciente }
     });
+
 
     dialogRef.afterClosed().subscribe(result => {
+
       if (result) {
-        this.citas = this.citas.filter(c => c !== cita);
+
+        this.citaService.cancelarCita(cita.idCita).subscribe({
+
+          next: () => {
+
+            // 🔥 Actualizamos estado en memoria
+            cita.estado = 'cancelada';
+
+            this.snackBar.open(
+              'Cita cancelada correctamente',
+              'Cerrar',
+              { duration: 3000 }
+            );
+
+          },
+
+          error: () => {
+            this.snackBar.open(
+              'Error al cancelar cita',
+              'Cerrar',
+              { duration: 3000 }
+            );
+          }
+
+        });
+
       }
+
     });
   }
 
+  atenderCita(cita: Cita) {
+
+    this.citaSeleccionada = cita;
+
+    // Dividir nombre completo
+    const partes = cita.nombrePaciente?.split(' ') || [];
+
+    this.consulta.pacienteNombre = partes[0] || '';
+    this.consulta.pacienteApPaterno = partes[1] || '';
+    this.consulta.pacienteApMaterno = partes[2] || '';
+
+    // 🔥 USAR EXACTAMENTE LO QUE VIENE DE LA CITA
+    this.consulta.fechaNacimiento = cita.fechaNacimiento || '';
+    this.consulta.motivo = '';
+
+    // 👇 AGREGA ESTO SI LOS TIENES EN EL FORM
+    (this.consulta as any).nss = cita.nss || '';
+    (this.consulta as any).curp = cita.curp || '';
+
+    this.selectedSection = 'formulario';
+  }
+
+  get nombrePacientePartes(): string[] {
+    if (!this.citaSeleccionada?.nombrePaciente) return ['', '', ''];
+    return this.citaSeleccionada.nombrePaciente.split(' ');
+  }
+
+  completarCita(cita: Cita) {
+
+    this.citaService.completarCita(cita.idCita).subscribe({
+
+      next: () => {
+
+        // 🔥 Actualiza el estado en memoria
+        cita.estado = 'completada';
+
+        this.snackBar.open(
+          'Cita completada correctamente',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
+      },
+
+      error: () => {
+
+        this.snackBar.open(
+          'Error al completar cita',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
+      }
+
+    });
+
+  }
+
+
+
   get paginatedCitas(): Cita[] {
+
+    let citasFiltradas: Cita[] = this.citas;
+
+    if (this.filtroEstado === 'pendiente') {
+      citasFiltradas = this.citas.filter(c =>
+        c.estado?.toLowerCase() !== 'cancelada' &&
+        c.estado?.toLowerCase() !== 'completada'
+      );
+    }
+
+    else if (this.filtroEstado === 'completada') {
+      citasFiltradas = this.citas.filter(c =>
+        c.estado?.toLowerCase() === 'completada'
+      );
+    }
+
+    else if (this.filtroEstado === 'cancelada') {
+      citasFiltradas = this.citas.filter(c =>
+        c.estado?.toLowerCase() === 'cancelada'
+      );
+    }
+
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
-    return this.citas.slice(start, end);
+
+    return citasFiltradas.slice(start, end);
   }
+
+  filtrarPorEstado(estado: string) {
+    this.filtroEstado = estado;
+    this.pageIndex = 0; // reinicia paginación
+  }
+
+
+  get tituloSeccion(): string {
+  switch (this.selectedSection) {
+    case 'citas':
+      return 'Gestión de Citas';
+    case 'pacientes':
+      return 'Lista de Pacientes';
+    case 'formulario':
+      return 'Consulta Médica';
+    default:
+      return 'Perfil Médico';
+  }
+}
 
   // ================= PACIENTES =================
 
-  cargarPacientes(page: number = 1, pageSize: number = this.pageSizePacientes): void {
-    this.patientService.getPatients(page, pageSize).subscribe({
-      next: (res: PaginatedResponse<Patient>) => {
-        this.pacientes = res.data;
-        this.pageSizePacientes = res.pageSize;
-        this.pageIndexPacientes = res.page - 1;
-      },
-      error: (err) => console.error('Error al cargar pacientes', err)
-    });
-  }
+cargarPacientes(page: number = 1, pageSize: number = this.pageSizePacientes): void {
+  this.patientService.getPatients(page, pageSize).subscribe({
+    next: (res: PaginatedResponse<Patient>) => {
+      this.pacientes = res.data;
+      this.totalPacientes = res.total; // 👈 importante
+      this.pageSizePacientes = res.pageSize;
+      this.pageIndexPacientes = res.page - 1;
+    },
+    error: (err) => console.error('Error al cargar pacientes', err)
+  });
+}
 
-  get paginatedPacientes(): Patient[] {
-    const start = this.pageIndexPacientes * this.pageSizePacientes;
-    const end = start + this.pageSizePacientes;
-    return this.pacientes.slice(start, end);
-  }
+get paginatedPacientes(): Patient[] {
+  return this.pacientes;
+}
 
   descargarExpediente(idPaciente: number) {
     this.patientService.getPatientById(idPaciente).subscribe({
@@ -166,21 +306,37 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     telefono: '',
     correo: '',
     telefonoEmergencia: '',
+    nss: '',
+    curp: '',
     antHeredofamiliares: '',
     antPatologicos: '',
     antQuirurgicos: '',
     antAlergicos: '',
     enfCronicas: '',
     antGinecoObstetricos: '',
-    observaciones: ''
+    observaciones: '',
+    motivo: '',
+    presionArterial: '',
+    frecuenciaCardiaca: '',
+    temperatura: '',
+    peso: '',
+    estatura: '',
+medicamentos: '',
+    diagnostico: '',
+    observacionesMedicas: '',
+    receta: '',
+    
+
   };
 
-  tiposSangre = ['A_POS','A_NEG','B_POS','B_NEG','AB_POS','AB_NEG','O_POS','O_NEG'];
+  tiposSangre = ['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'];
 
   guardarConsulta() {
     console.log('Datos de la consulta:', this.consulta);
     alert('Consulta guardada (temporal, sin conexión al backend)');
   }
+
+
 
   // ================= PAGINACIÓN =================
 
@@ -191,6 +347,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     } else if (this.selectedSection === 'pacientes') {
       this.pageSizePacientes = event.pageSize;
       this.pageIndexPacientes = event.pageIndex;
+
+       this.cargarPacientes(event.pageIndex + 1, event.pageSize);
     }
   }
 
@@ -216,14 +374,69 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   get citasPendientes(): number {
-    return this.citas.filter(c => c.estado === 'pendiente').length;
+    return this.citas.filter(c =>
+      c.estado?.toLowerCase() !== 'cancelada' &&
+      c.estado?.toLowerCase() !== 'completada'
+    ).length;
   }
 
   get citasCanceladas(): number {
-    return this.citas.filter(c => c.estado === 'cancelada').length;
+    return this.citas.filter(c =>
+      c.estado?.toLowerCase() === 'cancelada'
+    ).length;
+  }
+
+  get citasCompletadas(): number {
+    return this.citas.filter(c =>
+      c.estado?.toLowerCase() === 'completada'
+    ).length;
   }
 
   get proximaCita(): string {
     return this.citas.length > 0 ? this.citas[0].hora : '--';
+  }
+
+  // ================= PERFIL =================
+
+  toggleEdicion() {
+    this.modoEdicion = !this.modoEdicion;
+  }
+
+  guardarPerfil() {
+    this.guardando = true;
+
+    this.authService.editarPerfilMedico(this.medico).subscribe({
+      next: (res: Medico) => {
+        this.medico = res;
+        this.modoEdicion = false;
+        this.guardando = false;
+
+        this.snackBar.open(
+          'Perfil actualizado correctamente',
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['snackbar-success'],
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom'
+          }
+        );
+      },
+      error: (err) => {
+        console.error('Error al actualizar perfil', err);
+        this.guardando = false;
+
+        this.snackBar.open(
+          'Ocurrió un error al actualizar el perfil',
+          'Cerrar',
+          {
+            duration: 4000,
+            panelClass: ['snackbar-error'],
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom'
+          }
+        );
+      }
+    });
   }
 }

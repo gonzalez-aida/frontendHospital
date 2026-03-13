@@ -9,6 +9,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { DashboardRoutingModule } from './dashboard-routing-medico.module';
 import { DashboardComponent } from './dashboard-medico.component';
@@ -19,6 +20,7 @@ import { ConfirmDialogComponent } from '../dashboard-medico/confirm-dialog-medic
   declarations: [
     DashboardComponent,
     ConfirmDialogComponent
+    
   ],
   imports: [
     CommonModule,
@@ -34,6 +36,8 @@ MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSnackBarModule,
+
 
   ]
 })

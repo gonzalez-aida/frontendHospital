@@ -336,3 +336,261 @@ mat-paginator {
 .dark-mode .table-scroll thead th {
   background: #243041;
 }
+
+/* ================= PERFIL MEDICO ================= */
+
+.profile-container {
+  margin-top: 20px;
+}
+
+/* HEADER */
+
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px 35px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1f3a5f, #2c5282);
+  color: white;
+  margin-bottom: 25px;
+}
+
+.avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background: white;
+  color: #1f3a5f;
+  font-size: 26px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-info h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sub-info {
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #2e7d32;
+}
+
+.status-badge.inactive {
+  background: #c62828;
+}
+
+/* TARJETAS */
+
+.section-card {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+.section-card h3 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #1f3a5f;
+}
+
+/* GRID INFO */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.info-grid label {
+  font-size: 12px;
+  color: #777;
+  display: block;
+}
+
+.info-grid p {
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* INPUTS EDICIÓN */
+
+.edit-input {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #2c5282;
+  box-shadow: 0 0 0 2px rgba(44,82,130,0.15);
+}
+
+/* BOTÓN GUARDAR */
+
+.edit-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ================= ANIMACIÓN MODO EDICIÓN ================= */
+
+.section-card {
+  transition: all 0.3s ease;
+}
+
+.profile-header-card {
+  transition: all 0.3s ease;
+}
+
+/* Cuando está en modo edición */
+.section-card.edit-mode {
+  box-shadow: 0 12px 35px rgba(44, 82, 130, 0.15);
+  transform: translateY(-2px);
+}
+
+.section-card.edit-mode label {
+  color: #2c5282;
+  font-weight: 600;
+}
+
+.section-card.edit-mode .edit-input {
+  background: #f7faff;
+}
+
+.profile-header-card.edit-mode {
+  transform: scale(1.01);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+::ng-deep .snackbar-success {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+::ng-deep .snackbar-error {
+  background: linear-gradient(135deg, #c62828, #8e0000);
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* ================= Estilo de las cards ================= */
+
+.stat-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.active-filter {
+  border: 2px solid #1976d2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.estado-label {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.completada {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.cancelada {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* ================= BOTONES ACCIONES CITAS ================= */
+
+.acciones-cell {
+  text-align: center;
+}
+
+.acciones-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* Estilo base botón */
+.btn-accion {
+  border-radius: 25px !important;
+  padding: 6px 18px !important;
+  font-weight: 500;
+  font-size: 13px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+/* Hover elegante */
+.btn-accion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Personalización Completar */
+.btn-accion[color="primary"] {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+}
+
+/* Personalización Cancelar */
+.btn-accion[color="warn"] {
+  background: linear-gradient(135deg, #e53935, #c62828);
+}
+
+/* Ícono más pequeño */
+.btn-accion mat-icon {
+  font-size: 16px;
+}
+
+.campo-ancho {
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.campo-ancho-diagnostico {
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.campo-medicamentos {
+  width: 100%;
+  margin-bottom: 25px;
+}

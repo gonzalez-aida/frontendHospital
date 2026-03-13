@@ -8,5 +8,21 @@ export interface Medico {
   especialidad: string;
   turno: string;
   consultorio: string;
-  idUm: number;
+  activo: boolean;
+
+  usuario?: {
+    idUsuario: number;
+    correo: string;
+    estado: string;
+  };
+
+  unidadMedica?: {
+    idUm: number;
+    clave: string;
+    nombre: string;
+    nivel: number;
+    delegacion: string;
+    municipio: string;
+    estado: string;
+  };
 }

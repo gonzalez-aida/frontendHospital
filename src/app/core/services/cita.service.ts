@@ -28,4 +28,25 @@ obtenerMisCitas(): Observable<Cita[]> {
   obtenerTodasLasCitas(): Observable<Cita[]> {
     return this.http.get<Cita[]>(`${this.apiUrl}`, { withCredentials: true });
   }
+
+  // 🔹 Cancelar las citas
+  cancelarCita(idCita: number): Observable<any> {
+  return this.http.put(
+    `${this.apiUrl}/cancelar/${idCita}`,
+    {},
+    { withCredentials: true }
+  );
+}
+
+  // 🔹 Completar las citas
+completarCita(idCita: number) {
+  return this.http.put(
+    `${this.apiUrl}/completar/${idCita}`,
+    {},
+    { withCredentials: true }
+  );
+}
+
+
+
 }

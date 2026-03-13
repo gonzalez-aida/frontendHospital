@@ -108,6 +108,15 @@ return this.http.get<Medico>(
 );
 }
 
+// Editar perfil médico
+editarPerfilMedico(data: Medico): Observable<Medico> {
+  return this.http.put<Medico>(
+    `${environment.apiUrl}/medico/mi-perfil`,
+    data,
+    { withCredentials: true }
+  );
+}
+
 // Logout
 logout(): void {
 
