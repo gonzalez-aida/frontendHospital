@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { DoctoresRoutingModule } from './doctores-routing.module';
-
+import { DetalleConsultaComponent } from './detalle-consulta/detalle-consulta.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    DetalleConsultaComponent
+  ],
   imports: [
     CommonModule,
-    DoctoresRoutingModule
+    DoctoresRoutingModule,
+    MatDialogModule
   ]
 })
 export class DoctoresModule { }

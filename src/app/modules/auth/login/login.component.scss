@@ -1,145 +1,443 @@
 @import '../../../../styles/variables';
 @import '../../../../styles/mixins';
 
-/* 🔴 IMPORTANTE: aislar el componente */
+/* ═══════════════════════════════════════
+   HOST
+═══════════════════════════════════════ */
 :host {
     display: block;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
 }
 
-/* =========================
-   Contenedor principal
-========================= */
+/* ═══════════════════════════════════════
+   CONTENEDOR PRINCIPAL
+═══════════════════════════════════════ */
 .login-container {
     min-height: 100vh;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-background: linear-gradient(135deg,
-        #1f3a5f 0%,
-        #2c5282 100%);
-            padding: $spacing-xl;
+    padding: 48px $spacing-xl;
+    position: relative;
+    overflow: hidden;
+    background: #071020;
 }
 
-/* =========================
-   Card
-========================= */
-.login-card {
-    background: $bg-primary;
-    border-radius: $border-radius-xl;
-    box-shadow: $shadow-xl;
-    padding: $spacing-xl;
-    width: 100%;
-    max-width: 480px;
-    animation: fadeIn 0.3s ease-in;
+/* ─── CAPA 1: Gradiente direccional ─── */
+.bg-gradient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 60% 70% at 0% 50%,   rgba(15, 55, 130, 0.55) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 70% at 100% 50%,  rgba(10, 40, 110, 0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 80% 50% at 50% 0%,    rgba(20, 70, 160, 0.3)  0%, transparent 60%),
+        radial-gradient(ellipse 80% 50% at 50% 100%,  rgba(5,  20,  60, 0.6)  0%, transparent 60%);
+}
 
-    @media (min-width: 768px) {
-        padding: 48px;
+/* ─── CAPA 2: Grid macro (visible) ─── */
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(50, 140, 255, 0.18) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(50, 140, 255, 0.18) 1px, transparent 1px);
+        background-size: 60px 60px;
+        animation: gridDrift 25s linear infinite;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(50, 140, 255, 0.07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(50, 140, 255, 0.07) 1px, transparent 1px);
+        background-size: 15px 15px;
+        animation: gridDrift 25s linear infinite;
     }
 }
 
-/* =========================
-   Header
-========================= */
+/* ─── CAPA 3: Puntos en intersecciones del grid ─── */
+.bg-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background-image: radial-gradient(circle, rgba(80, 170, 255, 0.6) 1.5px, transparent 1.5px);
+    background-size: 60px 60px;
+    background-position: 30px 30px;
+    animation: dotPulse 3.5s ease-in-out infinite alternate;
+}
+
+/* ─── CAPA 4: Scan lines horizontales ─── */
+.circuit-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(60, 160, 255, 0.6)  30%,
+            rgba(150, 220, 255, 1)   50%,
+            rgba(60, 160, 255, 0.6)  70%,
+            transparent 100%
+        );
+        box-shadow: 0 0 12px 2px rgba(80, 180, 255, 0.5);
+        animation: scanH 5s ease-in-out infinite;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 40%;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(60, 160, 255, 0.4)  30%,
+            rgba(120, 200, 255, 0.7) 50%,
+            rgba(60, 160, 255, 0.4)  70%,
+            transparent 100%
+        );
+        box-shadow: 0 0 8px rgba(80, 180, 255, 0.3);
+        animation: scanH 5s ease-in-out infinite -2.5s;
+    }
+}
+
+/* ─── CAPA 5: Lluvia de código ─── */
+.code-rain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    overflow: hidden;
+}
+
+.code-col {
+    position: absolute;
+    top: -120%;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: rgba(70, 170, 255, 0.55);
+    writing-mode: vertical-lr;
+    letter-spacing: 10px;
+    white-space: nowrap;
+    line-height: 1;
+    user-select: none;
+    animation: codeRain linear infinite;
+    text-shadow: 0 0 6px rgba(70, 170, 255, 0.4);
+}
+
+.code-col:nth-child(1)  { left: 2.5%;  animation-duration: 14s; animation-delay: -2s;   font-size: 11px; color: rgba(60,160,255,0.45); }
+.code-col:nth-child(2)  { left: 6%;    animation-duration: 10s; animation-delay: -6s;   color: rgba(80,180,255,0.65); text-shadow: 0 0 8px rgba(80,180,255,0.5); }
+.code-col:nth-child(3)  { left: 10%;   animation-duration: 17s; animation-delay: -1s;   font-size: 10px; color: rgba(60,160,255,0.38); }
+.code-col:nth-child(4)  { left: 14.5%; animation-duration: 12s; animation-delay: -9s;   color: rgba(70,170,255,0.58); }
+.code-col:nth-child(5)  { left: 18%;   animation-duration: 9s;  animation-delay: -3s;   font-size: 13px; color: rgba(120,210,255,0.70); text-shadow: 0 0 10px rgba(120,210,255,0.5); }
+.code-col:nth-child(6)  { left: 22%;   animation-duration: 15s; animation-delay: -11s;  font-size: 10px; color: rgba(60,160,255,0.42); }
+.code-col:nth-child(7)  { left: 26.5%; animation-duration: 11s; animation-delay: -4s;   color: rgba(80,180,255,0.62); }
+.code-col:nth-child(8)  { left: 30%;   animation-duration: 13s; animation-delay: -7s;   font-size: 10px; color: rgba(60,160,255,0.40); }
+.code-col:nth-child(9)  { left: 34%;   animation-duration: 8s;  animation-delay: -13s;  font-size: 12px; color: rgba(70,170,255,0.55); }
+.code-col:nth-child(10) { left: 38%;   animation-duration: 16s; animation-delay: -5s;   color: rgba(80,175,255,0.50); }
+.code-col:nth-child(11) { left: 42%;   animation-duration: 10s; animation-delay: -8s;   font-size: 11px; color: rgba(100,200,255,0.60); text-shadow: 0 0 8px rgba(100,200,255,0.4); }
+.code-col:nth-child(12) { left: 46%;   animation-duration: 12s; animation-delay: -2s;   color: rgba(70,170,255,0.55); }
+.code-col:nth-child(13) { left: 50%;   animation-duration: 14s; animation-delay: -15s;  font-size: 10px; color: rgba(60,160,255,0.38); }
+.code-col:nth-child(14) { left: 54%;   animation-duration: 11s; animation-delay: -6s;   color: rgba(80,180,255,0.58); }
+.code-col:nth-child(15) { left: 58%;   animation-duration: 9s;  animation-delay: -10s;  font-size: 13px; color: rgba(120,210,255,0.68); text-shadow: 0 0 10px rgba(120,210,255,0.45); }
+.code-col:nth-child(16) { left: 62.5%; animation-duration: 15s; animation-delay: -3s;   color: rgba(60,160,255,0.44); }
+.code-col:nth-child(17) { left: 66%;   animation-duration: 13s; animation-delay: -7s;   font-size: 11px; color: rgba(80,175,255,0.55); }
+.code-col:nth-child(18) { left: 70%;   animation-duration: 10s; animation-delay: -12s;  color: rgba(70,170,255,0.62); text-shadow: 0 0 8px rgba(70,170,255,0.4); }
+.code-col:nth-child(19) { left: 74%;   animation-duration: 16s; animation-delay: -4s;   font-size: 10px; color: rgba(60,160,255,0.40); }
+.code-col:nth-child(20) { left: 78%;   animation-duration: 11s; animation-delay: -9s;   color: rgba(80,180,255,0.60); }
+.code-col:nth-child(21) { left: 82%;   animation-duration: 8s;  animation-delay: -1s;   font-size: 12px; color: rgba(100,200,255,0.65); text-shadow: 0 0 8px rgba(100,200,255,0.45); }
+.code-col:nth-child(22) { left: 86%;   animation-duration: 14s; animation-delay: -14s;  color: rgba(70,170,255,0.50); }
+.code-col:nth-child(23) { left: 90%;   animation-duration: 12s; animation-delay: -5s;   font-size: 11px; color: rgba(80,175,255,0.55); }
+.code-col:nth-child(24) { left: 94%;   animation-duration: 9s;  animation-delay: -8s;   color: rgba(70,170,255,0.58); }
+.code-col:nth-child(25) { left: 97.5%; animation-duration: 15s; animation-delay: -3s;   font-size: 10px; color: rgba(60,160,255,0.42); }
+
+/* ─── CAPA 6: Resplandores ambientales ─── */
+.bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    filter: blur(70px);
+}
+
+.bg-glow-1 {
+    width: 600px; height: 600px;
+    top: -200px; left: -200px;
+    background: radial-gradient(circle, rgba(25, 75, 180, 0.65) 0%, transparent 70%);
+    animation: glowFloat 9s ease-in-out infinite;
+}
+
+.bg-glow-2 {
+    width: 500px; height: 500px;
+    bottom: -150px; right: -150px;
+    background: radial-gradient(circle, rgba(15, 55, 160, 0.7) 0%, transparent 70%);
+    animation: glowFloat 11s ease-in-out infinite reverse;
+}
+
+.bg-glow-3 {
+    width: 350px; height: 350px;
+    top: 35%; left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(40, 100, 220, 0.25) 0%, transparent 70%);
+    animation: glowPulse 5s ease-in-out infinite;
+}
+
+/* ─── CAPA 7: Partículas flotantes ─── */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    overflow: hidden;
+}
+
+.particle-dot {
+    position: absolute;
+    border-radius: 50%;
+    animation: particleFloat linear infinite;
+}
+
+.particle-dot:nth-child(1) { width: 4px;  height: 4px;  left: 12%;  top: 18%; background: rgba(120,200,255,0.8); box-shadow: 0 0 6px rgba(120,200,255,0.6); animation-duration: 18s; animation-delay: 0s; }
+.particle-dot:nth-child(2) { width: 5px;  height: 5px;  left: 32%;  top: 55%; background: rgba(90,180,255,0.7);  box-shadow: 0 0 8px rgba(90,180,255,0.5);  animation-duration: 23s; animation-delay: -5s; }
+.particle-dot:nth-child(3) { width: 3px;  height: 3px;  left: 52%;  top: 28%; background: rgba(150,220,255,0.9); box-shadow: 0 0 6px rgba(150,220,255,0.6); animation-duration: 16s; animation-delay: -8s; }
+.particle-dot:nth-child(4) { width: 5px;  height: 5px;  left: 72%;  top: 68%; background: rgba(80,170,240,0.7);  box-shadow: 0 0 8px rgba(80,170,240,0.5);  animation-duration: 20s; animation-delay: -3s; }
+.particle-dot:nth-child(5) { width: 3px;  height: 3px;  left: 83%;  top: 14%; background: rgba(130,210,255,0.8); box-shadow: 0 0 6px rgba(130,210,255,0.5); animation-duration: 26s; animation-delay: -11s; }
+.particle-dot:nth-child(6) { width: 6px;  height: 6px;  left: 22%;  top: 78%; background: rgba(70,160,255,0.6);  box-shadow: 0 0 10px rgba(70,160,255,0.5); animation-duration: 28s; animation-delay: -7s; }
+.particle-dot:nth-child(7) { width: 3px;  height: 3px;  left: 63%;  top: 42%; background: rgba(150,220,255,0.8); box-shadow: 0 0 6px rgba(150,220,255,0.5); animation-duration: 14s; animation-delay: -14s; }
+.particle-dot:nth-child(8) { width: 4px;  height: 4px;  left: 43%;  top: 8%;  background: rgba(100,190,255,0.9); box-shadow: 0 0 8px rgba(100,190,255,0.6); animation-duration: 22s; animation-delay: -2s; }
+
+/* ═══════════════════════════════════════
+   CARD — GLASSMORPHISM PREMIUM
+═══════════════════════════════════════ */
+.login-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 460px;
+    padding: 40px 44px 36px;
+    animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    background: rgba(6, 14, 32, 0.88);
+    backdrop-filter: blur(28px) saturate(1.5);
+    -webkit-backdrop-filter: blur(28px) saturate(1.5);
+
+    border-radius: 20px;
+    border: 1px solid rgba(70, 160, 255, 0.28);
+
+    box-shadow:
+        0 0 0 1px rgba(70, 160, 255, 0.08),
+        0 0 60px rgba(30, 100, 220, 0.15),
+        0 32px 80px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(140, 210, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+
+    @media (min-width: 768px) {
+        padding: 44px 52px 40px;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(80, 170, 255, 0.6)  15%,
+            rgba(160, 220, 255, 1)   50%,
+            rgba(80, 170, 255, 0.6)  85%,
+            transparent 100%
+        );
+        border-radius: 2px;
+        box-shadow: 0 0 16px 2px rgba(100, 190, 255, 0.5);
+        animation: topBorderPulse 3.5s ease-in-out infinite;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 110px;
+        background: linear-gradient(180deg, rgba(70, 160, 255, 0.06) 0%, transparent 100%);
+        border-radius: 20px 20px 0 0;
+        pointer-events: none;
+    }
+}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
 .login-header {
     @include flex-between;
-    margin-bottom: $spacing-xl;
+    margin-bottom: 28px;
 
     .logo-container {
         display: flex;
         align-items: center;
-        gap: $spacing-md;
+        gap: 14px;
 
         .logo-icon {
-            font-size: 48px;
-            width: 48px;
-            height: 48px;
-color: #1f3a5f;
+            font-size: 42px;
+            width: 42px;
+            height: 42px;
+            color: #5ab4ff;
+            filter: drop-shadow(0 0 10px rgba(90, 180, 255, 0.6));
         }
 
         .logo-text {
             h1 {
-                font-size: $font-size-3xl;
-                font-weight: $font-weight-bold;
-color: #1f3a5f;
+                font-size: 32px;
+                font-weight: 700;
+                color: #ffffff;
                 line-height: 1;
+                letter-spacing: -0.5px;
+                text-shadow: 0 0 24px rgba(90, 180, 255, 0.4);
             }
 
             p {
-                font-size: $font-size-xs;
-                color: $text-secondary;
-                letter-spacing: 1px;
+                font-size: 9px;
+                color: rgba(130, 190, 255, 0.75);
+                letter-spacing: 3px;
+                margin-top: 2px;
+                font-weight: 500;
             }
         }
     }
 
     .help-button {
-        color: $text-secondary;
+        color: rgba(120, 175, 235, 0.5);
+        &:hover { color: rgba(120, 175, 235, 0.9); }
     }
 }
 
-/* =========================
-   Título
-========================= */
+/* ─── Divisor luminoso ─── */
+.card-divider {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(70, 160, 255, 0.25) 20%,
+        rgba(70, 160, 255, 0.4)  50%,
+        rgba(70, 160, 255, 0.25) 80%,
+        transparent
+    );
+    margin-bottom: 24px;
+}
+
+/* ═══════════════════════════════════════
+   TÍTULO
+═══════════════════════════════════════ */
 .login-title {
     text-align: center;
     margin-bottom: $spacing-lg;
 
     h2 {
-        font-size: $font-size-2xl;
-        font-weight: $font-weight-semibold;
-        margin-bottom: $spacing-sm;
+        font-size: 18px;
+        font-weight: 600;
+        color: #ddeeff;
+        margin-bottom: 6px;
+        letter-spacing: -0.2px;
     }
 
     p {
-        font-size: $font-size-sm;
-        color: $text-secondary;
+        font-size: 12px;
+        color: rgba(140, 190, 245, 0.6);
+        letter-spacing: 0.5px;
     }
 }
 
-/* =========================
-   Badge
-========================= */
+/* ═══════════════════════════════════════
+   BADGE
+═══════════════════════════════════════ */
 .portal-badge {
     @include flex-center;
     gap: $spacing-sm;
-background: #eef3f9;
-color: #1f3a5f;
-    padding: $spacing-md;
-    border-radius: $border-radius-md;
-    margin-bottom: $spacing-xl;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
+    background: rgba(30, 90, 180, 0.22);
+    border: 1px solid rgba(70, 160, 255, 0.25);
+    color: rgba(130, 200, 255, 0.9);
+    padding: 10px $spacing-md;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+
+    mat-icon {
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
+        color: #6ac0ff;
+    }
 }
 
-/* =========================
-   Formulario
-========================= */
+/* ═══════════════════════════════════════
+   FORMULARIO
+═══════════════════════════════════════ */
 .login-form {
 
-    .full-width {
-        width: 100%;
-    }
+    .full-width { width: 100%; }
 
-    /* 🔧 FIX Angular Material */
     mat-form-field {
         width: 100%;
         margin-bottom: $spacing-sm;
 
-        .mat-form-field-wrapper {
-            padding-bottom: 0;
-        }
+        .mat-form-field-wrapper { padding-bottom: 0; }
 
         .mat-form-field-flex {
-            background-color: $bg-primary;
-            border-radius: $border-radius-md;
-            padding: 0 $spacing-sm;
+            background-color: rgba(20, 45, 90, 0.75) !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(70, 160, 255, 0.35) !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+            &:hover {
+                border-color: rgba(70, 160, 255, 0.6) !important;
+                background-color: rgba(25, 52, 105, 0.80) !important;
+            }
         }
 
-        .mat-form-field-infix {
-            padding: 0.75em 0;
+        &.mat-focused .mat-form-field-flex {
+            border-color: rgba(90, 180, 255, 0.8) !important;
+            box-shadow: 0 0 0 3px rgba(70, 160, 255, 0.12), 0 0 14px rgba(70, 160, 255, 0.1) !important;
+            background-color: rgba(28, 58, 115, 0.82) !important;
+        }
+
+        .mat-form-field-infix { padding: 0.75em 0; }
+
+        mat-icon { color: rgba(120, 195, 255, 0.75); }
+
+        mat-error {
+            color: rgba(223, 138, 138, 0.85) !important;
+            font-size: 11px !important;
         }
     }
 
@@ -147,165 +445,272 @@ color: #1f3a5f;
         display: flex;
         align-items: center;
         gap: $spacing-sm;
-        background: lighten($error-red, 40%);
-        color: $error-red;
+        background: rgba(140, 40, 40, 0.12);
+        border: 1px solid rgba(180, 90, 90, 0.20);
+        color: rgba(221, 116, 116, 0.8);
         padding: $spacing-md;
-        border-radius: $border-radius-md;
+        border-radius: 8px;
         margin-bottom: $spacing-md;
-        font-size: $font-size-sm;
+        font-size: 13px;
+
+        mat-icon {
+            color: rgba(220, 140, 140, 0.75);
+            font-size: 18px;
+        }
     }
 
     .forgot-password-link {
         text-align: right;
-        margin-top: $spacing-xs;
+        margin-top: 6px;
 
         .link-button {
-color: #2c5282;
-            font-size: $font-size-sm;
+            color: rgba(100, 185, 255, 0.7);
+            font-size: 12px;
             cursor: pointer;
-
-            &:hover {
-                color: $primary-teal-dark;
-                text-decoration: underline;
-            }
+            transition: color 0.2s;
+            &:hover { color: #6ac0ff; }
         }
     }
 
+    /* ─── BOTÓN PRINCIPAL ─── */
     .sign-in-button {
         width: 100%;
         height: 52px;
         margin-top: $spacing-lg;
-        font-size: $font-size-base;
-        font-weight: $font-weight-semibold;
-        border-radius: $border-radius-md;
-        letter-spacing: 0.5px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 10px;
+        letter-spacing: 1px;
         position: relative;
-        background: #1f3a5f;
-color: white;
+        overflow: hidden;
 
-&:disabled {
-    background: #d6dee8;
-    color: #8a97a6;
-}
+        background: linear-gradient(135deg, #1855b0 0%, #2070d8 50%, #1855b0 100%) !important;
+        background-size: 200% 100% !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(100, 180, 255, 0.35) !important;
+
+        box-shadow:
+            0 4px 24px rgba(30, 100, 220, 0.45),
+            0 0 40px rgba(30, 100, 220, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+
+        transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.1s ease !important;
+
+        &:not(:disabled):hover {
+            background-position: 100% 0 !important;
+            box-shadow:
+                0 6px 32px rgba(30, 100, 220, 0.6),
+                0 0 50px rgba(30, 100, 220, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        }
+
+        &:not(:disabled):active { transform: scale(0.99); }
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.09) 50%, transparent 100%);
+            transition: left 0.4s ease;
+        }
+
+        &:not(:disabled):hover::after { left: 100%; }
+
+        mat-icon { margin-left: 8px; font-size: 18px; }
+
+        &:disabled {
+            background: rgba(20, 45, 90, 0.4) !important;
+            color: rgba(100, 145, 210, 0.35) !important;
+            border-color: rgba(40, 90, 160, 0.12) !important;
+            box-shadow: none !important;
+        }
     }
 
+    /* ─── INFO SEGURIDAD ─── */
     .security-info {
         display: flex;
         justify-content: center;
         gap: $spacing-lg;
         margin-top: $spacing-lg;
         padding-top: $spacing-lg;
-        border-top: 1px solid $border-light;
+        border-top: 1px solid rgba(70, 160, 255, 0.1);
 
         .security-item {
             @include flex-center;
-            gap: $spacing-xs;
-            font-size: $font-size-xs;
-            color: $text-secondary;
+            gap: 6px;
+            font-size: 10px;
+            color: rgba(100, 165, 235, 0.55);
+            letter-spacing: 1px;
+            font-weight: 500;
 
             mat-icon {
-color: #2c5282;
-                font-size: 16px;
+                color: rgba(100, 185, 255, 0.45);
+                font-size: 13px;
+                width: 13px;
+                height: 13px;
             }
         }
     }
 }
 
-/* =========================
-   Aviso integración
-========================= */
-.integration-notice {
-    display: flex;
-    gap: $spacing-md;
-    background: lighten($info-blue, 40%);
-    border: 1px solid lighten($info-blue, 30%);
-    border-radius: $border-radius-md;
-    padding: $spacing-md;
-    margin-top: $spacing-xl;
-}
-
-/* =========================
-   Footer
-========================= */
-.login-footer {
-    text-align: center;
-    margin-top: $spacing-xl;
-    padding-top: $spacing-lg;
-    border-top: 1px solid $border-light;
-
-    p {
-        font-size: $font-size-xs;
-        color: $text-secondary;
-    }
-
-    .footer-note {
-        font-weight: $font-weight-medium;
-    }
-}
-
-/* =========================
+/* ═══════════════════════════════════════
    REGISTRO
-========================= */
+═══════════════════════════════════════ */
 .register-section {
     margin-top: $spacing-lg;
     text-align: center;
-    font-size: $font-size-sm;
-    color: $text-secondary;
+    font-size: 13px;
+    color: rgba(130, 175, 230, 0.5);
 }
 
-.register-section span {
-    margin-right: 6px;
-}
+.register-section span { margin-right: 6px; }
 
 .register-section a {
-    color: #1f3a5f;
-    font-weight: $font-weight-semibold;
+    color: #6ac0ff;
+    font-weight: 600;
     text-decoration: none;
     position: relative;
-    transition: all 0.3s ease;
-}
+    transition: color 0.3s ease;
 
-/* Línea animada elegante */
-.register-section a::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    width: 0%;
-    height: 2px;
-    background: #1f3a5f;
-    transition: width 0.3s ease;
-}
-
-.register-section a:hover::after {
-    width: 100%;
-}
-
-/* =========================
-   Animación
-========================= */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: -2px;
+        width: 0%; height: 1px;
+        background: #6ac0ff;
+        transition: width 0.3s ease;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    &:hover {
+        color: #90d0ff;
+        &::after { width: 100%; }
     }
 }
 
-/* =========================
-   Responsive
-========================= */
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.login-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: $spacing-lg;
+    border-top: 1px solid rgba(70, 160, 255, 0.08);
+
+    p {
+        font-size: 10px;
+        color: rgba(100, 155, 220, 0.38);
+        letter-spacing: 1px;
+    }
+
+    .footer-note {
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        margin-top: 3px;
+    }
+}
+
+/* ═══════════════════════════════════════
+   FIX ANGULAR MATERIAL — ::ng-deep
+   Penetra el encapsulamiento para labels
+   e inputs dentro del formulario
+═══════════════════════════════════════ */
+::ng-deep .login-form {
+
+    /* Label flotante: "Email", "Contraseña" */
+    .mat-form-field-label,
+    .mat-label,
+    label.mat-form-field-label {
+        color: rgba(170, 215, 255, 0.92) !important;
+    }
+
+    /* Texto escrito dentro del input */
+    .mat-input-element,
+    input.mat-input-element {
+        color: #eef6ff !important;
+        -webkit-text-fill-color: #eef6ff !important;
+        opacity: 1 !important;
+    }
+
+    /* Placeholder */
+    input::placeholder {
+        color: rgba(140, 185, 240, 0.40) !important;
+        -webkit-text-fill-color: rgba(140, 185, 240, 0.40) !important;
+    }
+
+    /* Error debajo del campo — rojo suave */
+    .mat-error {
+        color: rgba(220, 140, 140, 0.82) !important;
+    }
+
+    /* Ícono del suffix (ojo contraseña) */
+    .mat-form-field-suffix mat-icon,
+    .mat-form-field-suffix .mat-icon {
+        color: rgba(120, 185, 255, 0.65) !important;
+    }
+}
+
+/* ═══════════════════════════════════════
+   ANIMACIONES
+═══════════════════════════════════════ */
+
+@keyframes gridDrift {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 60px 60px, 60px 60px; }
+}
+
+@keyframes dotPulse {
+    from { opacity: 0.5; }
+    to   { opacity: 1; }
+}
+
+@keyframes scanH {
+    0%   { top: 5%;   left: -70%;  opacity: 0; }
+    4%   { opacity: 1; }
+    95%  { opacity: 0.9; }
+    100% { top: 95vh; left: 130%;  opacity: 0; }
+}
+
+@keyframes codeRain {
+    0%   { transform: translateY(0);     opacity: 0; }
+    3%   { opacity: 1; }
+    90%  { opacity: 0.85; }
+    100% { transform: translateY(220vh); opacity: 0; }
+}
+
+@keyframes glowFloat {
+    0%, 100% { transform: translateY(0)    scale(1); }
+    50%       { transform: translateY(-30px) scale(1.06); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50%       { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+}
+
+@keyframes particleFloat {
+    0%   { transform: translateY(0) translateX(0);    opacity: 0; }
+    8%   { opacity: 1; }
+    88%  { opacity: 0.7; }
+    100% { transform: translateY(-100vh) translateX(18px); opacity: 0; }
+}
+
+@keyframes cardReveal {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); filter: blur(3px); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+}
+
+@keyframes topBorderPulse {
+    0%, 100% { opacity: 0.6; box-shadow: 0 0 12px 1px rgba(100, 190, 255, 0.4); }
+    50%       { opacity: 1;   box-shadow: 0 0 20px 3px rgba(100, 190, 255, 0.7); }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
 @media (max-width: 576px) {
-    .login-card {
-        padding: $spacing-lg;
-    }
-
-    .security-info {
-        flex-direction: column;
-        gap: $spacing-sm;
-    }
+    .login-container { padding: 32px 16px; }
+    .login-card { padding: 32px 24px 28px; }
+    .security-info { flex-direction: column; gap: $spacing-sm; }
+    .code-col:nth-child(even) { display: none; }
 }

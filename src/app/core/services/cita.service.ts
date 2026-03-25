@@ -29,6 +29,23 @@ obtenerMisCitas(): Observable<Cita[]> {
     return this.http.get<Cita[]>(`${this.apiUrl}`, { withCredentials: true });
   }
 
+  // Agendar cita para un paciente
+agendarCita(idPaciente: number, data: any): Observable<Cita> {
+  return this.http.post<Cita>(
+    `${this.apiUrl}/paciente/${idPaciente}/agendar`,
+    data,
+    { withCredentials: true }
+  );
+}
+
+// Buscar citas de un paciente
+searchCitasPaciente(idPaciente: number, filtro: string): Observable<Cita[]> {
+  return this.http.get<Cita[]>(
+    `${this.apiUrl}/paciente/${idPaciente}/buscar?filtro=${filtro}`,
+    { withCredentials: true }
+  );
+}
+
   // 🔹 Cancelar las citas
   cancelarCita(idCita: number): Observable<any> {
   return this.http.put(
@@ -39,14 +56,12 @@ obtenerMisCitas(): Observable<Cita[]> {
 }
 
   // 🔹 Completar las citas
-completarCita(idCita: number) {
+completarCita(idCita: number, data: any) {
   return this.http.put(
-    `${this.apiUrl}/completar/${idCita}`,
-    {},
+    `${this.apiUrl}/${idCita}/completar`,
+    data,
     { withCredentials: true }
   );
 }
-
-
 
 }

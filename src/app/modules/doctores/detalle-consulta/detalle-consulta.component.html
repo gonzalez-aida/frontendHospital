@@ -1,0 +1,56 @@
+<div class="consulta-container">
+
+  <button class="btn-cerrar-superior" (click)="cerrar()">✕</button>
+
+  <div class="header-modal">
+        <h2 class="titulo">Detalle de la Consulta</h2>
+  </div>
+
+  <div class="seccion">
+    <h3>Información General</h3>
+    <div class="grid">
+      <div><strong>Fecha:</strong> {{ consulta.fecha }}</div>
+      <div><strong>Motivo:</strong> {{ consulta.motivo }}</div>
+      <div><strong>Estado:</strong> {{ consulta.estado }}</div>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Signos Vitales</h3>
+    <div class="grid">
+      <div><strong>Presión Arterial:</strong> {{ consulta.presionArterial }}</div>
+      <div><strong>Frecuencia Cardíaca:</strong> {{ consulta.frecuenciaCardiaca }} bpm</div>
+      <div><strong>Temperatura:</strong> {{ consulta.temperatura }} °C</div>
+      <div><strong>Peso:</strong> {{ consulta.peso }} kg</div>
+      <div><strong>Estatura:</strong> {{ consulta.estatura }} m</div>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Diagnóstico</h3>
+    <p><strong>Diagnóstico Principal:</strong></p>
+    <div class="bloque-texto">
+      {{ consulta.dxPrincipal || 'No registrado' }}
+    </div>
+
+    <p><strong>Descripción:</strong></p>
+    <div class="bloque-texto">
+      {{ consulta.dxDescripcion || 'No registrada' }}
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Observaciones</h3>
+    <div class="bloque-texto">
+      {{ consulta.observaciones || 'Sin observaciones' }}
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Receta</h3>
+    <div class="bloque-texto">
+      {{ consulta.receta || 'Sin receta médica' }}
+    </div>
+  </div>
+
+</div>
