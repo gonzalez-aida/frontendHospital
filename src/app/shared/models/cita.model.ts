@@ -20,4 +20,21 @@ export interface Cita {
   nss: string;
   curp: string;
   fechaNacimiento: string; 
+
+    // 🔥 AGREGA ESTOS
+  dxPrincipal?: string;
+  dxDescripcion?: string;
+  observaciones?: string;
+  receta?: string;
+
+  presionArterial?: string;
+  frecuenciaCardiaca?: number;
+  temperatura?: number;
+  peso?: number;
+  estatura?: number;
+
+  medico?: any;
+
 }
+
+

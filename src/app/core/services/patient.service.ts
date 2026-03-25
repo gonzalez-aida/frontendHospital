@@ -16,20 +16,12 @@ export interface PaginatedResponse<T> {
     providedIn: 'root'
 })
 export class PatientService {
-    private apiUrl = `${environment.apiUrl}/patients`;
+    private apiUrl = `${environment.apiUrl}/paciente`;
 
     constructor(private http: HttpClient) { }
 
-    getPatients(page: number = 1, pageSize: number = 10, search?: string): Observable<PaginatedResponse<Patient>> {
-        let params = new HttpParams()
-            .set('page', page.toString())
-            .set('pageSize', pageSize.toString());
-
-        if (search) {
-            params = params.set('search', search);
-        }
-
-        return this.http.get<PaginatedResponse<Patient>>(this.apiUrl, { params });
+    getPatients(): Observable<Patient[]> {
+        return this.http.get<Patient[]>(this.apiUrl);
     }
 
     getPatientById(id: number): Observable<Patient> {
@@ -48,8 +40,25 @@ export class PatientService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    searchPatients(searchTerm: string): Observable<Patient[]> {
-        const params = new HttpParams().set('q', searchTerm);
-        return this.http.get<Patient[]>(`${this.apiUrl}/search`, { params });
+    searchPatients(filtro: string) {
+        return this.http.get<Patient[]>(
+            `${this.apiUrl}/buscar?filtro=${filtro}`
+        );
     }
+
+
+    // PARA EL EXPEDIENTE
+
+    getExpedientesByPaciente(idPaciente: number) {
+        return this.http.get<any>(`http://localhost:8081/expedientes/paciente/${idPaciente}`);
+    }
+
+actualizarExpediente(idExpediente: number, cambios: any) {
+  return this.http.patch(
+    `http://localhost:8081/expedientes/expediente-update/${idExpediente}`,
+    cambios,
+    { withCredentials: true }  // 🔥 obligatorio
+  );
+}
+
 }

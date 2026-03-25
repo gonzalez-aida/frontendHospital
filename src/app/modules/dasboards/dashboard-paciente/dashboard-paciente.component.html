@@ -9,9 +9,7 @@
     </div>
 
     <nav>
-      <a 
-        [class.active]="selectedSection === 'citas'"
-        (click)="changeSection('citas')">
+      <a [class.active]="selectedSection === 'citas'" (click)="changeSection('citas')">
         <mat-icon>event</mat-icon> Citas
       </a>
 
@@ -28,8 +26,7 @@
       </a>
     </nav>
 
-    <button mat-raised-button color="warn"
-      (click)="logout()" class="logout-btn">
+    <button mat-raised-button color="warn" (click)="logout()" class="logout-btn">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
     </button>
@@ -103,41 +100,37 @@
         </thead>
 
         <tbody>
-<tr *ngFor="let cita of paginatedCitas">
-  <td class="patient-name">
-    {{ cita.nombrePaciente }}
-  </td>
+          <tr *ngFor="let cita of paginatedCitas">
+            <td class="patient-name">
+              {{ cita.nombrePaciente }}
+            </td>
 
-  <td>
-    {{ calcularEdad(cita.fechaNacimiento) }}
-  </td>
+            <td>
+              {{ calcularEdad(cita.fechaNacimiento) }}
+            </td>
 
-  <td>
-    {{ cita.nss }}
-  </td>
+            <td>
+              {{ cita.nss }}
+            </td>
 
-  <td>
-    {{ cita.fecha }}
-  </td>
+            <td>
+              {{ cita.fecha }}
+            </td>
 
-  <td>
-    {{ cita.hora }}
-  </td>
+            <td>
+              {{ cita.hora }}
+            </td>
 
-  <td>
-    <button mat-flat-button color="warn" class="cancel-btn"
-      (click)="openCancelDialog(cita)">
-      Cancelar
-    </button>
-  </td>
-</tr>
+            <td>
+              <button mat-flat-button color="warn" class="cancel-btn" (click)="openCancelDialog(cita)">
+                Cancelar
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
 
-      <mat-paginator
-        [length]="citas.length"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 20]"
+      <mat-paginator [length]="citas.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
         (page)="handlePageEvent($event)">
       </mat-paginator>
 
@@ -157,30 +150,35 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let paciente of paginatedPacientes">
-            <td>{{ paciente.firstName }} {{ paciente.lastName }}</td>
-            <td>{{ paciente.nationalHealthId || '-' }}</td>
-            <td>{{ paciente.phone }}</td>
-            <td>
-              <button mat-flat-button color="primary" 
-                      (click)="descargarExpediente(paciente.id)">
-                Visualizar Expediente
-              </button>
-            </td>
-          </tr>
+<tbody>
+  <tr *ngFor="let paciente of paginatedPacientes">
+    <td>
+      {{ paciente.nombre }}
+      {{ paciente.apPaterno }}
+      {{ paciente.apMaterno }}
+    </td>
 
-          <tr *ngIf="pacientes.length === 0">
-            <td colspan="4" style="text-align:center; padding:30px;">
-              No hay pacientes registrados.
-            </td>
-          </tr>
-        </tbody>
+    <td>{{ paciente.nss || '-' }}</td>
+
+    <td>{{ paciente.telefono || '-' }}</td>
+
+    <td>
+      <button mat-flat-button color="primary"
+        (click)="descargarExpediente(paciente.idPaciente)">
+        Visualizar Expediente
+      </button>
+    </td>
+  </tr>
+
+  <tr *ngIf="pacientes.length === 0">
+    <td colspan="4" style="text-align:center; padding:30px;">
+      No hay pacientes registrados.
+    </td>
+  </tr>
+</tbody>
       </table>
 
-      <mat-paginator
-        [length]="pacientes.length"
-        [pageSize]="pageSizePacientes"
-        [pageSizeOptions]="[5, 10, 20]"
+      <mat-paginator [length]="pacientes.length" [pageSize]="pageSizePacientes" [pageSizeOptions]="[5, 10, 20]"
         (page)="handlePageEvent($event)">
       </mat-paginator>
 
@@ -190,119 +188,121 @@
     <div class="form-consulta-container" *ngIf="selectedSection === 'formulario'">
 
       <h2>Formulario de Consulta</h2>
-      
+
       <div class="form-scroll">
-      <form class="consulta-form" (ngSubmit)="guardarConsulta()" #consultaForm="ngForm">
+        <form class="consulta-form" (ngSubmit)="guardarConsulta()" #consultaForm="ngForm">
 
-        <!-- Datos Paciente -->
-        <fieldset>
-          <legend>Datos del Paciente</legend>
-          
-          <div class="form-row">
-            <mat-form-field appearance="fill">
-              <mat-label>Nombre</mat-label>
-              <input matInput [(ngModel)]="consulta.pacienteNombre" name="pacienteNombre" required>
-            </mat-form-field>
+          <!-- Datos Paciente -->
+          <fieldset>
+            <legend>Datos del Paciente</legend>
 
-            <mat-form-field appearance="fill">
-              <mat-label>Apellido Paterno</mat-label>
-              <input matInput [(ngModel)]="consulta.pacienteApPaterno" name="pacienteApPaterno" required>
-            </mat-form-field>
+            <div class="form-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Nombre</mat-label>
+                <input matInput [(ngModel)]="consulta.pacienteNombre" name="pacienteNombre" required>
+              </mat-form-field>
 
-            <mat-form-field appearance="fill">
-              <mat-label>Apellido Materno</mat-label>
-              <input matInput [(ngModel)]="consulta.pacienteApMaterno" name="pacienteApMaterno" required>
-            </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Apellido Paterno</mat-label>
+                <input matInput [(ngModel)]="consulta.pacienteApPaterno" name="pacienteApPaterno" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Apellido Materno</mat-label>
+                <input matInput [(ngModel)]="consulta.pacienteApMaterno" name="pacienteApMaterno" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput [(ngModel)]="consulta.fechaNacimiento" name="fechaNacimiento" type="date" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Sexo</mat-label>
+                <mat-select [(ngModel)]="consulta.sexo" name="sexo" required>
+                  <mat-option value="M">Masculino</mat-option>
+                  <mat-option value="F">Femenino</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Tipo de Sangre</mat-label>
+                <mat-select [(ngModel)]="consulta.tipoSangre" name="tipoSangre" required>
+                  <mat-option *ngFor="let t of tiposSangre" [value]="t">{{t}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Teléfono</mat-label>
+                <input matInput [(ngModel)]="consulta.telefono" name="telefono" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Correo</mat-label>
+                <input matInput [(ngModel)]="consulta.correo" name="correo" type="email" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Teléfono de Emergencia</mat-label>
+                <input matInput [(ngModel)]="consulta.telefonoEmergencia" name="telefonoEmergencia" required>
+              </mat-form-field>
+            </div>
+          </fieldset>
+
+          <!-- Antecedentes -->
+          <fieldset>
+            <legend>Antecedentes Médicos</legend>
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Heredofamiliares</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.antHeredofamiliares"
+                  name="antHeredofamiliares"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Patológicos</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.antPatologicos" name="antPatologicos"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Quirúrgicos</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.antQuirurgicos" name="antQuirurgicos"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Alergias</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.antAlergicos" name="antAlergicos"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Enfermedades Crónicas</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.enfCronicas" name="enfCronicas"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Gineco-obstétricos</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.antGinecoObstetricos"
+                  name="antGinecoObstetricos"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Observaciones</mat-label>
+                <textarea matInput rows="2" [(ngModel)]="consulta.observaciones" name="observaciones"></textarea>
+              </mat-form-field>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit">Guardar Consulta</button>
           </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="fill">
-              <mat-label>Fecha de Nacimiento</mat-label>
-              <input matInput [(ngModel)]="consulta.fechaNacimiento" name="fechaNacimiento" type="date" required>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Sexo</mat-label>
-              <mat-select [(ngModel)]="consulta.sexo" name="sexo" required>
-                <mat-option value="M">Masculino</mat-option>
-                <mat-option value="F">Femenino</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Tipo de Sangre</mat-label>
-              <mat-select [(ngModel)]="consulta.tipoSangre" name="tipoSangre" required>
-                <mat-option *ngFor="let t of tiposSangre" [value]="t">{{t}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="fill">
-              <mat-label>Teléfono</mat-label>
-              <input matInput [(ngModel)]="consulta.telefono" name="telefono" required>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Correo</mat-label>
-              <input matInput [(ngModel)]="consulta.correo" name="correo" type="email" required>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Teléfono de Emergencia</mat-label>
-              <input matInput [(ngModel)]="consulta.telefonoEmergencia" name="telefonoEmergencia" required>
-            </mat-form-field>
-          </div>
-        </fieldset>
-
-        <!-- Antecedentes -->
-        <fieldset>
-          <legend>Antecedentes Médicos</legend>
-          <div class="form-row">
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Heredofamiliares</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.antHeredofamiliares" name="antHeredofamiliares"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Patológicos</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.antPatologicos" name="antPatologicos"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Quirúrgicos</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.antQuirurgicos" name="antQuirurgicos"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Alergias</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.antAlergicos" name="antAlergicos"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Enfermedades Crónicas</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.enfCronicas" name="enfCronicas"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Gineco-obstétricos</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.antGinecoObstetricos" name="antGinecoObstetricos"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Observaciones</mat-label>
-              <textarea matInput rows="2" [(ngModel)]="consulta.observaciones" name="observaciones"></textarea>
-            </mat-form-field>
-          </div>
-        </fieldset>
-
-        <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit">Guardar Consulta</button>
+        </form>
       </div>
-    </form>
-  </div>
 
-</div>
+    </div>
 
   </main>
 

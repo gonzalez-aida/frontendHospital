@@ -1,4 +1,70 @@
 <div class="login-container">
+
+    <!-- ══════════════════════════════════════
+         CAPAS DE FONDO TECNOLÓGICO
+    ══════════════════════════════════════ -->
+
+    <!-- Gradiente de profundidad -->
+    <div class="bg-gradient"></div>
+
+    <!-- Grid de circuito (macro + micro) -->
+    <div class="bg-grid"></div>
+
+    <!-- Puntos en las intersecciones del grid -->
+    <div class="bg-dots"></div>
+
+    <!-- Líneas de scan horizontal -->
+    <div class="circuit-lines"></div>
+
+    <!-- Lluvia de código vertical -->
+    <div class="code-rain">
+        <div class="code-col">01001101 10110 0010 H+ SYS</div>
+        <div class="code-col">AUTH 0xFA3 ██ SECURE NODE</div>
+        <div class="code-col">110 0101 01110 100 0001 01</div>
+        <div class="code-col">AES-256 ██ ENCRYPT READY</div>
+        <div class="code-col">0xA3F 0110 1010 0101 1001</div>
+        <div class="code-col">10110 01001 01110 0010 011</div>
+        <div class="code-col">SSL/TLS ██ FIREWALL ACTIVE</div>
+        <div class="code-col">01010 11001 00110 10001 01</div>
+        <div class="code-col">MOSCATTI v1.0 ██ ONLINE</div>
+        <div class="code-col">1001 0110 1010 0011 0110 01</div>
+        <div class="code-col">0xB2E ██ VPN 01100 NODE 10</div>
+        <div class="code-col">01100 10110 01001 01110 001</div>
+        <div class="code-col">PORTAL ██ MED AUTH 0x4F2</div>
+        <div class="code-col">10010 01101 01001 11001 010</div>
+        <div class="code-col">0xD1A ██ GRANT ACCESS OK</div>
+        <div class="code-col">10110 01001 01110 10001 011</div>
+        <div class="code-col">HTTPS ██ NODE 0x2C5 LIVE</div>
+        <div class="code-col">01001 10110 00110 10110 001</div>
+        <div class="code-col">H+ ACCESS ██ VERIFIED 0xF</div>
+        <div class="code-col">10010 11001 01101 00110 011</div>
+        <div class="code-col">0xFF4 ██ BIOMETRIC 01100</div>
+        <div class="code-col">AUTH TOKEN ██ 0xC3A VALID</div>
+        <div class="code-col">01110 10010 11001 0110 101</div>
+        <div class="code-col">MED SYS ██ v1.0 MOSCATTI</div>
+        <div class="code-col">10100 01110 10010 01101 10</div>
+    </div>
+
+    <!-- Resplandores ambientales -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Partículas flotantes -->
+    <div class="particles">
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+        <div class="particle-dot"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+
+
     <div class="login-card">
 
         <!-- Header -->
@@ -10,11 +76,10 @@
                     <p>HOSPITAL MOSCATTI</p>
                 </div>
             </div>
-
-            <button mat-icon-button class="help-button" matTooltip="Mesa de Ayuda">
-                <mat-icon>help_outline</mat-icon>
-            </button>
         </div>
+
+        <!-- Divisor luminoso -->
+        <div class="card-divider"></div>
 
         <!-- Título -->
         <div class="login-title">
@@ -75,11 +140,6 @@
                     Mínimo 6 caracteres
                 </mat-error>
 
-                <div class="forgot-password-link">
-                    <a class="link-button" (click)="forgotPassword()">
-                        ¿Olvidaste tu contraseña?
-                    </a>
-                </div>
             </mat-form-field>
 
             <!-- Botón -->
@@ -90,11 +150,11 @@
                 <span *ngIf="!loading">Iniciar Sesión</span>
                 <mat-icon *ngIf="!loading">arrow_forward</mat-icon>
             </button>
-<div class="register-section">
-  <span>No tienes cuenta?</span>
-  <a routerLink="/login/register">Registrarse</a>
-</div>
 
+            <div class="register-section">
+                <span>No tienes cuenta?</span>
+                <a routerLink="/login/register">Registrarse</a>
+            </div>
 
             <!-- Info -->
             <div class="security-info">
@@ -112,7 +172,7 @@
 
         <!-- Footer -->
         <div class="login-footer">
-            <p>© 2024 Hospital Moscatti</p>
+            <p>© 2026 Hospital Moscatti</p>
             <p class="footer-note">Acceso autorizado únicamente</p>
         </div>
 

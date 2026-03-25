@@ -8,6 +8,7 @@ import { User, LoginRequest, LoginResponse, ExchangeResponse } from '../../share
 import { Medico } from '../../shared/models/medico.model';
 
 import { environment } from '../../../environments/environment';
+import { Patient } from 'src/app/shared/models/patient.model';
 
 @Injectable({
 providedIn: 'root'
@@ -149,6 +150,30 @@ this.currentUserSubject.next(null);
 this.router.navigate(['/login']);
 
 }
+
+
+// =============================
+// PACIENTE
+// =============================
+
+
+// Obtener perfil paciente
+obtenerPerfilPaciente(): Observable<Patient> {
+  return this.http.get<Patient>(
+    `${environment.apiUrl}/paciente/mi-perfil`,
+    { withCredentials: true }
+  );
+}
+
+// Editar perfil paciente
+editarPerfilPaciente(data: Patient): Observable<Patient> {
+  return this.http.put<Patient>(
+    `${environment.apiUrl}/paciente/mi-perfil`,
+    data,
+    { withCredentials: true }
+  );
+}
+
 
 // =============================
 // REGISTRO DE PACIENTE

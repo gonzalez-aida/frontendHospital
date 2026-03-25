@@ -11,6 +11,10 @@ import { PatientService, PaginatedResponse } from '../../../core/services/patien
 import { Patient } from '../../../shared/models/patient.model';
 import { jsPDF } from 'jspdf';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { DetalleConsultaComponent } from '../../doctores/detalle-consulta/detalle-consulta.component';
+import Swal  from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,6 +46,12 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   pageSizePacientes = 5;
   pageIndexPacientes = 0;
   totalPacientes = 0;
+  pacientesFiltrados: Patient[] = [];
+  filtroBusqueda: string = '';
+  private searchSubject = new Subject<string>();
+  mensajeBusqueda: string = 'Escriba al menos 1 letra del nombre o NSS del paciente';
+  cargandoBusqueda: boolean = false;
+
 
   constructor(
     private authService: AuthService,
@@ -66,7 +76,43 @@ export class DashboardComponent implements AfterViewInit, OnInit {
           medico.apPaterno + ' ' +
           medico.apMaterno;
 
-           this.cargarPacientes();
+
+        this.pacientesFiltrados = [...this.pacientes];
+
+
+        this.searchSubject.pipe(
+          debounceTime(400),
+          distinctUntilChanged()
+        ).subscribe((value: string) => {
+
+          const filtro = value.trim();
+
+          if (!filtro) {
+            this.pacientesFiltrados = [];
+            this.mensajeBusqueda = 'Escriba al menos 1 letra del nombre o NSS del paciente';
+            return;
+          }
+
+          this.cargandoBusqueda = true;
+
+          this.patientService.searchPatients(filtro).subscribe({
+            next: (data: Patient[]) => {
+              this.pacientesFiltrados = data;
+              this.pageIndexPacientes = 0;
+
+              this.mensajeBusqueda = data.length === 0
+                ? 'No se encontraron pacientes con ese criterio'
+                : '';
+
+              this.cargandoBusqueda = false;
+            },
+            error: () => {
+              this.cargandoBusqueda = false;
+              this.mensajeBusqueda = 'Error al buscar pacientes';
+            }
+          });
+
+        });
 
         // ✅ SOLO UNA LLAMADA
         this.citaService.obtenerMisCitas().subscribe({
@@ -143,63 +189,44 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     });
   }
 
-  atenderCita(cita: Cita) {
+atenderCita(cita: Cita) {
+  // 🔹 Inicializar la consulta antes de asignar valores
+  this.consulta = {
+    ...this.consulta,  // mantiene todos los campos existentes del expediente
+    presionArterial: '',
+    frecuenciaCardiaca: 0,
+    temperatura: 0,
+    peso: 0,
+    estatura: 0,
+    diagnostico: '',
+    observacionesMedicas: '',
+    receta: ''
+  };
 
-    this.citaSeleccionada = cita;
+  this.citaSeleccionada = cita;
 
-    // Dividir nombre completo
-    const partes = cita.nombrePaciente?.split(' ') || [];
+  // Dividir nombre completo
+  const partes = cita.nombrePaciente?.split(' ') || [];
 
-    this.consulta.pacienteNombre = partes[0] || '';
-    this.consulta.pacienteApPaterno = partes[1] || '';
-    this.consulta.pacienteApMaterno = partes[2] || '';
+  this.consulta.pacienteNombre = partes[0] || '';
+  this.consulta.pacienteApPaterno = partes[1] || '';
+  this.consulta.pacienteApMaterno = partes[2] || '';
 
-    // 🔥 USAR EXACTAMENTE LO QUE VIENE DE LA CITA
-    this.consulta.fechaNacimiento = cita.fechaNacimiento || '';
-    this.consulta.motivo = '';
+  // Asignar datos de la cita
+  this.consulta.fechaNacimiento = cita.fechaNacimiento ? cita.fechaNacimiento.substring(0, 10) : '';
+  this.consulta.motivo = cita.motivo || '';
+  (this.consulta as any).nss = cita.nss || '';
+  (this.consulta as any).curp = cita.curp || '';
 
-    // 👇 AGREGA ESTO SI LOS TIENES EN EL FORM
-    (this.consulta as any).nss = cita.nss || '';
-    (this.consulta as any).curp = cita.curp || '';
-
-    this.selectedSection = 'formulario';
-  }
+  this.selectedSection = 'formulario';
+}
 
   get nombrePacientePartes(): string[] {
     if (!this.citaSeleccionada?.nombrePaciente) return ['', '', ''];
     return this.citaSeleccionada.nombrePaciente.split(' ');
   }
 
-  completarCita(cita: Cita) {
 
-    this.citaService.completarCita(cita.idCita).subscribe({
-
-      next: () => {
-
-        // 🔥 Actualiza el estado en memoria
-        cita.estado = 'completada';
-
-        this.snackBar.open(
-          'Cita completada correctamente',
-          'Cerrar',
-          { duration: 3000 }
-        );
-
-      },
-
-      error: () => {
-
-        this.snackBar.open(
-          'Error al completar cita',
-          'Cerrar',
-          { duration: 3000 }
-        );
-
-      }
-
-    });
-
-  }
 
 
 
@@ -239,102 +266,532 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
 
   get tituloSeccion(): string {
-  switch (this.selectedSection) {
-    case 'citas':
-      return 'Gestión de Citas';
-    case 'pacientes':
-      return 'Lista de Pacientes';
-    case 'formulario':
-      return 'Consulta Médica';
-    default:
-      return 'Perfil Médico';
+    switch (this.selectedSection) {
+      case 'citas':
+        return 'Gestión de Citas';
+      case 'pacientes':
+        return 'Lista de Pacientes';
+      case 'formulario':
+        return 'Consulta Médica';
+      default:
+        return 'Perfil Médico';
+    }
   }
-}
+
 
   // ================= PACIENTES =================
 
-cargarPacientes(page: number = 1, pageSize: number = this.pageSizePacientes): void {
-  this.patientService.getPatients(page, pageSize).subscribe({
-    next: (res: PaginatedResponse<Patient>) => {
-      this.pacientes = res.data;
-      this.totalPacientes = res.total; // 👈 importante
-      this.pageSizePacientes = res.pageSize;
-      this.pageIndexPacientes = res.page - 1;
-    },
-    error: (err) => console.error('Error al cargar pacientes', err)
+  filtrarPacientes() {
+    this.searchSubject.next(this.filtroBusqueda);
+  }
+
+  limpiarBusqueda() {
+    this.filtroBusqueda = '';
+    this.pacientesFiltrados = [];
+    this.mensajeBusqueda = 'Escriba al menos 1 letra del nombre o NSS del paciente';
+  }
+
+get paginatedPacientes(): Patient[] {
+  const start = this.pageIndexPacientes * this.pageSizePacientes;
+  const end = start + this.pageSizePacientes;
+  return this.pacientesFiltrados.slice(start, end);
+}
+
+
+pacienteSeleccionado!: Patient;
+expedienteSeleccionado: any;
+mostrarFormularioExpediente: boolean = false;
+
+nuevoExpediente = {
+  ant_heredofamiliares: '',
+  ant_patologicos: '',
+  ant_quirurgicos: '',
+  ant_alergicos: '',
+  enf_cronicas: '',
+  ant_ginecoobstetricos: '',
+  observaciones: ''
+};
+
+pacienteHistorial: any = null;
+historialConsultas: any[] = [];
+
+
+verHistorialPaciente(paciente: any) {
+
+  this.pacienteHistorial = paciente;
+  this.selectedSection = 'historialPaciente';
+
+  this.citaService.obtenerCitasPorPaciente(paciente.idPaciente)
+    .subscribe({
+
+      next: (citas: Cita[]) => {
+
+        // 🔥 FILTRO EN FRONT
+        this.historialConsultas = citas.filter(c =>
+          c.estado?.toLowerCase() === 'completada'
+        );
+
+      },
+
+      error: (err) => {
+        console.error('Error al obtener historial', err);
+        this.historialConsultas = [];
+      }
+
+    });
+}
+
+verDetalle(consulta: Cita) {
+  this.dialog.open(DetalleConsultaComponent, {
+    width: '800px',
+    data: consulta
   });
 }
 
-get paginatedPacientes(): Patient[] {
-  return this.pacientes;
-}
+descargarExpediente(idPaciente: number) {
+ this.patientService.getExpedientesByPaciente(idPaciente).subscribe({
+  next: (resp) => {
 
-  descargarExpediente(idPaciente: number) {
-    this.patientService.getPatientById(idPaciente).subscribe({
-      next: (paciente: Patient) => {
-        const doc = new jsPDF();
-        doc.text(`Expediente de: ${paciente.firstName} ${paciente.lastName}`, 10, 10);
-        doc.text(`NSS: ${paciente.nationalHealthId || '-'}`, 10, 20);
-        doc.text(`Teléfono: ${paciente.phone}`, 10, 30);
-        doc.text(`Email: ${paciente.email}`, 10, 40);
-        doc.text(`Género: ${paciente.gender}`, 10, 50);
-        doc.text(`Tipo de sangre: ${paciente.bloodType}`, 10, 60);
+    console.log("RESP:", resp);
 
-        if (paciente.emergencyContact) {
-          doc.text(
-            `Contacto de emergencia: ${paciente.emergencyContact.name} (${paciente.emergencyContact.relationship}) - ${paciente.emergencyContact.phone}`,
-            10,
-            70
-          );
-        }
+    if (!resp?.data || resp.data.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin expediente',
+        text: 'Este paciente aún no cuenta con un expediente clínico.'
+      });
+      return;
+    }
 
-        doc.save(`Expediente_${paciente.firstName}.pdf`);
-      },
-      error: (err) => console.error('Error al generar expediente', err)
+    this.generarPDF(resp);
+  },
+
+  error: (err) => {
+
+    console.log("ERROR:", err);
+
+    if (err.status === 404) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin expediente',
+        text: 'Este paciente aún no cuenta con un expediente clínico.'
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Sin expediente',
+      text: 'Este paciente aún no cuenta con un expediente clínico.'
     });
   }
+});    
 
-  // ================= FORMULARIO CONSULTA =================
+}
 
-  consulta = {
-    pacienteNombre: '',
-    pacienteApPaterno: '',
-    pacienteApMaterno: '',
-    fechaNacimiento: '',
-    sexo: '',
-    tipoSangre: '',
-    telefono: '',
-    correo: '',
-    telefonoEmergencia: '',
-    nss: '',
-    curp: '',
-    antHeredofamiliares: '',
-    antPatologicos: '',
-    antQuirurgicos: '',
-    antAlergicos: '',
-    enfCronicas: '',
-    antGinecoObstetricos: '',
-    observaciones: '',
-    motivo: '',
-    presionArterial: '',
-    frecuenciaCardiaca: '',
-    temperatura: '',
-    peso: '',
-    estatura: '',
-medicamentos: '',
-    diagnostico: '',
-    observacionesMedicas: '',
-    receta: '',
-    
+generarPDF(expediente: any) {
 
+const lista = expediente?.data ?? [];
+
+if (!lista || lista.length === 0) {
+  Swal.fire('Error', 'No hay datos del expediente', 'error');
+  return;
+}
+
+// 👇 Tomamos el primer expediente de la lista
+const exp = lista[0];
+
+
+  if (!exp) {
+    Swal.fire('Error', 'No hay datos del expediente', 'error');
+    return;
+  }
+
+  const doc = new jsPDF();
+
+  const safe = (v: any) => v ? v : 'No especificado';
+
+  let y = 20;
+
+  // 🏥 HEADER
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('EXPEDIENTE CLÍNICO', 20, y);
+
+  y += 10;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+// 📅 Formato DD/MM/AAAA
+const fechaActual = new Date();
+const dia = String(fechaActual.getDate()).padStart(2, '0');
+const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+const anio = fechaActual.getFullYear();
+const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+// Nombre del paciente (ajusta si viene anidado)
+const nombrePaciente = 
+  `${safe(exp.idPaciente?.nombre)} ${safe(exp.idPaciente?.apPaterno)} ${safe(exp.idPaciente?.apMaterno)}`;
+
+doc.text(`Folio: ${safe(exp.folio)}`, 20, y);
+doc.text(`Fecha: ${fechaFormateada}`, 140, y);
+
+y += 8;
+
+// 👤 Línea nueva debajo del folio
+doc.text(`Paciente: ${nombrePaciente}`, 20, y);
+
+
+  y += 8;
+
+  doc.line(20, y, 190, y);
+
+  y += 15; // 🔥 MÁS ESPACIO DESPUÉS DEL HEADER
+
+  // 🧾 CAMPO
+  const campo = (label: string, value: any) => {
+    doc.setFont('helvetica', 'bold');
+    doc.text(label, 20, y);
+
+    doc.setFont('helvetica', 'normal');
+    doc.text(safe(value), 75, y);
+
+    y += 8; // 🔥 MÁS ESPACIO ENTRE CAMPOS
   };
+
+  // 🧠 SECCIÓN MEJORADA
+  const seccion = (titulo: string, campos: { label: string, value: any }[]) => {
+
+    y += 8; // 🔥 ESPACIO ANTES DE CADA SECCIÓN
+
+    // título
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(titulo, 20, y);
+
+    y += 5;
+
+    doc.setDrawColor(180);
+    doc.line(20, y, 190, y);
+
+    y += 10; // 🔥 MÁS AIRE DESPUÉS DEL TÍTULO
+
+    doc.setFontSize(10);
+
+    campos.forEach(c => campo(c.label, c.value));
+
+    y += 8; // 🔥 ESPACIO DESPUÉS DE LA SECCIÓN
+  };
+
+  // 📋 SECCIONES
+  seccion('Antecedentes', [
+    { label: 'Heredofamiliares:', value: exp.ant_heredofamiliares },
+    { label: 'Patológicos:', value: exp.ant_patologicos },
+    { label: 'Quirúrgicos:', value: exp.ant_quirurgicos }
+  ]);
+
+  seccion('Condiciones Médicas', [
+    { label: 'Alergias:', value: exp.ant_alergicos },
+    { label: 'Enf. Crónicas:', value: exp.enf_cronicas }
+  ]);
+
+  seccion('Ginecoobstétricos', [
+    { label: 'Detalles:', value: exp.ant_ginecoobstetricos }
+  ]);
+
+  seccion('Observaciones Generales', [
+    { label: 'Notas:', value: exp.observaciones }
+  ]);
+
+
+  // 📄 FOOTER
+  doc.setFontSize(8);
+  doc.setTextColor(150);
+  doc.text(
+    'Sistema Hospitalario',
+    105,
+    285,
+    { align: 'center' }
+  );
+
+  window.open(doc.output('bloburl').toString());
+}
+
+  // PARA LA PARTE DEL FORMULARIO EN EXPEDIENTE
+
+guardarActualizacionExpediente() {
+
+  if (!this.expedienteSeleccionado?.idExpediente) {
+    Swal.fire('Error', 'No hay expediente seleccionado', 'error');
+    return;
+  }
+
+  // 🔥 Construimos SOLO los campos que se escribieron
+  const cambios: any = {};
+
+  Object.keys(this.nuevoExpediente).forEach((key) => {
+    const value = (this.nuevoExpediente as any)[key];
+    if (value && value.trim() !== '') {
+      cambios[key] = value;
+    }
+  });
+
+  if (Object.keys(cambios).length === 0) {
+    Swal.fire('Aviso', 'No hay información para actualizar', 'info');
+    return;
+  }
+
+  this.patientService.actualizarExpediente(
+    this.expedienteSeleccionado.idExpediente,
+    cambios
+  ).subscribe({
+
+    next: (nuevoExpediente: any) => {
+
+// actualizamos el expediente en memoria mezclando los cambios
+this.expedienteSeleccionado = {
+  ...this.expedienteSeleccionado,
+  ...cambios
+};
+
+      Swal.fire(
+        'Éxito',
+        'Expediente actualizado correctamente',
+        'success'
+      );
+
+      this.mostrarFormularioExpediente = false;
+
+      // limpiar formulario
+      this.nuevoExpediente = {
+        ant_heredofamiliares: '',
+        ant_patologicos: '',
+        ant_quirurgicos: '',
+        ant_alergicos: '',
+        enf_cronicas: '',
+        ant_ginecoobstetricos: '',
+        observaciones: ''
+      };
+
+    },
+
+    error: (err) => {
+      console.error(err);
+      Swal.fire('Error', 'No se pudo actualizar', 'error');
+    }
+
+  });
+
+}
+
+
+abrirAgregarExpediente(paciente: Patient) {
+
+  this.pacienteSeleccionado = paciente;
+
+  this.patientService.getExpedientesByPaciente(paciente.idPaciente)
+    .subscribe({
+
+      next: (resp: any) => {
+
+const lista = resp?.data ?? [];
+
+        if (!lista.length) {
+          Swal.fire('Sin expediente', 
+            'Este paciente aún no tiene expediente clínico.', 
+            'info');
+          return;
+        }
+
+        // 🔥 Tomamos el expediente ACTIVO
+const activo = lista.find(
+  (e: any) => e.estado?.trim().toUpperCase() === 'ACTIVO'
+);
+        if (!activo) {
+          Swal.fire('Error', 'No hay expediente activo', 'error');
+          return;
+        }
+
+        this.expedienteSeleccionado = activo;
+        this.mostrarFormularioExpediente = true;
+      }
+
+    });
+
+}
+
+
+
+// ================= FORMULARIO CONSULTA =================
+// ================= FORMULARIO CONSULTA =================
+consulta: {
+  pacienteNombre: string;
+  pacienteApPaterno: string;
+  pacienteApMaterno: string;
+  fechaNacimiento: string;
+  sexo: string;
+  tipoSangre: string;
+  telefono: string;
+  correo: string;
+  telefonoEmergencia: string;
+  nss: string;
+  curp: string;
+  antHeredofamiliares: string;
+  antPatologicos: string;
+  antQuirurgicos: string;
+  antAlergicos: string;
+  enfCronicas: string;
+  antGinecoObstetricos: string;
+  observaciones: string;
+  motivo: string;
+  presionArterial: string;
+  frecuenciaCardiaca: number;
+  temperatura: number;
+  peso: number;
+  estatura: number;
+  medicamentos: string;
+  diagnostico: string;
+  observacionesMedicas: string;
+  receta: string;
+
+  // 🔹 Campos adicionales existentes
+  cie10: string;
+  tratamiento: string;
+  funAlta: string;
+  vencimiento: string;
+  presentacion: string;
+  dosis: string;
+  frecuencia: string;
+  duracion: string;
+  cantidad: number;
+
+  // 🔹 Campos adicionales que faltaban
+  frecuenciaRespiratoria: number;
+  spo2: number;
+  glucosa: number;
+  tipoDiagnostico: string;
+  indicaciones: string;
+  folio: string;
+  listaMedicamentos: Array<{
+    nombre: string;
+    presentacion: string;
+    dosis: string;
+    frecuencia: string;
+    duracion: string;
+    cantidad: number;
+    via: string;
+  }>;
+} = {
+  pacienteNombre: '',
+  pacienteApPaterno: '',
+  pacienteApMaterno: '',
+  fechaNacimiento: '',
+  sexo: '',
+  tipoSangre: '',
+  telefono: '',
+  correo: '',
+  telefonoEmergencia: '',
+  nss: '',
+  curp: '',
+  antHeredofamiliares: '',
+  antPatologicos: '',
+  antQuirurgicos: '',
+  antAlergicos: '',
+  enfCronicas: '',
+  antGinecoObstetricos: '',
+  observaciones: '',
+  motivo: '',
+  presionArterial: '',
+  frecuenciaCardiaca: 0,
+  temperatura: 0,
+  peso: 0,
+  estatura: 0,
+  medicamentos: '',
+  diagnostico: '',
+  observacionesMedicas: '',
+  receta: '',
+
+  // 🔹 Valores por defecto existentes
+  cie10: 'Z00.0',
+  tratamiento: '(Preventiva / general)',
+  funAlta: '',
+  vencimiento: new Date().toISOString().substring(0,10),
+  presentacion: 'N/A',
+  dosis: 'N/A',
+  frecuencia: 'N/A',
+  duracion: 'N/A',
+  cantidad: 1,
+
+  // 🔹 Inicialización de campos nuevos
+  frecuenciaRespiratoria: 0,
+  spo2: 0,
+  glucosa: 0,
+  tipoDiagnostico: '',
+  indicaciones: '',
+  folio: '',
+  listaMedicamentos: []
+};
+
 
   tiposSangre = ['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'];
 
-  guardarConsulta() {
-    console.log('Datos de la consulta:', this.consulta);
-    alert('Consulta guardada (temporal, sin conexión al backend)');
+guardarConsulta() {
+  if (!this.citaSeleccionada) {
+    Swal.fire('Error', 'No hay cita seleccionada', 'error');
+    return;
   }
+
+  // 🔹 Construimos el request con campos obligatorios
+const request = {
+  signosVitales: {
+    pesoKg: Number(this.consulta.peso),
+    tallaM: Number(this.consulta.estatura), // asegurarse de que sea en metros (ej: 1.75)
+    presionArterial: this.consulta.presionArterial, // si backend espera presionSistolica / presionDiastolica, separa
+    frecuenciaCardiaca: Number(this.consulta.frecuenciaCardiaca),
+    frecuenciaRespiratoria: Number(this.consulta.frecuenciaRespiratoria || 0),
+    temperatura: Number(this.consulta.temperatura),
+    spo2: Number(this.consulta.spo2 || 0),
+    glucosa: Number(this.consulta.glucosa || 0)
+  },
+  diagnostico: {
+    cie10: this.consulta.cie10,
+    descripcion: this.consulta.diagnostico,
+    tipo: this.consulta.tipoDiagnostico || 'secundario', 
+    medicamentosBase: this.consulta.medicamentos || 'Ninguno',
+    tratamiento: this.consulta.tratamiento,
+    indicaciones: this.consulta.indicaciones || '',
+    funAlta: this.consulta.funAlta || ''
+  },
+  receta: {
+    folio: this.consulta.folio || 'Sin Folio',
+    vencimiento: this.consulta.vencimiento,
+    medicamentos: this.consulta.listaMedicamentos?.map(m => ({
+      nombre: m.nombre,
+      presentacion: m.presentacion || 'N/A',
+      dosis: m.dosis || 'N/A',
+      frecuencia: m.frecuencia || 'N/A',
+      duracion: m.duracion || 'N/A',
+      cantidad: Number(m.cantidad) || 1,
+      via: m.via || 'Oral'
+    })) || []
+  }
+  };
+
+  console.log('Request JSON listo para enviar:', request);
+
+  this.citaService.completarCita(this.citaSeleccionada.idCita, request)
+    .subscribe({
+      next: () => {
+        this.snackBar.open('Consulta guardada correctamente', 'Cerrar', { duration: 3000 });
+        this.citaSeleccionada.estado = 'completada';
+        this.selectedSection = 'citas';
+      },
+      error: (err) => {
+        console.error('Error al guardar la consulta:', err);
+        Swal.fire('Error', 'No se pudo guardar la consulta', 'error');
+      }
+    });
+}
 
 
 
@@ -348,26 +805,27 @@ medicamentos: '',
       this.pageSizePacientes = event.pageSize;
       this.pageIndexPacientes = event.pageIndex;
 
-       this.cargarPacientes(event.pageIndex + 1, event.pageSize);
     }
   }
 
   // ================= MÉTRICAS =================
 
-  calcularEdad(fechaNacimiento: Date | string): number {
-    if (!fechaNacimiento) return 0;
+calcularEdad(fechaNacimiento?: string | Date | null): number {
+  if (!fechaNacimiento) return 0;
 
-    const nacimiento = new Date(fechaNacimiento);
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const mes = hoy.getMonth() - nacimiento.getMonth();
+  const nacimiento = new Date(fechaNacimiento);
+  const hoy = new Date();
 
-    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad--;
-    }
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
 
-    return edad;
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
   }
+
+  return edad;
+}
+
 
   get totalCitasHoy(): number {
     return this.citas.length;

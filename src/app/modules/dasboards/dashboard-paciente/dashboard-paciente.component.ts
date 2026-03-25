@@ -23,6 +23,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   selectedSection: string = 'citas';
   darkMode: boolean = false;
 
+  nombrePaciente: string = '';
+
   // Citas
   pageSize = 5;
   pageIndex = 0;
@@ -42,22 +44,27 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     private patientService: PatientService
   ) {}
 
-  ngOnInit(): void {
-    // Cargar citas
-    this.authService.obtenerPerfilMedico().subscribe({
-      next: (medico: Medico) => {
-        this.medicoId = medico.idMedico;
-        this.citaService.obtenerCitasPorPaciente(this.medicoId).subscribe({
-          next: (data: Cita[]) => this.citas = data,
-          error: (err) => console.error('Error al obtener citas del médico', err)
-        });
-      },
-      error: (err) => console.error('Error al obtener perfil del médico', err)
-    });
+ngOnInit(): void {
 
-    // Cargar pacientes
-    this.cargarPacientes();
+  const user = this.authService.currentUserValue;
+
+  if (user) {
+
+    //this.patientService.getPacientePorUsuario(user.idUsuario)
+      //.subscribe({
+        //next: (paciente: any) => {
+
+          //this.nombrePaciente =
+            //paciente.nombre + ' ' + paciente.apPaterno;
+
+       // },
+     //   error: (err) =>
+      //    console.error('Error al obtener paciente', err)
+   //   });
+
   }
+
+}
 
   ngAfterViewInit() {}
 
@@ -97,16 +104,15 @@ openCancelDialog(cita: Cita) {
   }
 
   // ================= PACIENTES =================
-  cargarPacientes(page: number = 1, pageSize: number = this.pageSizePacientes): void {
-    this.patientService.getPatients(page, pageSize).subscribe({
-      next: (res: PaginatedResponse<Patient>) => {
-        this.pacientes = res.data;
-        this.pageSizePacientes = res.pageSize;
-        this.pageIndexPacientes = res.page - 1;
-      },
-      error: (err) => console.error('Error al cargar pacientes', err)
-    });
-  }
+cargarPacientes(): void {
+  this.patientService.getPatients().subscribe({
+    next: (res: Patient[]) => {
+      this.pacientes = res;
+      this.pageIndexPacientes = 0; // reinicia página
+    },
+    error: (err: any) => console.error('Error al cargar pacientes', err)
+  });
+}
 
   get paginatedPacientes(): Patient[] {
     const start = this.pageIndexPacientes * this.pageSizePacientes;
@@ -114,24 +120,29 @@ openCancelDialog(cita: Cita) {
     return this.pacientes.slice(start, end);
   }
 
-  descargarExpediente(idPaciente: number) {
-    this.patientService.getPatientById(idPaciente).subscribe({
-      next: (paciente: Patient) => {
-        const doc = new jsPDF();
-        doc.text(`Expediente de: ${paciente.firstName} ${paciente.lastName}`, 10, 10);
-        doc.text(`NSS: ${paciente.nationalHealthId || '-'}`, 10, 20);
-        doc.text(`Teléfono: ${paciente.phone}`, 10, 30);
-        doc.text(`Email: ${paciente.email}`, 10, 40);
-        doc.text(`Género: ${paciente.gender}`, 10, 50);
-        doc.text(`Tipo de sangre: ${paciente.bloodType}`, 10, 60);
-        if (paciente.emergencyContact) {
-          doc.text(`Contacto de emergencia: ${paciente.emergencyContact.name} (${paciente.emergencyContact.relationship}) - ${paciente.emergencyContact.phone}`, 10, 70);
-        }
-        doc.save(`Expediente_${paciente.firstName}.pdf`);
-      },
-      error: (err) => console.error('Error al generar expediente', err)
-    });
-  }
+descargarExpediente(idPaciente: number) {
+  this.patientService.getPatientById(idPaciente).subscribe({
+    next: (paciente: Patient) => {
+
+      const doc = new jsPDF();
+
+      doc.text(
+        `Expediente de: ${paciente.nombre} ${paciente.apPaterno} ${paciente.apMaterno}`,
+        10,
+        10
+      );
+
+      doc.text(`NSS: ${paciente.nss || '-'}`, 10, 20);
+      doc.text(`Teléfono: ${paciente.telefono || '-'}`, 10, 30);
+      doc.text(`Correo: ${paciente.correo || '-'}`, 10, 40);
+      doc.text(`Sexo: ${paciente.sexo || '-'}`, 10, 50);
+      doc.text(`Tipo de sangre: ${paciente.tipoSangre || '-'}`, 10, 60);
+
+      doc.save(`Expediente_${paciente.nombre}.pdf`);
+    },
+    error: (err) => console.error('Error al generar expediente', err)
+  });
+}
 
     // ================= FORMULARIO CONSULTA =================
 

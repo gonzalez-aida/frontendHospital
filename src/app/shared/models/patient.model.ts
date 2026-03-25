@@ -1,17 +1,13 @@
 export interface Patient {
-    id: number;
-    firstName: string;
-    lastName: string;
-    dateOfBirth: Date;
-    gender: Gender;
-    bloodType: BloodType;
-    phone: string;
-    email: string;
-    address?: string;
-    nationalHealthId?: string;
-    emergencyContact?: EmergencyContact;
-    createdAt?: Date;
-    updatedAt?: Date;
+  idPaciente: number;
+  nombre: string;
+  apPaterno: string;
+  apMaterno: string;
+  nss: string;
+  telefono: string;
+  correo: string;
+  sexo: string;
+  tipoSangre: string;
 }
 
 export enum Gender {

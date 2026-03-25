@@ -17,6 +17,8 @@ body {
     font-size: $font-size-base;
     color: $text-primary;
     background-color: $bg-secondary;
+    margin: 0;
+  overflow: hidden;
 }
 
 /* Scroll personalizado */

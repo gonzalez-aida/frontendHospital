@@ -78,10 +78,16 @@
   flex: 1;
   padding: 40px;
     width: 100%;
-
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 👈 importante */
 }
 
 
+.content > div {
+  flex: 1;
+  overflow-y: auto;
+}
 /* ================= HEADER ================= */
 
 .top-header {
@@ -593,4 +599,300 @@ mat-paginator {
 .campo-medicamentos {
   width: 100%;
   margin-bottom: 25px;
+}
+
+/* ================= BUSCADOR MODERNO ================= */
+
+.search-wrapper {
+  display: flex;
+  justify-content: flex-end; /* 👈 lo manda a la derecha */
+  margin-bottom: 20px;
+}
+
+/* Buscador */
+.custom-search {
+  display: flex;
+  align-items: center;
+  width: 300px;              /* más compacto */
+  padding: 8px 12px;         /* menos alto */
+  border-radius: 20px;       /* más elegante */
+
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+
+  transition: all 0.25s ease;
+}
+
+/* Animación suave */
+.custom-search:focus-within {
+  border-color: #1976d2;
+  box-shadow: 0 4px 14px rgba(25, 118, 210, 0.15);
+}
+
+/* Input */
+.custom-search input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13px;
+  background: transparent;
+  padding: 4px;
+}
+
+/* Icono */
+.search-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+  color: #1976d2;
+  font-size: 18px;
+}
+
+/* Botón limpiar */
+.clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #aaa;
+  transition: 0.2s ease;
+}
+
+.clear-btn:hover {
+  color: #e53935;
+  transform: scale(1.1);
+}
+
+
+/* ================= MENSAJE BUSQUEDA PREMIUM ================= */
+
+.search-message-card {
+  margin-top: 30px;
+  padding: 40px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.dark-mode .search-message-card {
+  background: linear-gradient(135deg, #1e1e2f, #2a2a3f);
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.message-content mat-icon {
+  font-size: 50px;
+  width: 50px;
+  height: 50px;
+  opacity: 0.7;
+}
+
+.message-content h3 {
+  margin: 10px 0 0;
+  font-weight: 600;
+}
+
+.message-content p {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= TABLA PACIENTES PROFESIONAL ================= */
+
+.pacientes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pacientes-table th:last-child,
+.pacientes-table td:last-child {
+  width: 260px;  
+  padding: 14px;
+  text-align: left;
+}
+
+/* HEADER SOMBREADO */
+.pacientes-table thead {
+  background: linear-gradient(135deg, #eef2f7, #dde6f2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .pacientes-table thead {
+  background: linear-gradient(135deg, #1f1f2e, #2b2b3f);
+}
+
+/* SCROLL SOLO EN EL BODY */
+.pacientes-body-scroll {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Scroll elegante */
+.pacientes-body-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pacientes-body-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.dark-mode .pacientes-body-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+.form-consulta-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+.form-scroll-expediente {
+  max-height: 60vh;   /* controla qué tan alto puede crecer */
+  overflow-y: auto;
+  padding-right: 10px;
+
+}
+
+/* ================= HISTORIAL POR PACIENTE ================= */
+
+.historial-container {
+  padding: 20px;
+}
+
+.historial-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.historial-header h2 {
+  margin: 0;
+}
+
+.historial-header p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.historial-header span {
+  font-size: 13px;
+  color: gray;
+}
+
+/* ================= BOTON VER DETALLE HISTORIAL ================= */
+
+.btn-ver-detalle {
+  border-radius: 20px !important;
+  padding: 4px 14px !important;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: auto !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.btn-ver-detalle mat-icon {
+  font-size: 16px;
+}
+
+.btn-ver-detalle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(25, 118, 210, 0.25);
+}
+
+/* ================= BOTONES ACCIONES PACIENTES ================= */
+
+.pacientes-table td:last-child {
+  white-space: nowrap;
+}
+
+.btn-paciente-accion {
+  border-radius: 18px !important;
+  padding: 4px 12px !important;
+  font-size: 12px;
+  min-width: auto !important;
+  line-height: 28px !important;
+  height: 40px;
+  margin-right: 6px;
+  transition: all 0.25s ease;
+}
+
+.btn-paciente-accion mat-icon {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.btn-paciente-accion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* ================= COLORES PERSONALIZADOS PARA LISTA DE PACIENTES ================= */
+
+.btn-paciente-accion {
+  border-radius: 18px !important;
+  font-size: 12px;
+  padding: 4px 14px !important;
+  min-width: auto !important;
+  font-weight: 500;
+  border: none !important;
+  transition: all 0.25s ease;
+}
+
+/* ===== VISUALIZAR ===== */
+
+.btn-expediente {
+  background: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.btn-expediente:hover {
+  background: #d6eafc !important;
+}
+
+/* ===== HISTORIAL ===== */
+
+.btn-historial {
+  background: #eceff1 !important;
+  color: #455a64 !important;
+}
+
+.btn-historial:hover {
+  background: #e0e0e0 !important;
+}
+
+/* ===== AGREGAR ===== */
+
+.btn-agregar {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.btn-agregar:hover {
+  background: #dff3e3 !important;
 }
