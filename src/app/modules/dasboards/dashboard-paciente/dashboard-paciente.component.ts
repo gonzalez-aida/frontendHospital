@@ -1,74 +1,359 @@
-import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
-import { Medico } from '../../../shared/models/medico.model';
 import { ConnectivityService } from '../../../core/services/connectivity.service';
-import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../dashboard-paciente/confirm-dialog-paciente.component';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { PatientService } from '../../../core/services/patient.service';
 import { CitaService } from '../../../core/services/cita.service';
-import { Cita } from '../../../shared/models/cita.model';
-import { PatientService, PaginatedResponse } from '../../../core/services/patient.service';
-import { Patient } from '../../../shared/models/patient.model';
 import { jsPDF } from 'jspdf';
+import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dashboard-paciente',
   templateUrl: './dashboard-paciente.component.html',
   styleUrls: ['./dashboard-paciente.component.scss']
 })
-export class DashboardComponent implements AfterViewInit, OnInit {
+export class DashboardPacienteComponent implements OnInit {
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  selectedSection: string = 'citas';
+  // ================= UI =================
+  selectedSection: string = 'perfil';
   darkMode: boolean = false;
+  tituloSeccion: string = 'Mi Perfil';
 
-  nombrePaciente: string = '';
+  // ================= DATOS =================
+  paciente: any = {};
+  expediente: any = {};
 
-  // Citas
-  pageSize = 5;
-  pageIndex = 0;
-  citas: Cita[] = [];
-  medicoId!: number;
-
-  // Pacientes
-  pacientes: Patient[] = [];
-  pageSizePacientes = 5;
-  pageIndexPacientes = 0;
+  citas: any[] = [];
+  historial: any[] = [];
 
   constructor(
     private authService: AuthService,
     public connectivityService: ConnectivityService,
-    private dialog: MatDialog,
-    private citaService: CitaService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private citaService: CitaService
   ) {}
 
-ngOnInit(): void {
+  ngOnInit(): void {
+    this.cargarPerfilPaciente();
+  }
 
-  const user = this.authService.currentUserValue;
+  // ================= PERFIL =================
 
-  if (user) {
+cargarPerfilPaciente() {
+  this.authService.obtenerPerfilPaciente().subscribe({
+    next: (data: any) => {
+      this.paciente = data;
 
-    //this.patientService.getPacientePorUsuario(user.idUsuario)
-      //.subscribe({
-        //next: (paciente: any) => {
+      // 🔥 IMPORTANTE
+      this.cargarHistorial(); 
+      this.cargarCitas();
+    },
+    error: (err) => console.error('Error al obtener perfil paciente', err)
+  });
+}
 
-          //this.nombrePaciente =
-            //paciente.nombre + ' ' + paciente.apPaterno;
 
-       // },
-     //   error: (err) =>
-      //    console.error('Error al obtener paciente', err)
-   //   });
+cargarCitas() {
+  this.citaService.obtenerCitasPorPaciente(this.paciente.idPaciente)
+    .subscribe({
+      next: (data: any[]) => {
+        this.citas = data;
+        console.log('Citas cargadas:', this.citas);
+      },
+      error: (err) => console.error('Error al cargar citas', err)
+    });
+}
 
+
+cargarHistorial() {
+
+  if (!this.paciente?.idPaciente) {
+    console.log('Paciente aún no cargado');
+    return;
+  }
+
+  this.citaService.obtenerCitasPorPaciente(this.paciente.idPaciente)
+    .subscribe({
+      next: (data: any[]) => {
+        this.historial = data.map(c => ({
+          ...c,
+          expandida: false
+        }));
+
+        console.log('Historial cargado:', this.historial);
+      },
+      error: (err) => console.error('Error al cargar historial', err)
+    });
+}
+
+
+// ================= EXPEDIENTE PACIENTE =================
+expedientePaciente: any = null;
+descargasRestantes: number = 3;
+bloqueadoDescarga: boolean = false;
+
+
+// ================= EXPEDIENTE =================
+
+cargarExpediente() {
+
+  if (!this.paciente?.idPaciente) {
+    console.log('Paciente aún no cargado');
+    return;
+  }
+
+  this.patientService.getExpedientesByPaciente(this.paciente.idPaciente)
+    .subscribe({
+      next: (data: any) => {
+        this.expediente = data;
+        console.log('Expediente cargado:', this.expediente);
+      },
+      error: (err) => console.error('Error al cargar expediente', err)
+    });
+}
+
+
+// Descargar expediente como PDF simple (frontend)
+descargarMiExpediente() {
+
+  if (this.bloqueadoDescarga) return;
+
+  if (!this.expedientePaciente) return;
+
+  if (this.descargasRestantes <= 0) {
+    this.bloqueadoDescarga = true;
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'Límite alcanzado',
+      text: 'Has alcanzado el límite máximo de descargas (3).'
+    });
+
+    return;
+  }
+
+  this.generarPDFPaciente(this.expedientePaciente);
+
+  this.descargasRestantes--;
+
+  Swal.fire({
+    icon: 'info',
+    title: 'Descarga realizada',
+    text: `Te quedan ${this.descargasRestantes} descargas disponibles. Guarda bien tu copia.`,
+    timer: 3000,
+    showConfirmButton: false
+  });
+
+  if (this.descargasRestantes === 0) {
+    this.bloqueadoDescarga = true;
   }
 
 }
 
-  ngAfterViewInit() {}
+cargarMiExpediente() {
 
-  // ================= LOGOUT Y DARK MODE =================
+  if (!this.paciente?.idPaciente) return;
+
+  this.patientService.getExpedientesByPaciente(this.paciente.idPaciente)
+    .subscribe({
+
+      next: (resp: any) => {
+
+        const lista = resp?.data ?? [];
+
+        if (!lista.length) {
+          Swal.fire(
+            'Sin expediente',
+            'Aún no cuentas con un expediente clínico.',
+            'info'
+          );
+          return;
+        }
+
+        this.expedientePaciente = lista[0];
+      },
+
+      error: () => {
+        Swal.fire(
+          'Error',
+          'No se pudo cargar tu expediente.',
+          'error'
+        );
+      }
+
+    });
+
+}
+
+generarPDFPaciente(exp: any) {
+
+  const doc = new jsPDF();
+
+  const safe = (v: any) => v ? v : 'No especificado';
+
+  let y = 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('MI EXPEDIENTE CLÍNICO', 20, y);
+
+  y += 10;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  doc.text(`Paciente: ${this.paciente.nombre} ${this.paciente.apPaterno} ${this.paciente.apMaterno}`, 20, y);
+
+  y += 10;
+
+  const campo = (label: string, value: any) => {
+    doc.setFont('helvetica', 'bold');
+    doc.text(label, 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(safe(value), 70, y);
+    y += 8;
+  };
+
+  campo('Alergias:', exp.ant_alergicos);
+  campo('Enfermedades Crónicas:', exp.enf_cronicas);
+  campo('Heredofamiliares:', exp.ant_heredofamiliares);
+  campo('Observaciones:', exp.observaciones);
+
+  window.open(doc.output('bloburl').toString());
+}
+
+
+// ================= NUEVA CITA =================
+// ================= NUEVA CITA =================
+nuevaCita = {
+  fecha: '',
+  hora: '',
+  motivo: '',
+  tipo: 'PRIMERA VEZ'
+};
+
+ultimaCitaAgendada: any = null;
+
+confirmarCita() {
+  const { fecha, hora, motivo, tipo } = this.nuevaCita;
+
+  // 1️⃣ Validar que todos los campos estén llenos
+  if (!fecha || !hora || !motivo || !tipo) {
+    alert('Por favor completa todos los campos de la cita.');
+    return;
+  }
+
+  // 2️⃣ Mapear los tipos de frontend a los enums del backend
+  const tipoMap: Record<string, string> = {
+    "PRIMERA VEZ": "primera_vez",
+    "SUBSECUENTE": "subsecuente",
+    "URGENCIA": "urgencia",
+    "REFERIDA": "referida",
+    "ARCHIVADA": "archivada"
+  };
+
+  const tipoBackend = tipoMap[tipo];
+  if (!tipoBackend) {
+    alert('Tipo de cita inválido.');
+    return;
+  }
+
+  // 3️⃣ Construir payload (no enviar idPaciente)
+const citaPayload = {
+  fecha: this.nuevaCita.fecha,      // "yyyy-MM-dd"
+  hora: this.nuevaCita.hora + ":00", // "HH:mm:ss" necesario para Java
+  motivo: this.nuevaCita.motivo,
+  tipo: tipoBackend
+};
+
+  console.log("Enviando datos JSON:", JSON.stringify(citaPayload));
+
+  // 4️⃣ Llamada al servicio para agendar cita
+  this.citaService.agendarCita(citaPayload).subscribe({
+    next: (cita) => {
+      console.log("Cita agendada:", cita);
+      this.ultimaCitaAgendada = cita;
+      this.citas.push(cita);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Cita confirmada',
+        text: `Cita agendada con Dr. ${cita.medico?.nombre || 'pendiente asignar'}`,
+        timer: 3000,
+        showConfirmButton: false
+      });
+
+      // Limpiar formulario
+      this.nuevaCita = { fecha: '', hora: '', motivo: '', tipo: 'PRIMERA VEZ' };
+    },
+    error: (err) => {
+      console.error("Error al agendar:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo agendar la cita. Revisa la consola para más detalles.'
+      });
+    }
+  });
+}
+
+cancelarCita(idCita: number) {
+
+  Swal.fire({
+    title: '¿Cancelar cita?',
+    text: 'Esta acción no se puede deshacer',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cancelar',
+    cancelButtonText: 'No'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+
+      this.citaService.cancelarCita(idCita)
+        .subscribe({
+
+          next: () => {
+            Swal.fire('Cancelada', 'La cita fue cancelada', 'success');
+            this.cargarCitas();
+          },
+
+          error: () => {
+            Swal.fire('Error', 'No se pudo cancelar la cita', 'error');
+          }
+
+        });
+    }
+  });
+}
+
+// ================= UI =================
+
+changeSection(section: string) {
+  this.selectedSection = section;
+
+  switch (section) {
+
+    case 'citas':
+      this.tituloSeccion = 'Mis Citas';
+      this.cargarCitas();
+      break;
+
+case 'expediente':
+  this.tituloSeccion = 'Mi Expediente';
+  this.cargarExpediente();   // 🔥 IMPORTANTE
+  break;
+
+    case 'historial':
+      this.tituloSeccion = 'Historial de Consultas';
+      this.cargarHistorial();
+      break;
+
+    case 'perfil':
+      this.tituloSeccion = 'Mi Perfil';
+      break;
+  }
+  }
+
   logout(): void {
     this.authService.logout();
   }
@@ -77,140 +362,20 @@ ngOnInit(): void {
     this.darkMode = !this.darkMode;
   }
 
-  changeSection(section: string) {
-    this.selectedSection = section;
-  }
+  calcularEdad(fechaNacimiento?: string | Date | null): number {
+    if (!fechaNacimiento) return 0;
 
-  // ================= CITAS =================
-openCancelDialog(cita: Cita) {
-  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-    width: '400px',
-    data: { 
-      nombre: cita.nombrePaciente
-    }
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.citas = this.citas.filter(c => c !== cita);
-    }
-  });
-}
-
-  get paginatedCitas() {
-    const start = this.pageIndex * this.pageSize;
-    const end = start + this.pageSize;
-    return this.citas.slice(start, end);
-  }
-
-  // ================= PACIENTES =================
-cargarPacientes(): void {
-  this.patientService.getPatients().subscribe({
-    next: (res: Patient[]) => {
-      this.pacientes = res;
-      this.pageIndexPacientes = 0; // reinicia página
-    },
-    error: (err: any) => console.error('Error al cargar pacientes', err)
-  });
-}
-
-  get paginatedPacientes(): Patient[] {
-    const start = this.pageIndexPacientes * this.pageSizePacientes;
-    const end = start + this.pageSizePacientes;
-    return this.pacientes.slice(start, end);
-  }
-
-descargarExpediente(idPaciente: number) {
-  this.patientService.getPatientById(idPaciente).subscribe({
-    next: (paciente: Patient) => {
-
-      const doc = new jsPDF();
-
-      doc.text(
-        `Expediente de: ${paciente.nombre} ${paciente.apPaterno} ${paciente.apMaterno}`,
-        10,
-        10
-      );
-
-      doc.text(`NSS: ${paciente.nss || '-'}`, 10, 20);
-      doc.text(`Teléfono: ${paciente.telefono || '-'}`, 10, 30);
-      doc.text(`Correo: ${paciente.correo || '-'}`, 10, 40);
-      doc.text(`Sexo: ${paciente.sexo || '-'}`, 10, 50);
-      doc.text(`Tipo de sangre: ${paciente.tipoSangre || '-'}`, 10, 60);
-
-      doc.save(`Expediente_${paciente.nombre}.pdf`);
-    },
-    error: (err) => console.error('Error al generar expediente', err)
-  });
-}
-
-    // ================= FORMULARIO CONSULTA =================
-
-  // Datos temporales del formulario
-consulta = {
-  pacienteNombre: '',
-  pacienteApPaterno: '',
-  pacienteApMaterno: '',
-  fechaNacimiento: '',
-  sexo: '',
-  tipoSangre: '',
-  telefono: '',
-  correo: '',
-  telefonoEmergencia: '',
-  antHeredofamiliares: '',
-  antPatologicos: '',
-  antQuirurgicos: '',
-  antAlergicos: '',
-  enfCronicas: '',
-  antGinecoObstetricos: '',
-  observaciones: ''
-};
-
-// Tipos de sangre
-tiposSangre = ['A_POS','A_NEG','B_POS','B_NEG','AB_POS','AB_NEG','O_POS','O_NEG'];
-
-// Método para guardar la consulta (temporal)
-guardarConsulta() {
-  console.log('Datos de la consulta:', this.consulta);
-  alert('Consulta guardada (temporal, sin conexión al backend)');
-}
-
-  // ================= PAGINACIÓN =================
-  handlePageEvent(event: PageEvent) {
-    if (this.selectedSection === 'citas') {
-      this.pageSize = event.pageSize;
-      this.pageIndex = event.pageIndex;
-    } else if (this.selectedSection === 'pacientes') {
-      this.pageSizePacientes = event.pageSize;
-      this.pageIndexPacientes = event.pageIndex;
-    }
-  }
-
-  // ================= MÉTRICAS =================
-  calcularEdad(fechaNacimiento: Date | string): number {
     const nacimiento = new Date(fechaNacimiento);
     const hoy = new Date();
+
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
     const mes = hoy.getMonth() - nacimiento.getMonth();
+
     if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
       edad--;
     }
+
     return edad;
   }
 
-  get totalCitasHoy() {
-    return this.citas.length;
-  }
-
-  get citasPendientes() {
-    return this.citas.filter(c => c.estado === 'pendiente').length;
-  }
-
-  get citasCanceladas() {
-    return this.citas.filter(c => c.estado === 'cancelada').length;
-  }
-
-  get proximaCita() {
-    return this.citas.length > 0 ? this.citas[0].hora : '--';
-  }
 }

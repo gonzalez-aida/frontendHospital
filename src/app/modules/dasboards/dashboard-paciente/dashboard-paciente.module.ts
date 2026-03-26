@@ -11,13 +11,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 
 import { DashboardRoutingModule } from './dashboard-routing-paciente.module';
-import { DashboardComponent } from './dashboard-paciente.component';
+import { DashboardPacienteComponent } from './dashboard-paciente.component';
 import { ConfirmDialogComponent } from '../dashboard-paciente/confirm-dialog-paciente.component';
-
 
 @NgModule({
   declarations: [
-    DashboardComponent,
+    DashboardPacienteComponent,
     ConfirmDialogComponent
   ],
   imports: [
