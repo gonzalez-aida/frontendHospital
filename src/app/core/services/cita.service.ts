@@ -30,11 +30,11 @@ obtenerMisCitas(): Observable<Cita[]> {
   }
 
   // Agendar cita para un paciente
-agendarCita(idPaciente: number, data: any): Observable<Cita> {
+agendarCita(data: any): Observable<Cita> {
   return this.http.post<Cita>(
-    `${this.apiUrl}/paciente/${idPaciente}/agendar`,
+    `${this.apiUrl}/agendar`,
     data,
-    { withCredentials: true }
+    { withCredentials: true }  // ⚠️ NO necesitas token manualmente
   );
 }
 

@@ -61,4 +61,16 @@ actualizarExpediente(idExpediente: number, cambios: any) {
   );
 }
 
+
+obtenerCitasPaciente() {
+  return this.http.get<any[]>(`${this.apiUrl}/citas/mis-citas`);
+}
+
+obtenerHistorialPaciente(idPaciente: number) {
+  return this.http.get<any[]>(
+    `${this.apiUrl}/consultas/paciente/${idPaciente}`
+  );
+}
+
+
 }
