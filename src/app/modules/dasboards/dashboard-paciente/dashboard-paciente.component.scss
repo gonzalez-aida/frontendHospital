@@ -512,3 +512,338 @@ tr:hover {
   color: #d32f2f;
   font-weight: 600;
 }
+
+.expediente-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.empty-state {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 20px;
+  text-align: center;
+  color: #6b7280;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ================= CITAS ================= */
+
+.citas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.form-card {
+  background: white;
+  padding: 35px;
+  border-radius: 22px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+
+  mat-icon {
+    color: #1f3a5f;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  h2 {
+    margin: 0;
+    color: #1f3a5f;
+    font-weight: 600;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  input, select, textarea {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    outline: none;
+    font-family: 'Segoe UI', sans-serif;
+
+    &:focus {
+      border-color: #1f3a5f;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(31,58,95,0.08);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.disabled-field input {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.full-width {
+  grid-column: span 3;
+}
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* MÉDICO ASIGNADO */
+.medico-card {
+  margin-top: 25px;
+  padding: 20px 25px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  border-left: 4px solid #2e7d32;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+
+  .medico-card-icon {
+    mat-icon {
+      color: #2e7d32;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    color: #2e7d32;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #374151;
+  }
+}
+
+/* TABLE HEADER */
+.table-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 { margin: 0; color: #1f3a5f; }
+}
+
+.citas-count {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* BADGES */
+.folio-badge {
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.badge-estado {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.pendiente  { background: #fff3e0; color: #e65100; }
+  &.completada { background: #e8f5e9; color: #2e7d32; }
+  &.cancelada  { background: #ffebee; color: #c62828; }
+  &.archivada  { background: #f1f5f9; color: #64748b; }
+}
+
+/* EMPTY ROW */
+.empty-row {
+  text-align: center;
+  padding: 40px !important;
+  color: #9ca3af;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin: 0 auto 10px;
+    opacity: 0.4;
+  }
+
+  p { margin: 0; }
+}
+
+/* ================= DARK MODE CITAS ================= */
+
+.dark-mode .form-card {
+  background: #1e293b;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.dark-mode .form-card-header h2 {
+  color: #e2e8f0;
+}
+
+.dark-mode .form-card-header mat-icon {
+  color: #93c5fd;
+}
+
+.dark-mode .form-field label {
+  color: #94a3b8;
+}
+
+.dark-mode .form-field input,
+.dark-mode .form-field select,
+.dark-mode .form-field textarea {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+
+  &:focus {
+    border-color: #93c5fd;
+    background: #1e293b;
+    box-shadow: 0 0 0 3px rgba(147,197,253,0.1);
+  }
+}
+
+.dark-mode .disabled-field input {
+  background: #1e293b;
+  color: #475569;
+}
+
+.dark-mode .medico-card {
+  background: linear-gradient(135deg, #14532d, #166534);
+  border-left-color: #4ade80;
+
+  h3 { color: #4ade80; }
+  p  { color: #d1fae5; }
+}
+
+.dark-mode .table-header-row h2 {
+  color: #e2e8f0;
+}
+
+.dark-mode .citas-count {
+  background: #1e3a8a;
+  color: #93c5fd;
+}
+
+.dark-mode .folio-badge {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.dark-mode .badge-estado {
+  &.pendiente  { background: #431407; color: #fed7aa; }
+  &.completada { background: #14532d; color: #bbf7d0; }
+  &.cancelada  { background: #450a0a; color: #fecaca; }
+  &.archivada  { background: #1e293b; color: #94a3b8; }
+}
+
+.dark-mode .empty-row {
+  color: #475569;
+}
+
+.dark-mode .table-container {
+  background: #1e293b;
+}
+
+.dark-mode table thead {
+  background: #0f172a;
+}
+
+.dark-mode table th {
+  color: #64748b;
+  background: #0f172a;
+}
+
+.dark-mode table td {
+  border-top-color: #334155;
+  color: #e2e8f0;
+}
+
+.dark-mode table tr:hover {
+  background: #1f2a3a;
+}
+
+.input-error {
+  border-color: #d32f2f !important;
+  background: #fff5f5 !important;
+  box-shadow: 0 0 0 3px rgba(211,47,47,0.1) !important;
+}
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Dark mode
+.dark-mode .input-error {
+  border-color: #f87171 !important;
+  background: #2d1515 !important;
+}
+
+.dark-mode .error-msg {
+  color: #f87171;
+}
