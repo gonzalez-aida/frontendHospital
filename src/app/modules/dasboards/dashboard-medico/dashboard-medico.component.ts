@@ -349,170 +349,134 @@ verDetalle(consulta: Cita) {
 }
 
 descargarExpediente(idPaciente: number) {
- this.patientService.getExpedientesByPaciente(idPaciente).subscribe({
-  next: (resp) => {
+  this.patientService.getExpedientesByPaciente(idPaciente).subscribe({
+    next: (resp: any) => {
 
-    console.log("RESP:", resp);
+      // ❌ ANTES — esperaba lista
+      // if (!resp?.data || resp.data.length === 0) { ... }
+      // this.generarPDF(resp);
 
-    if (!resp?.data || resp.data.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Sin expediente',
-        text: 'Este paciente aún no cuenta con un expediente clínico.'
-      });
-      return;
+      // ✅ AHORA — data es objeto único
+      const exp = resp?.data;
+
+      if (!exp) {
+        Swal.fire({ icon: 'info', title: 'Sin expediente',
+          text: 'Este paciente aún no cuenta con un expediente clínico.' });
+        return;
+      }
+
+      // generarPDF espera { data: [ expediente ] }, lo wrapeamos
+      this.generarPDF({ data: [exp] });
+    },
+    error: (err) => {
+      Swal.fire({ icon: 'info', title: 'Sin expediente',
+        text: 'Este paciente aún no cuenta con un expediente clínico.' });
     }
-
-    this.generarPDF(resp);
-  },
-
-  error: (err) => {
-
-    console.log("ERROR:", err);
-
-    if (err.status === 404) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Sin expediente',
-        text: 'Este paciente aún no cuenta con un expediente clínico.'
-      });
-      return;
-    }
-
-    Swal.fire({
-      icon: 'error',
-      title: 'Sin expediente',
-      text: 'Este paciente aún no cuenta con un expediente clínico.'
-    });
-  }
-});    
+  });
 
 }
 
 generarPDF(expediente: any) {
+  const lista = expediente?.data ?? [];
+  if (!lista || lista.length === 0) {
+    Swal.fire('Error', 'No hay datos del expediente', 'error');
+    return;
+  }
 
-const lista = expediente?.data ?? [];
-
-if (!lista || lista.length === 0) {
-  Swal.fire('Error', 'No hay datos del expediente', 'error');
-  return;
-}
-
-// 👇 Tomamos el primer expediente de la lista
-const exp = lista[0];
-
-
+  const exp = lista[0];
   if (!exp) {
     Swal.fire('Error', 'No hay datos del expediente', 'error');
     return;
   }
 
   const doc = new jsPDF();
-
-  const safe = (v: any) => v ? v : 'No especificado';
-
+  const safe = (v: any) => (v ? v : 'No especificado');
+  const pageW = doc.internal.pageSize.getWidth();
   let y = 20;
 
-  // 🏥 HEADER
+  // ===== HEADER =====
+  doc.setFillColor(31, 58, 95);
+  doc.rect(0, 0, pageW, 38, 'F');
+
+  doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('EXPEDIENTE CLÍNICO', 20, y);
+  doc.setFontSize(18);
+  doc.text('EXPEDIENTE CLÍNICO', 14, 16);
 
-  y += 10;
-
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-// 📅 Formato DD/MM/AAAA
-const fechaActual = new Date();
-const dia = String(fechaActual.getDate()).padStart(2, '0');
-const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-const anio = fechaActual.getFullYear();
-const fechaFormateada = `${dia}/${mes}/${anio}`;
+  const fechaActual = new Date();
+  const fechaFormateada = `${String(fechaActual.getDate()).padStart(2,'0')}/${String(fechaActual.getMonth()+1).padStart(2,'0')}/${fechaActual.getFullYear()}`;
+  doc.text(`Folio: ${safe(exp.folio)}`, 14, 26);
+  doc.text(`Fecha: ${fechaFormateada}`, pageW - 14, 26, { align: 'right' });
 
-// Nombre del paciente (ajusta si viene anidado)
-const nombrePaciente = 
-  `${safe(exp.idPaciente?.nombre)} ${safe(exp.idPaciente?.apPaterno)} ${safe(exp.idPaciente?.apMaterno)}`;
+  const nombrePaciente = `${safe(exp.idPaciente?.nombre)} ${safe(exp.idPaciente?.apPaterno)} ${safe(exp.idPaciente?.apMaterno)}`;
+  doc.text(`Paciente: ${nombrePaciente}`, 14, 34);
 
-doc.text(`Folio: ${safe(exp.folio)}`, 20, y);
-doc.text(`Fecha: ${fechaFormateada}`, 140, y);
+  // ===== RESET COLOR =====
+  doc.setTextColor(0, 0, 0);
+  y = 50;
 
-y += 8;
-
-// 👤 Línea nueva debajo del folio
-doc.text(`Paciente: ${nombrePaciente}`, 20, y);
-
-
-  y += 8;
-
-  doc.line(20, y, 190, y);
-
-  y += 15; // 🔥 MÁS ESPACIO DESPUÉS DEL HEADER
-
-  // 🧾 CAMPO
-  const campo = (label: string, value: any) => {
+  // ===== FUNCIÓN SECCIÓN =====
+  const seccion = (titulo: string) => {
+    y += 6;
+    doc.setFillColor(238, 243, 249);
+    doc.rect(10, y - 5, pageW - 20, 10, 'F');
     doc.setFont('helvetica', 'bold');
-    doc.text(label, 20, y);
+    doc.setFontSize(11);
+    doc.setTextColor(31, 58, 95);
+    doc.text(titulo, 14, y + 2);
+    doc.setTextColor(0, 0, 0);
+    y += 12;
+  };
+
+  // ===== FUNCIÓN CAMPO CON SALTOS DE LÍNEA =====
+  const campo = (label: string, value: any) => {
+    const texto = safe(value);
+    const lineas = texto.split('\n');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(80, 80, 80);
+    doc.text(label, 14, y);
 
     doc.setFont('helvetica', 'normal');
-    doc.text(safe(value), 75, y);
+    doc.setTextColor(30, 30, 30);
 
-    y += 8; // 🔥 MÁS ESPACIO ENTRE CAMPOS
+    // Primera línea al lado del label
+    let primeraLinea = true;
+    lineas.forEach((linea: string) => {
+      const wrapped = doc.splitTextToSize(linea || ' ', 120);
+      wrapped.forEach((l: string) => {
+        doc.text(l, 75, y);
+        if (primeraLinea) primeraLinea = false;
+        y += 6;
+      });
+    });
+
+    y += 3;
   };
 
-  // 🧠 SECCIÓN MEJORADA
-  const seccion = (titulo: string, campos: { label: string, value: any }[]) => {
+  // ===== SECCIONES =====
+  seccion('Antecedentes');
+  campo('Heredofamiliares:', exp.ant_heredofamiliares);
+  campo('Patológicos:', exp.ant_patologicos);
+  campo('Quirúrgicos:', exp.ant_quirurgicos);
 
-    y += 8; // 🔥 ESPACIO ANTES DE CADA SECCIÓN
+  seccion('Condiciones Médicas');
+  campo('Alergias:', exp.ant_alergicos);
+  campo('Enf. Crónicas:', exp.enf_cronicas);
 
-    // título
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text(titulo, 20, y);
+  seccion('Ginecoobstétricos');
+  campo('Detalles:', exp.ant_ginecoobstetricos);
 
-    y += 5;
+  seccion('Observaciones Generales');
+  campo('Notas:', exp.observaciones);
 
-    doc.setDrawColor(180);
-    doc.line(20, y, 190, y);
-
-    y += 10; // 🔥 MÁS AIRE DESPUÉS DEL TÍTULO
-
-    doc.setFontSize(10);
-
-    campos.forEach(c => campo(c.label, c.value));
-
-    y += 8; // 🔥 ESPACIO DESPUÉS DE LA SECCIÓN
-  };
-
-  // 📋 SECCIONES
-  seccion('Antecedentes', [
-    { label: 'Heredofamiliares:', value: exp.ant_heredofamiliares },
-    { label: 'Patológicos:', value: exp.ant_patologicos },
-    { label: 'Quirúrgicos:', value: exp.ant_quirurgicos }
-  ]);
-
-  seccion('Condiciones Médicas', [
-    { label: 'Alergias:', value: exp.ant_alergicos },
-    { label: 'Enf. Crónicas:', value: exp.enf_cronicas }
-  ]);
-
-  seccion('Ginecoobstétricos', [
-    { label: 'Detalles:', value: exp.ant_ginecoobstetricos }
-  ]);
-
-  seccion('Observaciones Generales', [
-    { label: 'Notas:', value: exp.observaciones }
-  ]);
-
-
-  // 📄 FOOTER
+  // ===== FOOTER =====
   doc.setFontSize(8);
   doc.setTextColor(150);
-  doc.text(
-    'Sistema Hospitalario',
-    105,
-    285,
-    { align: 'center' }
-  );
+  doc.text('Sistema Hospitalario H+ Medical', pageW / 2, 285, { align: 'center' });
 
   window.open(doc.output('bloburl').toString());
 }
@@ -586,40 +550,36 @@ this.expedienteSeleccionado = {
 
 
 abrirAgregarExpediente(paciente: Patient) {
-
   this.pacienteSeleccionado = paciente;
 
   this.patientService.getExpedientesByPaciente(paciente.idPaciente)
     .subscribe({
-
       next: (resp: any) => {
 
-const lista = resp?.data ?? [];
+        // ❌ ANTES — esperaba lista
+        // const lista = resp?.data ?? [];
+        // const activo = lista.find(e => e.estado?.trim().toUpperCase() === 'ACTIVO');
 
-        if (!lista.length) {
-          Swal.fire('Sin expediente', 
-            'Este paciente aún no tiene expediente clínico.', 
-            'info');
-          return;
-        }
+        // ✅ AHORA — data es objeto único (el activo)
+        const activo = resp?.data;
 
-        // 🔥 Tomamos el expediente ACTIVO
-const activo = lista.find(
-  (e: any) => e.estado?.trim().toUpperCase() === 'ACTIVO'
-);
         if (!activo) {
-          Swal.fire('Error', 'No hay expediente activo', 'error');
+          Swal.fire('Sin expediente',
+            'Este paciente aún no tiene expediente clínico.',
+            'info');
           return;
         }
 
         this.expedienteSeleccionado = activo;
         this.mostrarFormularioExpediente = true;
+      },
+      error: () => {
+        Swal.fire('Sin expediente',
+          'Este paciente aún no tiene expediente clínico.',
+          'info');
       }
-
     });
-
 }
-
 
 
 // ================= FORMULARIO CONSULTA =================

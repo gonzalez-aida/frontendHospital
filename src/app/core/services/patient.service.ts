@@ -53,13 +53,13 @@ export class PatientService {
         return this.http.get<any>(`http://localhost:8081/expedientes/paciente/${idPaciente}`);
     }
 
-actualizarExpediente(idExpediente: number, cambios: any) {
-  return this.http.patch(
-    `http://localhost:8081/expedientes/expediente-update/${idExpediente}`,
-    cambios,
-    { withCredentials: true }  // 🔥 obligatorio
-  );
-}
+    actualizarExpediente(idExpediente: number, cambios: any) {
+        return this.http.patch(
+            `http://localhost:8081/expedientes/expediente-update/${idExpediente}`,
+            cambios,
+            { withCredentials: true }  
+        );
+    }
 
 
 obtenerCitasPaciente() {
