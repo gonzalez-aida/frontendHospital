@@ -1,6 +1,9 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.hospitalmoscatti.com/api',
-  appName: 'H+ Hospital Moscatti',
+  authUrl: 'https://as-hospital.onrender.com',
+  apiUrl: 'https://backhospital-khsl.onrender.com/api',
+  clientId: 'hospital',
+  redirectUri: 'https://tu-frontend.onrender.com/callback',
+  appName: 'h-moscatti-frontend',
   version: '1.0.0'
 };
