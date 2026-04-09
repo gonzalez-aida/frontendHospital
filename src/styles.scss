@@ -120,3 +120,50 @@ body {
         color: $text-white;
     }
 }
+
+
+/* ════════════════════════════════════════════════════
+   Agrega esto en tu styles.scss global del proyecto
+   Fix: mat-select no muestra valor en temas oscuros
+════════════════════════════════════════════════════ */
+
+.mat-select-value,
+.mat-select-value-text,
+.mat-select-value-text > span,
+.mat-select-min-line {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+}
+
+/* Para el componente register específicamente */
+app-register .mat-select-value,
+app-register .mat-select-value-text,
+app-register .mat-select-value-text > span,
+app-register .mat-select-min-line {
+  color: #eef6ff !important;
+  -webkit-text-fill-color: #eef6ff !important;
+  opacity: 1 !important;
+}
+
+/* ════════════════════════════════════════════════════
+   Fix scroll del stepper en registro
+   Agrega esto al FINAL de tu styles.scss
+════════════════════════════════════════════════════ */
+
+app-register .mat-horizontal-content-container {
+  max-height: calc(92vh - 185px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+app-register .mat-horizontal-content-container::-webkit-scrollbar {
+  display: none !important;
+}
+
+app-register .mat-horizontal-stepper-content {
+  height: auto !important;
+}
+

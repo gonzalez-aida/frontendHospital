@@ -64,4 +64,11 @@ completarCita(idCita: number, data: any) {
   );
 }
 
+obtenerMisRecetas(): Observable<any[]> {
+  return this.http.get<any[]>(
+    `${environment.apiUrl}/receta/mis-recetas`,
+    { withCredentials: true }
+  );
+}
+
 }

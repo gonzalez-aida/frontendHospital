@@ -1,22 +1,48 @@
 <div class="register-container fade-in">
+
+  <!-- Fondo fijo -->
+  <div class="code-rain">
+    <div class="code-col">01001101 10110 H+ SYS</div>
+    <div class="code-col">AUTH 0xFA3 ██ SECURE NODE</div>
+    <div class="code-col">110 0101 01110 100 0001</div>
+    <div class="code-col">AES-256 ██ ENCRYPT READY</div>
+    <div class="code-col">0xA3F 0110 1010 0101</div>
+    <div class="code-col">10110 01001 01110 0010</div>
+    <div class="code-col">SSL/TLS ██ FIREWALL ACTIVE</div>
+    <div class="code-col">01010 11001 00110 10001</div>
+    <div class="code-col">MOSCATTI v1.0 ██ ONLINE</div>
+    <div class="code-col">1001 0110 1010 0011 01</div>
+    <div class="code-col">0xB2E ██ VPN NODE 10</div>
+    <div class="code-col">01100 10110 01001 0111</div>
+    <div class="code-col">PORTAL ██ MED AUTH 0x4F2</div>
+    <div class="code-col">H+ ACCESS ██ VERIFIED</div>
+  </div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
   <div class="register-card">
 
-    <div class="register-title">
-      <h2>Registro de Paciente</h2>
-      <p>Completa la información paso a paso</p>
+    <!-- Título — siempre visible, fuera del stepper -->
+    <div class="card-header">
+      <div class="register-title">
+        <h2>Registro de Paciente</h2>
+        <p>Completa la información paso a paso</p>
+      </div>
     </div>
 
-    <mat-horizontal-stepper linear>
+    <!-- ══════════════════════════════════════════════
+         STEPPER COMPLETO
+         El header (pasos 1-2-3) queda fijo arriba.
+         El contenido (forms) scrollea dentro del card.
+    ══════════════════════════════════════════════ -->
+    <mat-horizontal-stepper linear class="register-stepper">
 
-      <!-- ========================= -->
-      <!-- PASO 1 - DATOS PERSONALES -->
-      <!-- ========================= -->
+      <!-- ═══ PASO 1 — DATOS PERSONALES ═══ -->
       <mat-step [stepControl]="datosPersonalesForm">
-        <form [formGroup]="datosPersonalesForm">
+        <ng-template matStepLabel>Datos personales</ng-template>
 
-          <ng-template matStepLabel>Datos personales</ng-template>
+        <form [formGroup]="datosPersonalesForm" class="step-form">
 
-          <!-- Nombre -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre">
@@ -25,7 +51,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Apellido Paterno -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Apellido Paterno</mat-label>
             <input matInput formControlName="apPaterno">
@@ -34,7 +59,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Apellido Materno -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Apellido Materno</mat-label>
             <input matInput formControlName="apMaterno">
@@ -43,7 +67,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- NSS -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>NSS</mat-label>
             <input matInput formControlName="nss" placeholder="Ej. 12345678901">
@@ -53,7 +76,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- CURP -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>CURP</mat-label>
             <input matInput formControlName="curp" placeholder="Ej. GARC850101HDFRRL09">
@@ -63,7 +85,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Fecha -->
           <div class="fecha-grid">
             <mat-form-field appearance="outline">
               <mat-label>Día</mat-label>
@@ -75,9 +96,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Mes</mat-label>
               <mat-select formControlName="mes">
-                <mat-option *ngFor="let m of meses" [value]="m.valor">
-                  {{ m.nombre }}
-                </mat-option>
+                <mat-option *ngFor="let m of meses" [value]="m.valor">{{ m.nombre }}</mat-option>
               </mat-select>
             </mat-form-field>
 
@@ -100,28 +119,36 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Tipo de sangre</mat-label>
             <mat-select formControlName="tipoSangre">
-              <mat-option *ngFor="let tipo of tiposSangre" [value]="tipo">
-                {{ tipo }}
-              </mat-option>
+              <mat-option *ngFor="let tipo of tiposSangre" [value]="tipo">{{ tipo }}</mat-option>
             </mat-select>
           </mat-form-field>
 
-          <button mat-raised-button color="primary" matStepperNext>
-            Siguiente
-          </button>
+          <div class="step-actions">
+            <button mat-raised-button color="primary"
+                    matStepperNext
+                    [disabled]="datosPersonalesForm.invalid">
+              Siguiente
+            </button>
+          </div>
+
 
         </form>
+
+        <div class="login-link">
+            <span>¿Ya tienes una cuenta?</span>
+            <button mat-stroked-button color="primary" class="login-btn" (click)="irLogin()">
+              <mat-icon>login</mat-icon>
+              Iniciar sesión
+            </button>
+          </div>
       </mat-step>
 
-      <!-- ========================= -->
-      <!-- PASO 2 - CONTACTO -->
-      <!-- ========================= -->
+      <!-- ═══ PASO 2 — CONTACTO ═══ -->
       <mat-step [stepControl]="contactoForm">
-        <form [formGroup]="contactoForm">
+        <ng-template matStepLabel>Contacto</ng-template>
 
-          <ng-template matStepLabel>Contacto</ng-template>
+        <form [formGroup]="contactoForm" class="step-form">
 
-          <!-- Email -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
             <input matInput formControlName="correo" placeholder="ejemplo@correo.com">
@@ -130,21 +157,16 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Contraseña -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Contraseña</mat-label>
-            <input matInput 
-                   [type]="hidePassword ? 'password':'text'" 
+            <input matInput
+                   [type]="hidePassword ? 'password' : 'text'"
                    formControlName="contrasena">
-
-            <button mat-icon-button matSuffix
-                    (click)="hidePassword=!hidePassword"
-                    type="button">
+            <button mat-icon-button matSuffix (click)="hidePassword=!hidePassword" type="button">
               <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
             </button>
           </mat-form-field>
 
-          <!-- BARRA SEGURIDAD -->
           <div class="password-bar">
             <div class="password-strength"
                  [style.width.%]="passwordStrength * 20"
@@ -152,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Teléfono -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefono">
@@ -161,7 +182,6 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Teléfono Emergencia -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Teléfono de Emergencia</mat-label>
             <input matInput formControlName="telefonoEmergencia">
@@ -170,21 +190,31 @@
             </mat-error>
           </mat-form-field>
 
-          <button mat-button matStepperPrevious>Regresar</button>
-          <button mat-raised-button color="primary" matStepperNext>
-            Siguiente
-          </button>
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>Regresar</button>
+            <button mat-raised-button color="primary"
+                    matStepperNext
+                    [disabled]="contactoForm.invalid">
+              Siguiente
+            </button>
+          </div>
+
+          <div class="login-link">
+            <span>¿Ya tienes una cuenta?</span>
+            <button mat-stroked-button color="primary" class="login-btn" (click)="irLogin()">
+              <mat-icon>login</mat-icon>
+              Iniciar sesión
+            </button>
+          </div>
 
         </form>
       </mat-step>
 
-      <!-- ========================= -->
-      <!-- PASO 3 - DIRECCIÓN -->
-      <!-- ========================= -->
+      <!-- ═══ PASO 3 — DIRECCIÓN ═══ -->
       <mat-step [stepControl]="direccionForm">
-        <form [formGroup]="direccionForm">
+        <ng-template matStepLabel>Dirección</ng-template>
 
-          <ng-template matStepLabel>Dirección</ng-template>
+        <form [formGroup]="direccionForm" class="step-form">
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Calle</mat-label>
@@ -240,33 +270,32 @@
             </mat-error>
           </mat-form-field>
 
-          <button mat-button matStepperPrevious>Regresar</button>
-          <button mat-raised-button color="primary" (click)="registrar()">
-            Registrarse
-          </button>
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>Regresar</button>
+            <button mat-raised-button color="primary"
+                    [disabled]="direccionForm.invalid"
+                    (click)="registrar()">
+              Registrarse
+            </button>
+          </div>
+
+          <div class="login-link">
+            <span>¿Ya tienes una cuenta?</span>
+            <button mat-stroked-button color="primary" class="login-btn" (click)="irLogin()">
+              <mat-icon>login</mat-icon>
+              Iniciar sesión
+            </button>
+          </div>
 
         </form>
       </mat-step>
 
     </mat-horizontal-stepper>
 
-    <!-- LOGIN -->
-    <div class="login-link">
-      <span>¿Ya tienes una cuenta?</span>
-      <button mat-stroked-button color="primary"
-              class="login-btn"
-              (click)="irLogin()">
-        <mat-icon>login</mat-icon>
-        Iniciar sesión
-      </button>
-    </div>
-
-  </div>
+  </div><!-- /register-card -->
 </div>
 
-<!-- ============================= -->
-<!-- OVERLAY ÉXITO -->
-<!-- ============================= -->
+<!-- Overlay éxito -->
 <div class="success-overlay" *ngIf="registroExitoso">
   <div class="success-card">
     <div class="checkmark-circle">
@@ -277,5 +306,4 @@
   </div>
 </div>
 
-<!-- SONIDO -->
 <audio #successSound src="assets/sounds/success.mp3"></audio>
