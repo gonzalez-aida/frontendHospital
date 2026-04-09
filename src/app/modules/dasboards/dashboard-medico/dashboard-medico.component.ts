@@ -301,6 +301,7 @@ get paginatedPacientes(): Patient[] {
 pacienteSeleccionado!: Patient;
 expedienteSeleccionado: any;
 mostrarFormularioExpediente: boolean = false;
+modoCreacionExpediente: boolean = false;
 
 nuevoExpediente = {
   ant_heredofamiliares: '',
@@ -485,12 +486,56 @@ generarPDF(expediente: any) {
 
 guardarActualizacionExpediente() {
 
+  if (!this.pacienteSeleccionado) {
+    Swal.fire('Error', 'No hay paciente seleccionado', 'error');
+    return;
+  }
+
+  // ================= CREACIÓN =================
+  if (this.modoCreacionExpediente) {
+
+    const nuevo = {
+      ...this.nuevoExpediente,
+      idPaciente: { idPaciente: this.pacienteSeleccionado.idPaciente },
+      medico: { idMedico: this.medicoId }
+    };
+
+    this.patientService.crearExpediente(nuevo).subscribe({
+
+      next: () => {
+
+        Swal.fire('Éxito', 'Expediente creado correctamente', 'success');
+
+        this.modoCreacionExpediente = false;
+        this.mostrarFormularioExpediente = false;
+
+        this.nuevoExpediente = {
+          ant_heredofamiliares: '',
+          ant_patologicos: '',
+          ant_quirurgicos: '',
+          ant_alergicos: '',
+          enf_cronicas: '',
+          ant_ginecoobstetricos: '',
+          observaciones: ''
+        };
+
+      },
+
+      error: () => {
+        Swal.fire('Error', 'No se pudo crear el expediente', 'error');
+      }
+
+    });
+
+    return;
+  }
+
+  // ================= EDICIÓN =================
   if (!this.expedienteSeleccionado?.idExpediente) {
     Swal.fire('Error', 'No hay expediente seleccionado', 'error');
     return;
   }
 
-  // 🔥 Construimos SOLO los campos que se escribieron
   const cambios: any = {};
 
   Object.keys(this.nuevoExpediente).forEach((key) => {
@@ -510,23 +555,17 @@ guardarActualizacionExpediente() {
     cambios
   ).subscribe({
 
-    next: (nuevoExpediente: any) => {
+    next: () => {
 
-// actualizamos el expediente en memoria mezclando los cambios
-this.expedienteSeleccionado = {
-  ...this.expedienteSeleccionado,
-  ...cambios
-};
+      this.expedienteSeleccionado = {
+        ...this.expedienteSeleccionado,
+        ...cambios
+      };
 
-      Swal.fire(
-        'Éxito',
-        'Expediente actualizado correctamente',
-        'success'
-      );
+      Swal.fire('Éxito', 'Expediente actualizado correctamente', 'success');
 
       this.mostrarFormularioExpediente = false;
 
-      // limpiar formulario
       this.nuevoExpediente = {
         ant_heredofamiliares: '',
         ant_patologicos: '',
@@ -539,8 +578,7 @@ this.expedienteSeleccionado = {
 
     },
 
-    error: (err) => {
-      console.error(err);
+    error: () => {
       Swal.fire('Error', 'No se pudo actualizar', 'error');
     }
 
@@ -548,39 +586,63 @@ this.expedienteSeleccionado = {
 
 }
 
-
 abrirAgregarExpediente(paciente: Patient) {
+
   this.pacienteSeleccionado = paciente;
 
   this.patientService.getExpedientesByPaciente(paciente.idPaciente)
     .subscribe({
+
       next: (resp: any) => {
 
-        // ❌ ANTES — esperaba lista
-        // const lista = resp?.data ?? [];
-        // const activo = lista.find(e => e.estado?.trim().toUpperCase() === 'ACTIVO');
-
-        // ✅ AHORA — data es objeto único (el activo)
         const activo = resp?.data;
 
         if (!activo) {
-          Swal.fire('Sin expediente',
-            'Este paciente aún no tiene expediente clínico.',
-            'info');
+
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin expediente',
+            text: 'Este paciente aún no tiene expediente clínico.',
+            confirmButtonText: 'Crear expediente'
+          }).then(result => {
+
+            if (result.isConfirmed) {
+              this.modoCreacionExpediente = true;
+              this.mostrarFormularioExpediente = true;
+              this.expedienteSeleccionado = null;
+            }
+
+          });
+
           return;
         }
 
+        // 🔹 SI existe → modo edición
+        this.modoCreacionExpediente = false;
         this.expedienteSeleccionado = activo;
         this.mostrarFormularioExpediente = true;
       },
+
       error: () => {
-        Swal.fire('Sin expediente',
-          'Este paciente aún no tiene expediente clínico.',
-          'info');
+
+        Swal.fire({
+          icon: 'info',
+          title: 'Sin expediente',
+          text: 'Este paciente aún no tiene expediente clínico.',
+          confirmButtonText: 'Crear expediente'
+        }).then(result => {
+
+          if (result.isConfirmed) {
+            this.modoCreacionExpediente = true;
+            this.mostrarFormularioExpediente = true;
+            this.expedienteSeleccionado = null;
+          }
+
+        });
+
       }
     });
 }
-
 
 // ================= FORMULARIO CONSULTA =================
 // ================= FORMULARIO CONSULTA =================
@@ -632,15 +694,16 @@ consulta: {
   tipoDiagnostico: string;
   indicaciones: string;
   folio: string;
-  listaMedicamentos: Array<{
-    nombre: string;
-    presentacion: string;
-    dosis: string;
-    frecuencia: string;
-    duracion: string;
-    cantidad: number;
-    via: string;
-  }>;
+listaMedicamentos: Array<{
+  nombre: string;
+  presentacion: string;
+  dosis: string;
+  frecuencia: string;
+  duracion: string;
+  cantidad: number;
+  via: string;
+  viaPersonalizada?: string;
+}>;
 } = {
   pacienteNombre: '',
   pacienteApPaterno: '',
@@ -673,7 +736,7 @@ consulta: {
 
   // 🔹 Valores por defecto existentes
   cie10: 'Z00.0',
-  tratamiento: '(Preventiva / general)',
+tratamiento: '',
   funAlta: '',
   vencimiento: new Date().toISOString().substring(0,10),
   presentacion: 'N/A',
@@ -691,6 +754,27 @@ consulta: {
   folio: '',
   listaMedicamentos: []
 };
+
+
+// Agrega estos métodos:
+agregarMedicamento() {
+  this.consulta.listaMedicamentos.push({
+    nombre: '',
+    presentacion: '',
+    dosis: '',
+    frecuencia: '',
+    duracion: '',
+    cantidad: 1,
+    via: 'oral',
+    viaPersonalizada: ''
+  });
+}
+
+onViaChange(med: any) {
+  if (med.via !== 'otra') {
+    med.viaPersonalizada = '';
+  }
+}
 
 
   tiposSangre = ['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'];
@@ -732,8 +816,8 @@ const request = {
       frecuencia: m.frecuencia || 'N/A',
       duracion: m.duracion || 'N/A',
       cantidad: Number(m.cantidad) || 1,
-      via: m.via || 'Oral'
-    })) || []
+ via: m.via === 'otra' ? (m.viaPersonalizada || 'otra') : m.via  // ✅ esta línea cambia  
+   })) || []
   }
   };
 
@@ -810,9 +894,89 @@ calcularEdad(fechaNacimiento?: string | Date | null): number {
     ).length;
   }
 
-  get proximaCita(): string {
-    return this.citas.length > 0 ? this.citas[0].hora : '--';
+/* get proximaCita(): string {
+  const ahora = new Date();
+  const horaActual = ahora.getHours() * 60 + ahora.getMinutes();
+  const fechaHoy = this.getFechaHoy();
+
+  // Filtra solo las pendientes de hoy y las ordena por hora
+  const pendientesHoy = this.citas
+    .filter(c =>
+      c.estado?.toLowerCase() !== 'cancelada' &&
+      c.estado?.toLowerCase() !== 'completada' &&
+      c.fecha === fechaHoy
+    )
+    .sort((a, b) => {
+      const [ah, am] = (a.hora || '00:00').split(':').map(Number);
+      const [bh, bm] = (b.hora || '00:00').split(':').map(Number);
+      return (ah * 60 + am) - (bh * 60 + bm);
+    });
+
+  // Encuentra la próxima cita que aún no ha pasado
+  const proxima = pendientesHoy.find(c => {
+    const [h, m] = (c.hora || '00:00').split(':').map(Number);
+    return (h * 60 + m) > horaActual;
+  });
+
+  if (!proxima) return '--';
+
+  return this.formatearHora12(proxima.hora);
+}
+*/
+getFechaHoy(): string {
+  const hoy = new Date();
+  const year = hoy.getFullYear();
+  const month = String(hoy.getMonth() + 1).padStart(2, '0');
+  const day = String(hoy.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+formatearHora12(hora: string): string {
+  if (!hora) return '--';
+  const [h, m] = hora.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hora12 = h % 12 === 0 ? 12 : h % 12;
+  const minutos = String(m).padStart(2, '0');
+  return `${hora12}:${minutos} ${ampm}`;
+}
+
+
+get proximaCitaInfo(): { hora: string; fecha: string; esHoy: boolean } {
+  const ahora = new Date();
+  const fechaHoy = this.getFechaHoy();
+
+  const pendientes = this.citas
+    .filter(c =>
+      c.estado?.toLowerCase() !== 'cancelada' &&
+      c.estado?.toLowerCase() !== 'completada'
+    )
+    .sort((a, b) => {
+      const fechaA = `${a.fecha}T${a.hora || '00:00'}`;
+      const fechaB = `${b.fecha}T${b.hora || '00:00'}`;
+      return fechaA.localeCompare(fechaB);
+    });
+
+  if (pendientes.length === 0) {
+    return { hora: '--', fecha: '', esHoy: false };
   }
+
+  const proxima = pendientes[0];
+  const esHoy = proxima.fecha === fechaHoy;
+
+  return {
+    hora: this.formatearHora12(proxima.hora),
+    fecha: esHoy ? 'Hoy' : this.formatearFechaMedico(proxima.fecha),
+    esHoy
+  };
+}
+
+formatearFechaMedico(fecha: string): string {
+  if (!fecha) return '';
+  const [year, month, day] = fecha.split('-');
+  const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun',
+                 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${day} ${meses[parseInt(month) - 1]} ${year}`;
+}
 
   // ================= PERFIL =================
 

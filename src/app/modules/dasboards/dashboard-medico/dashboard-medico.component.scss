@@ -896,3 +896,105 @@ mat-paginator {
 .btn-agregar:hover {
   background: #dff3e3 !important;
 }
+
+/* ================= PROXIMA FECHA ================= */
+.proxima-fecha {
+  font-size: 11px;
+  opacity: 0.75;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ================= MEDICAMENTO CARD ================= */
+
+.medicamento-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #1976d2;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.08);
+  }
+}
+
+.medicamento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.medicamento-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f3a5f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-eliminar-med {
+  color: #c62828 !important;
+}
+
+.btn-agregar-med {
+  margin-top: 8px;
+  border-radius: 20px !important;
+  font-weight: 500;
+
+  mat-icon { font-size: 18px; }
+}
+
+/* ================= DARK MODE FORMULARIO ================= */
+
+.dark-mode .form-consulta-container {
+  color: #e2e8f0;
+
+  h2 { color: #e2e8f0; }
+
+  fieldset {
+    border-color: #334155;
+    background: transparent;
+    legend { color: #93c5fd; font-weight: 600; }
+  }
+}
+
+.dark-mode .medicamento-card {
+  background: #1a2535;
+  border-color: #334155;
+}
+
+.dark-mode .medicamento-num {
+  color: #93c5fd;
+}
+
+/* outline tiene mejor soporte de theming con CSS vars */
+.dark-mode mat-form-field[appearance="outline"] {
+  --mdc-outlined-text-field-container-shape: 4px;
+  --mdc-outlined-text-field-label-text-color: #93c5fd;
+  --mdc-outlined-text-field-input-text-color: #e2e8f0;
+  --mdc-outlined-text-field-outline-color: #475569;
+  --mdc-outlined-text-field-focus-outline-color: #93c5fd;
+  --mdc-outlined-text-field-focus-label-text-color: #93c5fd;
+  --mdc-outlined-text-field-hover-outline-color: #64748b;
+  --mat-select-trigger-text-color: #e2e8f0;
+  --mat-select-arrow-foreground-color: #93c5fd;
+  --mat-form-field-subscript-text-color: #64748b;
+}
+
+.dark-mode mat-form-field[appearance="outline"] input,
+.dark-mode mat-form-field[appearance="outline"] textarea {
+  color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
+}
+
+.dark-mode mat-form-field[appearance="outline"] input[readonly],
+.dark-mode mat-form-field[appearance="outline"] textarea[readonly] {
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b !important;
+}

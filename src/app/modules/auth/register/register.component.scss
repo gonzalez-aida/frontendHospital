@@ -1,162 +1,586 @@
-* {
-  box-sizing: border-box;
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+/* ═══════════════════════════════════════
+   HOST
+═══════════════════════════════════════ */
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #071020;
 }
 
-/* =========================
+/* ═══════════════════════════════════════
    CONTENEDOR
-========================= */
+═══════════════════════════════════════ */
 .register-container {
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
-  background: linear-gradient(135deg, #1f3a5f, #2c5282);
+  padding: 0 24px;
+  position: relative;
+  overflow: hidden;
 }
 
+.register-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 0% 50%,   rgba(15, 55, 130, 0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 70% at 100% 50%,  rgba(10, 40, 110, 0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 50% at 50% 0%,    rgba(20, 70, 160, 0.30) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% 100%,  rgba(5,  20,  60, 0.60) 0%, transparent 60%);
+}
+
+.register-container::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    linear-gradient(rgba(50, 140, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(50, 140, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(rgba(50, 140, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(50, 140, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 15px 15px, 15px 15px;
+  animation: gridDrift 25s linear infinite;
+}
+
+/* ─── Lluvia de código ─── */
+.code-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.code-col {
+  position: absolute;
+  top: -120%;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(70, 170, 255, 0.45);
+  writing-mode: vertical-lr;
+  letter-spacing: 10px;
+  white-space: nowrap;
+  line-height: 1;
+  user-select: none;
+  animation: codeRain linear infinite;
+  text-shadow: 0 0 6px rgba(70, 170, 255, 0.3);
+}
+
+.code-col:nth-child(1)  { left: 3%;    animation-duration: 14s; animation-delay: -2s;   color: rgba(60,160,255,0.35); }
+.code-col:nth-child(2)  { left: 9%;    animation-duration: 10s; animation-delay: -6s;   color: rgba(80,180,255,0.55); font-size: 12px; }
+.code-col:nth-child(3)  { left: 16%;   animation-duration: 17s; animation-delay: -1s;   color: rgba(60,160,255,0.30); font-size: 10px; }
+.code-col:nth-child(4)  { left: 23%;   animation-duration: 12s; animation-delay: -9s;   color: rgba(70,170,255,0.48); }
+.code-col:nth-child(5)  { left: 30%;   animation-duration: 9s;  animation-delay: -3s;   color: rgba(120,210,255,0.60); font-size: 12px; }
+.code-col:nth-child(6)  { left: 38%;   animation-duration: 15s; animation-delay: -11s;  color: rgba(60,160,255,0.35); font-size: 10px; }
+.code-col:nth-child(7)  { left: 46%;   animation-duration: 11s; animation-delay: -4s;   color: rgba(80,180,255,0.52); }
+.code-col:nth-child(8)  { left: 54%;   animation-duration: 13s; animation-delay: -7s;   color: rgba(60,160,255,0.33); font-size: 10px; }
+.code-col:nth-child(9)  { left: 62%;   animation-duration: 8s;  animation-delay: -13s;  color: rgba(70,170,255,0.45); }
+.code-col:nth-child(10) { left: 69%;   animation-duration: 16s; animation-delay: -5s;   color: rgba(80,175,255,0.42); }
+.code-col:nth-child(11) { left: 76%;   animation-duration: 10s; animation-delay: -8s;   color: rgba(100,200,255,0.55); font-size: 12px; }
+.code-col:nth-child(12) { left: 82%;   animation-duration: 12s; animation-delay: -2s;   color: rgba(70,170,255,0.45); }
+.code-col:nth-child(13) { left: 89%;   animation-duration: 14s; animation-delay: -15s;  color: rgba(60,160,255,0.32); font-size: 10px; }
+.code-col:nth-child(14) { left: 95%;   animation-duration: 9s;  animation-delay: -6s;   color: rgba(80,180,255,0.48); }
+
+/* ─── Resplandores ─── */
+.bg-glow {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+  filter: blur(80px);
+}
+
+.bg-glow-1 {
+  width: 550px; height: 550px;
+  top: -180px; left: -180px;
+  background: radial-gradient(circle, rgba(25, 75, 180, 0.55) 0%, transparent 70%);
+  animation: glowFloat 9s ease-in-out infinite;
+}
+
+.bg-glow-2 {
+  width: 450px; height: 450px;
+  bottom: -130px; right: -130px;
+  background: radial-gradient(circle, rgba(15, 55, 160, 0.60) 0%, transparent 70%);
+  animation: glowFloat 11s ease-in-out infinite reverse;
+}
+
+/* ═══════════════════════════════════════
+   CARD
+   max-height + overflow-y: auto = scroll
+   El contenido termina donde termina,
+   sin espacio extra
+═══════════════════════════════════════ */
 .register-card {
-  background: white;
-  padding: 40px;
-  border-radius: 14px;
+  position: relative;
+  z-index: 10;
   width: 100%;
-  max-width: 600px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  max-width: 580px;
+max-height: 90vh;
+height: auto;  
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;          /* ← el card NO scrollea, lo hace el content interno */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+
+  padding: 0;
+  animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: rgba(6, 14, 32, 0.88);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border-radius: 20px;
+  border: 1px solid rgba(70, 160, 255, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(70, 160, 255, 0.08),
+    0 0 60px rgba(30, 100, 220, 0.15),
+    0 32px 80px rgba(0, 0, 0, 0.70),
+    inset 0 1px 0 rgba(140, 210, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.40);
+
+  &::before {
+    content: '';
+    position: sticky;
+    top: -1px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(80, 170, 255, 0.6) 15%,
+      rgba(160, 220, 255, 1) 50%,
+      rgba(80, 170, 255, 0.6) 85%,
+      transparent 100%
+    );
+    border-radius: 2px;
+    box-shadow: 0 0 16px 2px rgba(100, 190, 255, 0.5);
+    animation: topBorderPulse 3.5s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(180deg, rgba(70, 160, 255, 0.07) 0%, transparent 100%);
+    border-radius: 20px 20px 0 0;
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
+/* ─── Título ─── */
+.card-header {
+  flex-shrink: 0;
+  padding: 32px 52px 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════
+   STEPPER
+═══════════════════════════════════════ */
+.register-stepper {
+  background: transparent !important;
+}
+
+::ng-deep .register-card {
+
+  .register-stepper,
+  .mat-stepper-horizontal {
+    background: transparent !important;
+  }
+
+  /* Header sticky — título del paso siempre visible */
+  .mat-horizontal-stepper-header-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5 !important;
+    background: rgba(6, 14, 32, 0.96) !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 14px 52px !important;
+    border-bottom: 1px solid rgba(70, 160, 255, 0.12) !important;
+  }
+
+  .mat-stepper-horizontal-line {
+    border-top-color: rgba(70, 160, 255, 0.18) !important;
+  }
+
+  /*
+   * CLAVE DEL FIX:
+   * overflow: hidden corta cualquier espacio
+   * extra que Material genere internamente.
+   * El padding-bottom: 0 evita espacio sobrante.
+   */
+  .mat-horizontal-content-container {
+    overflow-x: hidden !important;
+    padding: 20px 52px 0 !important;
+    /*
+     * max-height = 92vh (card) - título (~100px) - stepper header (~60px)
+     * Esto limita exactamente la zona scrolleable
+     * y el scroll termina donde termina el contenido real
+     */
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .mat-horizontal-content-container::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .mat-horizontal-stepper-content {
+    height: auto !important;
+  }
+
+  /* Iconos de paso */
+  .mat-step-header .mat-step-icon {
+    background-color: rgba(20, 55, 120, 0.55) !important;
+    color: rgba(130, 190, 255, 0.65) !important;
+    border: 1px solid rgba(70, 160, 255, 0.25);
+  }
+
+  .mat-step-header .mat-step-icon-selected {
+    background: linear-gradient(135deg, #1855b0, #2070d8) !important;
+    color: #ffffff !important;
+    border-color: rgba(100, 180, 255, 0.5);
+    box-shadow: 0 0 16px rgba(30, 100, 220, 0.55) !important;
+  }
+
+  .mat-step-header .mat-step-icon-state-done,
+  .mat-step-header .mat-step-icon-state-edit {
+    background-color: rgba(25, 75, 180, 0.65) !important;
+    color: #90d0ff !important;
+    border-color: rgba(70, 160, 255, 0.45);
+  }
+
+  .mat-step-label {
+    color: rgba(130, 185, 240, 0.55) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+  }
+
+  .mat-step-label-selected {
+    color: rgba(170, 215, 255, 0.95) !important;
+    font-weight: 600 !important;
+  }
+}
+
+/* ═══════════════════════════════════════
+   TÍTULO
+═══════════════════════════════════════ */
 .register-title {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #ddeeff;
+    margin-bottom: 5px;
+    letter-spacing: -0.2px;
+    text-shadow: 0 0 24px rgba(90, 180, 255, 0.25);
+  }
+
+  p {
+    font-size: 12px;
+    color: rgba(140, 190, 245, 0.55);
+    letter-spacing: 0.5px;
+  }
 }
 
-.register-title h2 {
-  color: #1f3a5f;
+/* ═══════════════════════════════════════
+   STEP-FORM y STEP-ACTIONS
+═══════════════════════════════════════ */
+.step-form {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(90vh - 230px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
-.register-title p {
-  color: #6b7c93;
+.step-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-/* =========================
-   STEPPER PERSONALIZADO
-========================= */
-::ng-deep .mat-step-header .mat-step-icon {
-  background-color: #d6dee8;
-  color: #1f3a5f;
+/* ═══════════════════════════════════════
+   INPUTS / FORM FIELDS
+═══════════════════════════════════════ */
+.full-width { width: 100%; }
+
+::ng-deep .register-card {
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .mat-form-field-flex {
+    background-color: rgba(15, 38, 82, 0.80) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(70, 160, 255, 0.28) !important;
+    align-items: center !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+      border-color: rgba(70, 160, 255, 0.52) !important;
+      background-color: rgba(20, 48, 100, 0.85) !important;
+    }
+  }
+
+  .mat-form-field.mat-focused .mat-form-field-flex {
+    border-color: rgba(90, 180, 255, 0.80) !important;
+    box-shadow: 0 0 0 3px rgba(70, 160, 255, 0.10), 0 0 14px rgba(70, 160, 255, 0.10) !important;
+    background-color: rgba(22, 52, 110, 0.88) !important;
+  }
+
+  .mat-form-field-outline,
+  .mat-form-field-outline-thick { color: transparent !important; }
+
+  .mat-form-field-label,
+  label.mat-form-field-label { color: rgba(165, 210, 255, 0.80) !important; }
+
+  .mat-input-element,
+  input.mat-input-element {
+    color: #eef6ff !important;
+    -webkit-text-fill-color: #eef6ff !important;
+    opacity: 1 !important;
+  }
+
+  input::placeholder {
+    color: rgba(140, 185, 240, 0.35) !important;
+    -webkit-text-fill-color: rgba(140, 185, 240, 0.35) !important;
+  }
+
+  .mat-error { color: rgba(220, 140, 140, 0.90) !important; font-size: 11px !important; }
+  .mat-hint  { color: rgba(130, 185, 255, 0.48) !important; font-size: 11px !important; }
+
+  .mat-form-field-suffix mat-icon,
+  .mat-form-field-suffix .mat-icon { color: rgba(120, 185, 255, 0.62) !important; }
+
+  .mat-select-value,
+  .mat-select-value-text,
+  .mat-select-value-text span,
+  .mat-select-min-line {
+    color: #eef6ff !important;
+    -webkit-text-fill-color: #eef6ff !important;
+    opacity: 1 !important;
+  }
+
+  .mat-select-placeholder { color: rgba(165, 210, 255, 0.70) !important; }
+  .mat-select-arrow       { color: rgba(120, 185, 255, 0.62) !important; }
+
+  .mat-select-trigger     { display: inline-table !important; }
+  .mat-select-arrow-wrapper { transform: translateY(0) !important; }
 }
 
-::ng-deep .mat-step-header.mat-active .mat-step-icon {
-  background-color: #1f3a5f;
-  color: white;
+/* ─── Fix global select ─── */
+::ng-deep .mat-select-value,
+::ng-deep .mat-select-value-text,
+::ng-deep .mat-select-value-text span,
+::ng-deep .mat-select-min-line {
+  color: #eef6ff !important;
+  -webkit-text-fill-color: #eef6ff !important;
+  opacity: 1 !important;
 }
 
-::ng-deep .mat-step-header.mat-completed .mat-step-icon {
-  background-color: #2c5282;
-  color: white;
+::ng-deep .mat-select-panel {
+  background: rgba(8, 18, 42, 0.97) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(70, 160, 255, 0.30) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.60), 0 0 0 1px rgba(70,160,255,0.08), 0 0 30px rgba(30,100,220,0.12) !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 160, 255, 0.30) transparent;
+
+  &::-webkit-scrollbar       { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(70,160,255,0.28); border-radius: 4px; }
 }
 
-::ng-deep .mat-step-label {
-  color: #1f3a5f;
-  font-weight: 500;
+::ng-deep .mat-option {
+  color: rgba(190, 220, 255, 0.85) !important;
+  font-size: 13px !important;
+  transition: background 0.15s ease !important;
+
+  &:hover:not(.mat-option-disabled),
+  &.mat-active {
+    background: rgba(50, 120, 220, 0.18) !important;
+    color: #eef6ff !important;
+  }
+
+  &.mat-selected:not(.mat-option-multiple) {
+    background: rgba(30, 90, 200, 0.25) !important;
+    color: #90d0ff !important;
+    font-weight: 500 !important;
+  }
 }
 
-/* =========================
-   INPUTS
-========================= */
-.full-width {
-  width: 100%;
-}
-
-::ng-deep .mat-form-field-outline {
-  color: #cbd5e0;
-}
-
-::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
-  color: #1f3a5f;
-}
-
-/* =========================
+/* ═══════════════════════════════════════
    FECHA GRID
-========================= */
+═══════════════════════════════════════ */
 .fecha-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(80px, 1fr));
   gap: 10px;
+  margin-bottom: 10px;
 }
 
-/* =========================
-   PASSWORD BAR
-========================= */
+/* ═══════════════════════════════════════
+   BARRA DE CONTRASEÑA
+═══════════════════════════════════════ */
 .password-bar {
-  height: 6px;
-  background: #eef3f9;
+  height: 5px;
+  background: rgba(20, 50, 110, 0.6);
   border-radius: 5px;
-  margin-top: -10px;
-  margin-bottom: 15px;
+  margin-top: -4px;
+  margin-bottom: 14px;
   overflow: hidden;
+  border: 1px solid rgba(70, 160, 255, 0.10);
 }
 
 .password-strength {
   height: 100%;
   border-radius: 5px;
-  transition: width .3s ease;
+  transition: width 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 8px rgba(70, 160, 255, 0.4);
 }
 
-/* =========================
+/* ═══════════════════════════════════════
    BOTONES
-========================= */
-::ng-deep .mat-raised-button.mat-primary {
-  background: #1f3a5f;
-  color: white;
+═══════════════════════════════════════ */
+::ng-deep .register-card {
+
+  .mat-raised-button.mat-primary {
+    height: 48px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px !important;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1855b0 0%, #2070d8 50%, #1855b0 100%) !important;
+    background-size: 200% 100% !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(100, 180, 255, 0.35) !important;
+    box-shadow: 0 4px 24px rgba(30,100,220,0.45), 0 0 40px rgba(30,100,220,0.15), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.1s ease !important;
+
+    &:not(:disabled):hover {
+      background-position: 100% 0 !important;
+      box-shadow: 0 6px 32px rgba(30,100,220,0.60), 0 0 50px rgba(30,100,220,0.20), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+    }
+
+    &:not(:disabled):active { transform: scale(0.99); }
+
+    &:disabled, &[disabled] {
+      background: rgba(15, 35, 75, 0.55) !important;
+      color: rgba(100, 145, 210, 0.35) !important;
+      border-color: rgba(40, 90, 160, 0.15) !important;
+      box-shadow: none !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+    }
+  }
+
+  .mat-horizontal-stepper-content:not(.mat-horizontal-stepper-content-inactive) {
+  height: auto !important;
+  min-height: 0 !important;
 }
 
-::ng-deep .mat-raised-button.mat-primary:hover {
-  background: #2c5282;
+.mat-step-body {
+  height: auto !important;
+  min-height: 0 !important;
 }
 
-::ng-deep .mat-button {
-  color: #1f3a5f;
+  .mat-button {
+    color: rgba(130, 190, 255, 0.68) !important;
+    font-weight: 500 !important;
+    margin-top: 8px;
+    margin-right: 10px;
+    border-radius: 8px !important;
+
+    &:hover {
+      color: #6ac0ff !important;
+      background: rgba(70, 160, 255, 0.07) !important;
+    }
+  }
 }
 
-/* =========================
+/* ═══════════════════════════════════════
    LOGIN LINK
-========================= */
+   padding-bottom: 20px es el espacio
+   final del card — el scroll termina aquí
+═══════════════════════════════════════ */
 .login-link {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 8px;
+padding: 8px 0 12px; // antes era padding: 8px 0 20px
+  margin-bottom: 0;   
+    border-top: 1px solid rgba(70, 160, 255, 0.10);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-}
 
-.login-link span {
-  color: #6b7c93;
+  span {
+    font-size: 13px;
+    color: rgba(130, 175, 230, 0.48);
+  }
 }
 
 .login-btn {
-  border-radius: 25px;
-  padding: 8px 22px;
+  border-radius: 25px !important;
+  padding: 8px 24px !important;
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #1f3a5f;
-  color: #1f3a5f;
+  border: 1px solid rgba(70, 160, 255, 0.28) !important;
+  color: rgba(130, 200, 255, 0.78) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+
+  mat-icon { font-size: 17px !important; width: 17px !important; height: 17px !important; }
+
+  &:hover {
+    background: rgba(70, 160, 255, 0.09) !important;
+    border-color: rgba(70, 160, 255, 0.52) !important;
+    color: #6ac0ff !important;
+    box-shadow: 0 0 14px rgba(70, 160, 255, 0.14) !important;
+  }
 }
 
-.login-btn:hover {
-  background: #eef3f9;
-}
-
-/* =========================
+/* ═══════════════════════════════════════
    OVERLAY ÉXITO
-========================= */
+═══════════════════════════════════════ */
 .success-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(31,58,95,0.65);
+  inset: 0;
+  background: rgba(4, 10, 22, 0.82);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -164,54 +588,119 @@
 }
 
 .success-card {
-  background: white;
-  padding: 45px 55px;
-  border-radius: 16px;
+  position: relative;
+  background: rgba(6, 14, 32, 0.95);
+  border: 1px solid rgba(70, 160, 255, 0.30);
+  box-shadow:
+    0 0 0 1px rgba(70, 160, 255, 0.08),
+    0 0 60px rgba(30, 100, 220, 0.22),
+    0 32px 80px rgba(0, 0, 0, 0.70),
+    inset 0 1px 0 rgba(140, 210, 255, 0.12);
+  padding: 52px 64px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 20px 45px rgba(0,0,0,0.25);
-  animation: fadeInScale .5s ease;
-}
+  animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 
-.success-card h2 {
-  color: #1f3a5f;
-  margin-top: 20px;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 10%; right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent, rgba(80,170,255,0.5) 20%,
+      rgba(160,220,255,0.9) 50%,
+      rgba(80,170,255,0.5) 80%, transparent
+    );
+    border-radius: 2px;
+    box-shadow: 0 0 14px 2px rgba(100, 190, 255, 0.4);
+  }
+
+  h2 { color: #ddeeff; font-size: 20px; font-weight: 600; margin-top: 20px; }
+  p  { color: rgba(140, 190, 245, 0.58); font-size: 13px; margin-top: 6px; }
 }
 
 .checkmark-circle {
-  width: 85px;
-  height: 85px;
+  width: 85px; height: 85px;
   border-radius: 50%;
-  background: #1f3a5f;
+  background: linear-gradient(135deg, #1855b0 0%, #2070d8 100%);
+  border: 1px solid rgba(100, 180, 255, 0.40);
+  box-shadow: 0 0 32px rgba(30,100,220,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: scaleIn .45s ease;
+  animation: scaleIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .checkmark {
-  width: 25px;
-  height: 50px;
-  border-right: 6px solid white;
-  border-bottom: 6px solid white;
+  width: 25px; height: 50px;
+  border-right: 5px solid rgba(200, 235, 255, 0.95);
+  border-bottom: 5px solid rgba(200, 235, 255, 0.95);
   transform: rotate(45deg) scale(0);
-  animation: drawCheck .5s .35s ease forwards;
+  animation: drawCheck 0.5s 0.35s ease forwards;
 }
 
-/* =========================
+/* ═══════════════════════════════════════
    ANIMACIONES
-========================= */
+═══════════════════════════════════════ */
+@keyframes gridDrift {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to   { background-position: 60px 60px, 60px 60px, 15px 15px, 15px 15px; }
+}
+
+@keyframes codeRain {
+  0%   { transform: translateY(0);     opacity: 0; }
+  3%   { opacity: 1; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(220vh); opacity: 0; }
+}
+
+@keyframes glowFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-28px) scale(1.05); }
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); filter: blur(3px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes topBorderPulse {
+  0%, 100% { opacity: 0.6; box-shadow: 0 0 12px 1px rgba(100, 190, 255, 0.40); }
+  50%       { opacity: 1;   box-shadow: 0 0 20px 3px rgba(100, 190, 255, 0.70); }
+}
+
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(.9); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(3px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
 @keyframes scaleIn {
   from { transform: scale(0); }
-  to { transform: scale(1); }
+  to   { transform: scale(1); }
 }
 
 @keyframes drawCheck {
   from { transform: rotate(45deg) scale(0); }
-  to { transform: rotate(45deg) scale(1); }
+  to   { transform: rotate(45deg) scale(1); }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .register-container { padding: 0 16px; }
+  .register-card      { max-height: 95vh; }
+  .card-header        { padding: 28px 24px 0; }
+  .fecha-grid         { grid-template-columns: 1fr; gap: 0; }
+  .code-col:nth-child(even) { display: none; }
+
+  ::ng-deep .register-card {
+    .mat-horizontal-stepper-header-container { padding: 14px 24px !important; }
+    .mat-horizontal-content-container        { padding: 16px 24px 0 !important; }
+  }
+}
+
+.fade-in {
+  animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
