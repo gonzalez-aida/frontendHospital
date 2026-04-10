@@ -6,13 +6,13 @@ import { Observable } from 'rxjs';
 export class AuthInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const user = localStorage.getItem('h-moscatti-user');
-        const token = user ? JSON.parse(user).accessToken : null;
+        const accessToken = user ? JSON.parse(user).accessToken : null;
 
-        console.log('Token enviado:', token ? 'SÍ' : 'NO', req.url);
+        console.log('Token enviado:', accessToken ? 'SÍ' : 'NO', req.url);
 
-        if (token) {
+        if (accessToken) {
             const cloned = req.clone({
-                headers: req.headers.set('Authorization', `Bearer ${token}`)
+                headers: req.headers.set('Authorization', `Bearer ${accessToken}`)
             });
             return next.handle(cloned);
         }

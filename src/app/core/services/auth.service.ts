@@ -90,7 +90,7 @@ return this.http.get<ExchangeResponse>(
       idUsuario: response.idUsuario,
       correo: response.correo,
       rol: response.rol,
-      token: response.accessToken
+      accessToken: response.accessToken
     };
 
     this.setUser(user);

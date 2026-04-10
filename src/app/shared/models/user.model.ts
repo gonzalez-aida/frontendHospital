@@ -2,7 +2,7 @@ export interface User {
   idUsuario: number;
   correo: string;
   rol: 'MEDICO' | 'PACIENTE' | 'ADMIN';
-  token?: string;
+  accessToken?: string;
 }
 
 export interface LoginRequest {
