@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const user = localStorage.getItem('h-moscatti-user');
+    const token = user ? JSON.parse(user).token : null;
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Ya no necesitamos leer el token — la cookie viaja automáticamente
-    // Solo agregamos withCredentials a todas las peticiones
-    const authReq = request.clone({
-      withCredentials: true
-    });
-    return next.handle(authReq);
+    if (token) {
+      const cloned = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${token}`)
+      });
+      return next.handle(cloned);
+    }
+    return next.handle(req);
   }
 }

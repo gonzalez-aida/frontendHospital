@@ -89,7 +89,8 @@ return this.http.get<ExchangeResponse>(
     const user: User = {
       idUsuario: response.idUsuario,
       correo: response.correo,
-      rol: response.rol
+      rol: response.rol,
+      token: response.accessToken
     };
 
     this.setUser(user);
