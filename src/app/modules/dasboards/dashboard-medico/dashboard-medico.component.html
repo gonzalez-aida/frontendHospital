@@ -78,15 +78,18 @@
         <p>Citas Canceladas</p>
       </div>
 
-      <div class="stat-card highlight premium-next">
-        <div class="next-content">
-          <div>
-            <h3>{{ proximaCita }}</h3>
-            <p>Próxima Cita</p>
-          </div>
-          <mat-icon>schedule</mat-icon>
-        </div>
-      </div>
+<div class="stat-card highlight premium-next">
+  <div class="next-content">
+    <div>
+      <h3>{{ proximaCitaInfo.hora }}</h3>
+      <p>Próxima Cita</p>
+      <span class="proxima-fecha" *ngIf="proximaCitaInfo.fecha">
+        {{ proximaCitaInfo.fecha }}
+      </span>
+    </div>
+    <mat-icon>schedule</mat-icon>
+  </div>
+</div>
 
     </section>
 
@@ -481,111 +484,161 @@
       </fieldset>
 
       <!-- ================= DIAGNÓSTICO ================= -->
-      <fieldset>
-        <legend>Diagnóstico</legend>
+<!-- ================= DIAGNÓSTICO ================= -->
+<fieldset>
+  <legend>Diagnóstico</legend>
+  <div class="form-row">
 
-        <div class="form-row">
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Descripción del Diagnóstico</mat-label>
+      <textarea matInput rows="4" [(ngModel)]="consulta.diagnostico" name="diagnostico"
+                placeholder="Describe el diagnóstico clínico del paciente..."></textarea>
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Descripción del Diagnóstico</mat-label>
-            <textarea matInput rows="4" [(ngModel)]="consulta.diagnostico" name="diagnostico"></textarea>
-          </mat-form-field>
+    <!-- ✅ Tipo de Diagnóstico como select -->
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Tipo de Diagnóstico</mat-label>
+      <mat-select [(ngModel)]="consulta.tipoDiagnostico" name="tipoDiagnostico">
+        <mat-option value="principal">Principal</mat-option>
+        <mat-option value="secundario">Secundario</mat-option>
+        <mat-option value="presuntivo">Presuntivo</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Tipo de Diagnóstico</mat-label>
-            <input matInput [(ngModel)]="consulta.tipoDiagnostico" name="tipoDiagnostico">
-          </mat-form-field>
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>CIE10</mat-label>
+      <input matInput [(ngModel)]="consulta.cie10" name="cie10"
+             placeholder="Ej: J06.9, E11, I10...">
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>CIE10</mat-label>
-            <input matInput [(ngModel)]="consulta.cie10" name="cie10">
-          </mat-form-field>
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Tratamiento</mat-label>
+      <input matInput [(ngModel)]="consulta.tratamiento" name="tratamiento"
+             placeholder="Ej: Reposo, hidratación, antibiótico...">
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Tratamiento</mat-label>
-            <input matInput [(ngModel)]="consulta.tratamiento" name="tratamiento">
-          </mat-form-field>
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Indicaciones</mat-label>
+      <textarea matInput rows="2" [(ngModel)]="consulta.indicaciones" name="indicaciones"
+                placeholder="Indicaciones para el paciente al salir..."></textarea>
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Indicaciones</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="consulta.indicaciones" name="indicaciones"></textarea>
-          </mat-form-field>
+    <!-- ✅ Función de Alta con placeholder descriptivo -->
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Función de Alta</mat-label>
+      <input matInput [(ngModel)]="consulta.funAlta" name="funAlta"
+             placeholder="Ej: Alta por mejoría, Alta voluntaria, Referido a especialista...">
+      <mat-hint>Motivo o condición bajo la que se da de alta al paciente</mat-hint>
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Función de Alta</mat-label>
-            <input matInput [(ngModel)]="consulta.funAlta" name="funAlta">
-          </mat-form-field>
+    <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
+      <mat-label>Observaciones Médicas</mat-label>
+      <textarea matInput rows="4" [(ngModel)]="consulta.observacionesMedicas"
+                name="observacionesMedicas"
+                placeholder="Notas adicionales del médico..."></textarea>
+    </mat-form-field>
 
-          <mat-form-field appearance="fill" class="campo-ancho-diagnostico">
-            <mat-label>Observaciones Médicas</mat-label>
-            <textarea matInput rows="4" [(ngModel)]="consulta.observacionesMedicas" name="observacionesMedicas"></textarea>
-          </mat-form-field>
+  </div>
+</fieldset>
 
-        </div>
-      </fieldset>
+<!-- ================= RECETA ================= -->
+<fieldset>
+  <legend>Receta Médica</legend>
 
-      <!-- ================= RECETA ================= -->
-      <fieldset>
-        <legend>Receta Médica</legend>
+  <div class="form-row">
+    <mat-form-field appearance="fill" class="campo-medicamentos">
+      <mat-label>Folio</mat-label>
+      <input matInput [(ngModel)]="consulta.folio" name="folio"
+             placeholder="Ej: RX-2026-001">
+    </mat-form-field>
 
-        <div class="form-row">
+    <mat-form-field appearance="fill" class="campo-medicamentos">
+      <mat-label>Vencimiento</mat-label>
+      <input matInput type="date" [(ngModel)]="consulta.vencimiento" name="vencimiento">
+    </mat-form-field>
+  </div>
 
-          <mat-form-field appearance="fill" class="campo-medicamentos">
-            <mat-label>Folio</mat-label>
-            <input matInput [(ngModel)]="consulta.folio" name="folio">
-          </mat-form-field>
+  <!-- MEDICAMENTOS -->
+  <div class="medicamento-card" *ngFor="let med of consulta.listaMedicamentos; let i = index">
 
-          <mat-form-field appearance="fill" class="campo-medicamentos">
-            <mat-label>Vencimiento</mat-label>
-            <input matInput type="date" [(ngModel)]="consulta.vencimiento" name="vencimiento">
-          </mat-form-field>
+    <div class="medicamento-header">
+      <span class="medicamento-num">Medicamento {{ i + 1 }}</span>
+      <button mat-icon-button color="warn" type="button"
+              (click)="consulta.listaMedicamentos.splice(i, 1)"
+              class="btn-eliminar-med">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
 
-        </div>
+    <div class="form-row">
+      <mat-form-field appearance="fill">
+        <mat-label>Nombre</mat-label>
+        <input matInput [(ngModel)]="med.nombre" name="medNombre{{i}}"
+               placeholder="Ej: Paracetamol 500mg">
+      </mat-form-field>
 
-        <div class="form-row" *ngFor="let med of consulta.listaMedicamentos; let i = index">
-          <mat-form-field appearance="fill">
-            <mat-label>Nombre Medicamento</mat-label>
-            <input matInput [(ngModel)]="med.nombre" name="medNombre{{i}}">
-          </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Presentación</mat-label>
+        <input matInput [(ngModel)]="med.presentacion" name="medPresentacion{{i}}"
+               placeholder="Ej: Tabletas, Jarabe, Ampolleta">
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Presentación</mat-label>
-            <input matInput [(ngModel)]="med.presentacion" name="medPresentacion{{i}}">
-          </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Dosis</mat-label>
+        <input matInput [(ngModel)]="med.dosis" name="medDosis{{i}}"
+               placeholder="Ej: 500mg, 10ml">
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Dosis</mat-label>
-            <input matInput [(ngModel)]="med.dosis" name="medDosis{{i}}">
-          </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Frecuencia</mat-label>
+        <input matInput [(ngModel)]="med.frecuencia" name="medFrecuencia{{i}}"
+               placeholder="Ej: Cada 8 horas, 2 veces al día">
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Frecuencia</mat-label>
-            <input matInput [(ngModel)]="med.frecuencia" name="medFrecuencia{{i}}">
-          </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Duración</mat-label>
+        <input matInput [(ngModel)]="med.duracion" name="medDuracion{{i}}"
+               placeholder="Ej: 5 días, 2 semanas">
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Duración</mat-label>
-            <input matInput [(ngModel)]="med.duracion" name="medDuracion{{i}}">
-          </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Cantidad</mat-label>
+        <input matInput type="number" [(ngModel)]="med.cantidad"
+               name="medCantidad{{i}}" min="1">
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Cantidad</mat-label>
-            <input matInput type="number" [(ngModel)]="med.cantidad" name="medCantidad{{i}}">
-          </mat-form-field>
+      <!-- ✅ Vía como select con opción "Otra" -->
+      <mat-form-field appearance="fill">
+        <mat-label>Vía</mat-label>
+        <mat-select [(ngModel)]="med.via" name="medVia{{i}}"
+                    (ngModelChange)="onViaChange(med)">
+          <mat-option value="oral">Oral</mat-option>
+          <mat-option value="IV">Intravenosa (IV)</mat-option>
+          <mat-option value="IM">Intramuscular (IM)</mat-option>
+          <mat-option value="topica">Tópica</mat-option>
+          <mat-option value="inhalatoria">Inhalatoria</mat-option>
+          <mat-option value="otra">Otra</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Vía</mat-label>
-            <input matInput [(ngModel)]="med.via" name="medVia{{i}}">
-          </mat-form-field>
+      <!-- ✅ Campo libre solo si eligió "otra" -->
+      <mat-form-field appearance="fill" *ngIf="med.via === 'otra'">
+        <mat-label>Especificar vía</mat-label>
+        <input matInput [(ngModel)]="med.viaPersonalizada"
+               name="medViaPersonalizada{{i}}"
+               placeholder="Describe la vía de administración">
+      </mat-form-field>
 
-          <button mat-button color="warn" type="button" (click)="consulta.listaMedicamentos.splice(i, 1)">Eliminar</button>
-        </div>
+    </div>
+  </div>
 
-        <button mat-raised-button color="primary" type="button" (click)="consulta.listaMedicamentos.push({nombre:'',presentacion:'',dosis:'',frecuencia:'',duracion:'',cantidad:1,via:''})">
-          Agregar Medicamento
-        </button>
+  <button mat-stroked-button color="primary" type="button" class="btn-agregar-med"
+          (click)="agregarMedicamento()">
+    <mat-icon>add</mat-icon>
+    Agregar Medicamento
+  </button>
 
-      </fieldset>
+</fieldset>
 
       <!-- ================= BOTONES ================= -->
       <div class="form-actions">

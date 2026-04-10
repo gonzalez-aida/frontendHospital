@@ -847,3 +847,551 @@ tr:hover {
 .dark-mode .error-msg {
   color: #f87171;
 }
+
+.header-actions {
+  margin-left: auto;
+}
+
+.btn-editar-perfil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.25s ease;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+
+    mat-icon {
+      transform: rotate(15deg);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+// Dark mode
+.dark-mode .btn-editar-perfil {
+  border-color: rgba(147, 197, 253, 0.5);
+  background: rgba(147, 197, 253, 0.1);
+
+  &:hover {
+    background: rgba(147, 197, 253, 0.2);
+    border-color: #93c5fd;
+  }
+}
+
+
+.edit-input {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-top: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: #1f3a5f;
+    box-shadow: 0 0 0 2px rgba(31, 58, 95, 0.15);
+  }
+}
+
+.edit-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+// Dark mode
+.dark-mode .edit-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+
+  &:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.1);
+  }
+}
+
+.input-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+  display: block;
+}
+
+.input-error-msg {
+  color: #d32f2f;
+}
+
+// Dark mode
+.dark-mode .input-hint {
+  color: #475569;
+}
+
+.dark-mode .input-error-msg {
+  color: #f87171;
+}
+
+
+/* ================= RECETAS ================= */
+
+.recetas-section {
+  margin-top: 40px;
+}
+
+.recetas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f3a5f;
+  margin-bottom: 20px;
+
+  mat-icon { color: #1f3a5f; }
+}
+
+.receta-card {
+  background: white;
+  border-radius: 18px;
+  padding: 22px 28px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  }
+}
+
+.receta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.receta-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.receta-folio {
+  font-weight: 700;
+  color: #1f3a5f;
+  font-size: 15px;
+}
+
+.receta-fecha {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.badge-estado-receta {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.activa  { background: #e8f5e9; color: #2e7d32; }
+  &.vencida { background: #ffebee; color: #c62828; }
+  &.surtida { background: #e3f2fd; color: #1565c0; }
+}
+
+.receta-acciones {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* CONTADOR DOTS */
+.intentos-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.intentos-label {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+
+.intentos-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2e7d32;
+  transition: all 0.3s ease;
+
+  &.usado {
+    background: #e5e7eb;
+  }
+}
+
+.intentos-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2e7d32;
+
+  &.agotado { color: #c62828; }
+}
+
+/* BOTÓN DESCARGA */
+.btn-descargar-receta {
+  border-radius: 25px !important;
+  background: linear-gradient(135deg, #1f3a5f, #2a5298) !important;
+  color: white !important;
+  padding: 6px 20px !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(31,58,95,0.35);
+  }
+
+  &[disabled] {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    cursor: not-allowed;
+  }
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+/* CHIPS MEDICAMENTOS */
+.receta-meds {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.med-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; color: #1f3a5f; }
+}
+
+/* DARK MODE */
+.dark-mode .recetas-titulo { color: #e2e8f0; mat-icon { color: #93c5fd; } }
+
+.dark-mode .receta-card {
+  background: #1e293b;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.dark-mode .receta-folio { color: #93c5fd; }
+.dark-mode .receta-fecha { color: #94a3b8; }
+
+.dark-mode .receta-meds { border-top-color: #334155; }
+
+.dark-mode .med-chip {
+  background: #0f172a;
+  color: #94a3b8;
+  mat-icon { color: #93c5fd; }
+}
+
+.dark-mode .dot { background: #4ade80; &.usado { background: #334155; } }
+.dark-mode .intentos-label { color: #94a3b8; }
+.dark-mode .intentos-count { color: #4ade80; &.agotado { color: #f87171; } }
+
+/* ================= RECETA INLINE EN HISTORIAL ================= */
+
+.receta-inline {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1.5px dashed #e2e8f0;
+}
+
+.receta-inline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.receta-inline-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  mat-icon {
+    color: #1f3a5f;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.receta-folio {
+  font-weight: 700;
+  color: #1f3a5f;
+  font-size: 14px;
+}
+
+.receta-fecha {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.badge-estado-receta {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.activa  { background: #e8f5e9; color: #2e7d32; }
+  &.vencida { background: #ffebee; color: #c62828; }
+  &.surtida { background: #e3f2fd; color: #1565c0; }
+}
+
+.receta-acciones {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.intentos-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.intentos-label {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+
+.intentos-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2e7d32;
+  transition: background 0.3s ease;
+
+  &.usado { background: #e5e7eb; }
+}
+
+.intentos-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2e7d32;
+
+  &.agotado { color: #c62828; }
+}
+
+.btn-descargar-receta {
+  border-radius: 25px !important;
+  background: linear-gradient(135deg, #1f3a5f, #2a5298) !important;
+  color: white !important;
+  padding: 5px 18px !important;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(31,58,95,0.3);
+  }
+
+  &[disabled] {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+  }
+
+  mat-icon { font-size: 17px; width: 17px; height: 17px; }
+}
+
+.receta-meds {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.med-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; color: #1f3a5f; }
+}
+
+.sin-receta {
+  margin-top: 18px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #94a3b8;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed #e2e8f0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+/* DARK MODE */
+.dark-mode .receta-inline { border-top-color: #334155; }
+
+.dark-mode .receta-folio { color: #93c5fd; }
+.dark-mode .receta-fecha { color: #94a3b8; }
+
+.dark-mode .receta-meds .med-chip {
+  background: #0f172a;
+  color: #94a3b8;
+  mat-icon { color: #93c5fd; }
+}
+
+.dark-mode .dot { background: #4ade80; &.usado { background: #334155; } }
+.dark-mode .intentos-label { color: #94a3b8; }
+.dark-mode .intentos-count { color: #4ade80; &.agotado { color: #f87171; } }
+
+.dark-mode .sin-receta {
+  background: #1e293b;
+  color: #475569;
+  border-color: #334155;
+}
+
+/* ================= TITULO RECETA ================= */
+
+.receta-inline-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f3a5f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1f3a5f;
+  }
+}
+
+.dark-mode .receta-inline-titulo {
+  color: #93c5fd;
+  mat-icon { color: #93c5fd; }
+}
+
+/* ================= ESTILOS DE LA FECHA DE CITA ================= */
+
+.fecha-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1f2937;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #64748b;
+  }
+
+  &:hover {
+    border-color: #1f3a5f;
+    background: white;
+  }
+}
+
+.dark-mode .fecha-display {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+
+  &:hover {
+    border-color: #93c5fd;
+    background: #1e293b;
+  }
+
+  mat-icon { color: #94a3b8; }
+}

@@ -10,29 +10,24 @@
 
     <nav>
 
-      <a [class.active]="selectedSection === 'citas'"
-         (click)="changeSection('citas')">
+      <a [class.active]="selectedSection === 'citas'" (click)="changeSection('citas')">
         <mat-icon>event</mat-icon>
         Mis Citas
       </a>
 
-      <a [class.active]="selectedSection === 'historial'"
-         (click)="changeSection('historial')">
+      <a [class.active]="selectedSection === 'historial'" (click)="changeSection('historial')">
         <mat-icon>history</mat-icon>
         Historial
       </a>
 
-      <a [class.active]="selectedSection === 'perfil'"
-         (click)="changeSection('perfil')">
+      <a [class.active]="selectedSection === 'perfil'" (click)="changeSection('perfil')">
         <mat-icon>person</mat-icon>
         Mi Perfil
       </a>
 
     </nav>
 
-    <button mat-raised-button color="warn"
-            (click)="logout()"
-            class="logout-btn">
+    <button mat-raised-button color="warn" (click)="logout()" class="logout-btn">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
     </button>
@@ -65,309 +60,412 @@
     </header>
 
     <!-- ================= MIS CITAS ================= -->
-<!-- ================= MIS CITAS ================= -->
-<div *ngIf="selectedSection === 'citas'" class="citas-container">
+    <!-- ================= MIS CITAS ================= -->
+    <div *ngIf="selectedSection === 'citas'" class="citas-container">
 
-  <!-- FORMULARIO NUEVA CITA -->
-  <div class="form-card">
+      <!-- FORMULARIO NUEVA CITA -->
+      <div class="form-card">
 
-    <div class="form-card-header">
-      <mat-icon>event_available</mat-icon>
-      <h2>Agendar Nueva Cita</h2>
-    </div>
+        <div class="form-card-header">
+          <mat-icon>event_available</mat-icon>
+          <h2>Agendar Nueva Cita</h2>
+        </div>
 
-    <div class="form-grid">
+        <div class="form-grid">
 
-      <div class="form-field disabled-field">
-        <label>Nombre Completo</label>
-        <input type="text"
-               [value]="paciente?.nombre + ' ' + paciente?.apPaterno + ' ' + paciente?.apMaterno"
-               disabled>
-      </div>
+          <div class="form-field disabled-field">
+            <label>Nombre Completo</label>
+            <input type="text" [value]="paciente?.nombre + ' ' + paciente?.apPaterno + ' ' + paciente?.apMaterno"
+              disabled>
+          </div>
 
-      <div class="form-field disabled-field">
-        <label>NSS</label>
-        <input type="text" [value]="paciente?.nss" disabled>
-      </div>
+          <div class="form-field disabled-field">
+            <label>NSS</label>
+            <input type="text" [value]="paciente?.nss" disabled>
+          </div>
 
-      <div class="form-field disabled-field">
-        <label>Edad</label>
-        <input type="text" [value]="calcularEdad(paciente?.fechaNacimiento) + ' años'" disabled>
-      </div>
+          <div class="form-field disabled-field">
+            <label>Edad</label>
+            <input type="text" [value]="calcularEdad(paciente?.fechaNacimiento) + ' años'" disabled>
+          </div>
 
 <div class="form-field">
   <label>Fecha de Cita</label>
-  <!-- ✅ min deshabilita fechas pasadas en el calendario -->
   <input type="date"
+         id="inputFechaCita"
          [(ngModel)]="nuevaCita.fecha"
          [min]="fechaMinima"
-         (change)="validarHora()">
-</div>
-
-<div class="form-field">
-  <label>Hora de Cita</label>
-  <input type="time"
-         [(ngModel)]="nuevaCita.hora"
          (change)="validarHora()"
-         [class.input-error]="horaInvalida">
-  <!-- ✅ Mensaje debajo si la hora es inválida -->
-  <span class="error-msg" *ngIf="horaInvalida">
-    <mat-icon>error_outline</mat-icon>
-    La hora seleccionada ya pasó. Elige una hora futura.
-  </span>
+         style="opacity:0; position:absolute; pointer-events:none; width:0; height:0;">
+  <div class="fecha-display" (click)="abrirCalendario()">
+    <span>{{ nuevaCita.fecha ? formatearFecha(nuevaCita.fecha) : 'Seleccionar fecha' }}</span>
+    <mat-icon>calendar_today</mat-icon>
+  </div>
 </div>
 
+          <div class="form-field">
+            <label>Hora de Cita</label>
+            <input type="time" [(ngModel)]="nuevaCita.hora" (change)="validarHora()" [class.input-error]="horaInvalida">
+            <!-- ✅ Mensaje debajo si la hora es inválida -->
+            <span class="error-msg" *ngIf="horaInvalida">
+              <mat-icon>error_outline</mat-icon>
+              La hora seleccionada ya pasó. Elige una hora futura.
+            </span>
+          </div>
 
-      <div class="form-field">
-        <label>Tipo de Cita</label>
-        <select [(ngModel)]="nuevaCita.tipo">
-          <option value="PRIMERA VEZ">Primera vez</option>
-          <option value="SUBSECUENTE">Subsecuente</option>
-          <option value="URGENCIA">Urgencia</option>
-          <option value="REFERIDA">Referida</option>
-        </select>
+
+          <div class="form-field">
+            <label>Tipo de Cita</label>
+            <select [(ngModel)]="nuevaCita.tipo">
+              <option value="PRIMERA VEZ">Primera vez</option>
+              <option value="SUBSECUENTE">Subsecuente</option>
+              <option value="URGENCIA">Urgencia</option>
+              <option value="REFERIDA">Referida</option>
+            </select>
+          </div>
+
+          <div class="form-field full-width">
+            <label>Motivo de Cita</label>
+            <textarea rows="3" [(ngModel)]="nuevaCita.motivo"
+              placeholder="Describe brevemente el motivo de tu consulta..."></textarea>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" (click)="confirmarCita()" [disabled]="horaInvalida">
+            <mat-icon>check_circle</mat-icon>
+            Confirmar Cita
+          </button>
+        </div>
+
+        <!-- TARJETA MÉDICO ASIGNADO -->
+        <div *ngIf="ultimaCitaAgendada" class="medico-card">
+          <div class="medico-card-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <div>
+            <h3>Cita Confirmada</h3>
+            <p><strong>Folio:</strong> {{ ultimaCitaAgendada.folio }}</p>
+            <p><strong>Fecha:</strong> {{ ultimaCitaAgendada.fecha }}</p>
+            <p><strong>Médico:</strong> Dr. {{ ultimaCitaAgendada.medico?.nombre }}</p>
+            <p><strong>Estado:</strong>
+              <span class="badge-estado pendiente">{{ ultimaCitaAgendada.estado }}</span>
+            </p>
+          </div>
+        </div>
+
       </div>
 
-      <div class="form-field full-width">
-        <label>Motivo de Cita</label>
-        <textarea rows="3" [(ngModel)]="nuevaCita.motivo"
-                  placeholder="Describe brevemente el motivo de tu consulta..."></textarea>
-      </div>
+      <!-- PANEL DE CITAS AGENDADAS -->
+      <div class="table-container">
 
-    </div>
+        <div class="table-header-row">
+          <h2>Mis Citas Programadas</h2>
+          <span class="citas-count">{{ citas.length }} cita(s)</span>
+        </div>
 
-    <div class="form-actions">
-<button mat-raised-button color="primary"
-        (click)="confirmarCita()"
-        [disabled]="horaInvalida">
-  <mat-icon>check_circle</mat-icon>
-  Confirmar Cita
-</button>
-    </div>
-
-    <!-- TARJETA MÉDICO ASIGNADO -->
-    <div *ngIf="ultimaCitaAgendada" class="medico-card">
-      <div class="medico-card-icon">
-        <mat-icon>medical_services</mat-icon>
-      </div>
-      <div>
-        <h3>Cita Confirmada</h3>
-        <p><strong>Folio:</strong> {{ ultimaCitaAgendada.folio }}</p>
-        <p><strong>Fecha:</strong> {{ ultimaCitaAgendada.fecha }}</p>
-        <p><strong>Médico:</strong> Dr. {{ ultimaCitaAgendada.medico?.nombre }}</p>
-        <p><strong>Estado:</strong>
-          <span class="badge-estado pendiente">{{ ultimaCitaAgendada.estado }}</span>
-        </p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- PANEL DE CITAS AGENDADAS -->
-  <div class="table-container">
-
-    <div class="table-header-row">
-      <h2>Mis Citas Programadas</h2>
-      <span class="citas-count">{{ citas.length }} cita(s)</span>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Folio</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Médico</th>
-          <th>Estado</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let cita of citas">
-          <td><span class="folio-badge">{{ cita.folio }}</span></td>
-          <td>{{ cita.fecha }}</td>
-          <td>{{ cita.hora }}</td>
-          <td>Dr. {{ cita.medico?.nombre }}</td>
-          <td>
-            <span class="badge-estado"
-                  [class.pendiente]="cita.estado?.toLowerCase() === 'pendiente'"
+        <table>
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Médico</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cita of citas">
+              <td><span class="folio-badge">{{ cita.folio }}</span></td>
+              <td>{{ cita.fecha }}</td>
+              <td>{{ cita.hora }}</td>
+              <td>Dr. {{ cita.medico?.nombre }}</td>
+              <td>
+                <span class="badge-estado" [class.pendiente]="cita.estado?.toLowerCase() === 'pendiente'"
                   [class.completada]="cita.estado?.toLowerCase() === 'completada'"
                   [class.cancelada]="cita.estado?.toLowerCase() === 'cancelada'"
                   [class.archivada]="cita.estado?.toLowerCase() === 'archivada'">
-              {{ cita.estado }}
-            </span>
-          </td>
-          <td>
-            <!-- ✅ Cancelar si está pendiente o proceso -->
-            <button mat-stroked-button color="warn"
-                    *ngIf="cita.estado?.toLowerCase() === 'pendiente' || cita.estado?.toLowerCase() === 'proceso'"
-                    (click)="cancelarCita(cita.idCita)">
-              <mat-icon>cancel</mat-icon>
-              Cancelar
-            </button>
+                  {{ cita.estado }}
+                </span>
+              </td>
+              <td>
+                <!-- ✅ Cancelar si está pendiente o proceso -->
+                <button mat-stroked-button color="warn"
+                  *ngIf="cita.estado?.toLowerCase() === 'pendiente' || cita.estado?.toLowerCase() === 'proceso'"
+                  (click)="cancelarCita(cita.idCita)">
+                  <mat-icon>cancel</mat-icon>
+                  Cancelar
+                </button>
 
-            <!-- Si ya está en otro estado -->
-            <span *ngIf="cita.estado?.toLowerCase() === 'completada' ||
+                <!-- Si ya está en otro estado -->
+                <span *ngIf="cita.estado?.toLowerCase() === 'completada' ||
                          cita.estado?.toLowerCase() === 'cancelada' ||
-                         cita.estado?.toLowerCase() === 'archivada'"
-                  style="color:#9ca3af; font-size:13px;">
-              Sin acciones
+                         cita.estado?.toLowerCase() === 'archivada'" style="color:#9ca3af; font-size:13px;">
+                  Sin acciones
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="citas.length === 0">
+              <td colspan="6" class="empty-row">
+                <mat-icon>event_busy</mat-icon>
+                <p>No tienes citas registradas.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+
+    <!-- ================= HISTORIAL CONSULTAS ================= -->
+    <div *ngIf="selectedSection === 'historial'" class="historial-container">
+
+      <div class="historial-card" *ngFor="let consulta of historial; let i = index">
+
+        <!-- HEADER -->
+        <div class="historial-header">
+
+          <div>
+            <h3>{{ consulta.fecha }}</h3>
+            <p class="doctor-name">
+              Dr. {{ consulta.medico?.nombre }}
+            </p>
+          </div>
+
+          <div class="historial-actions">
+            <span class="badge-dx">
+              {{ consulta.dxDescripcion }}
             </span>
-          </td>
-        </tr>
-        <tr *ngIf="citas.length === 0">
-          <td colspan="6" class="empty-row">
-            <mat-icon>event_busy</mat-icon>
-            <p>No tienes citas registradas.</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
-</div>
+            <button mat-stroked-button color="primary" (click)="consulta.expandida = !consulta.expandida">
+              {{ consulta.expandida ? 'Ocultar' : 'Ver detalle' }}
+            </button>
+          </div>
+
+        </div>
+
+        <!-- DETALLE EXPANDIBLE -->
+        <div class="historial-body" *ngIf="consulta.expandida">
+
+          <div class="detail-grid">
+            <div>
+              <label>Motivo de Consulta</label>
+              <p>{{ consulta.motivo }}</p>
+            </div>
+            <div>
+              <label>Diagnóstico</label>
+              <p>{{ consulta.dxDescripcion }}</p>
+            </div>
+            <div>
+              <label>Tratamiento</label>
+              <p>{{ consulta.tratamiento || 'No especificado' }}</p>
+            </div>
+            <div>
+              <label>Observaciones</label>
+              <p>{{ consulta.observaciones || 'Sin observaciones' }}</p>
+            </div>
+          </div>
+
+          <!-- ✅ RECETA DENTRO DEL DETALLE -->
+          <div class="receta-inline" *ngIf="consulta.receta; else sinReceta">
+
+            <!-- ✅ Título de sección -->
+            <div class="receta-inline-titulo">
+              <mat-icon>receipt_long</mat-icon>
+              <span>Receta Médica</span>
+            </div>
+
+            <div class="receta-inline-header">
+              <div class="receta-inline-info">
+                <span class="receta-folio">{{ consulta.receta.folio }}</span>
+                <span class="receta-fecha">Emitida: {{ consulta.receta.fecha }}</span>
+                <span class="receta-fecha">Vence: {{ consulta.receta.vencimiento }}</span>
+                <span class="badge-estado-receta" [class.activa]="consulta.receta.estado === 'activa'"
+                  [class.vencida]="consulta.receta.estado === 'vencida'"
+                  [class.surtida]="consulta.receta.estado === 'surtida'">
+                  {{ consulta.receta.estado }}
+                </span>
+              </div>
+
+              <div class="receta-acciones">
+                <!-- CONTADOR DOTS -->
+                <div class="intentos-indicator">
+                  <span class="intentos-label">Descargas</span>
+                  <div class="intentos-dots">
+                    <span class="dot" *ngFor="let d of [1,2,3]"
+                      [class.usado]="d > getDescargasRestantes(consulta.receta.idReceta)">
+                    </span>
+                  </div>
+                  <span class="intentos-count" [class.agotado]="getDescargasRestantes(consulta.receta.idReceta) === 0">
+                    {{ getDescargasRestantes(consulta.receta.idReceta) }}/3
+                  </span>
+                </div>
+
+                <button mat-raised-button class="btn-descargar-receta"
+                  [disabled]="!puedeDescargar(consulta.receta.idReceta)" (click)="descargarReceta(consulta.receta)">
+                  <mat-icon>download</mat-icon>
+                  Descargar Receta
+                </button>
+              </div>
+            </div>
+
+            <!-- CHIPS MEDICAMENTOS -->
+            <div class="receta-meds">
+              <div class="med-chip" *ngFor="let med of consulta.receta.medicamentos">
+                <mat-icon>medication</mat-icon>
+                {{ med.nombre }} — {{ med.dosis }}
+              </div>
+            </div>
 
 
-<!-- ================= HISTORIAL CONSULTAS ================= -->
-<div *ngIf="selectedSection === 'historial'" class="historial-container">
+          </div>
+        </div>
 
-  <div class="historial-card"
-       *ngFor="let consulta of historial; let i = index">
+        <!-- Si la consulta no tiene receta -->
+        <ng-template #sinReceta>
+          <div class="sin-receta">
+            <mat-icon>info_outline</mat-icon>
+            Esta consulta no tiene receta médica registrada.
+          </div>
+        </ng-template>
 
-    <!-- HEADER -->
-    <div class="historial-header">
-
-      <div>
-        <h3>{{ consulta.fecha }}</h3>
-        <p class="doctor-name">
-          Dr. {{ consulta.medico?.nombre }}
-        </p>
       </div>
 
-      <div class="historial-actions">
-        <span class="badge-dx">
-          {{ consulta.dxDescripcion }}
-        </span>
-
-        <button mat-stroked-button
-                color="primary"
-                (click)="consulta.expandida = !consulta.expandida">
-          {{ consulta.expandida ? 'Ocultar' : 'Ver detalle' }}
-        </button>
+      <!-- SI NO HAY HISTORIAL -->
+      <div *ngIf="historial.length === 0" class="empty-state">
+        No tienes consultas registradas.
       </div>
 
     </div>
-
-    <!-- DETALLE EXPANDIBLE -->
-    <div class="historial-body"
-         *ngIf="consulta.expandida">
-
-      <div class="detail-grid">
-
-        <div>
-          <label>Motivo de Consulta</label>
-          <p>{{ consulta.motivo }}</p>
-        </div>
-
-        <div>
-          <label>Diagnóstico</label>
-          <p>{{ consulta.dxDescripcion }}</p>
-        </div>
-
-        <div>
-          <label>Tratamiento</label>
-          <p>{{ consulta.tratamiento || 'No especificado' }}</p>
-        </div>
-
-        <div>
-          <label>Observaciones</label>
-          <p>{{ consulta.observaciones || 'Sin observaciones' }}</p>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- SI NO HAY HISTORIAL -->
-  <div *ngIf="historial.length === 0"
-       class="empty-state">
-    No tienes consultas registradas.
-  </div>
-
-</div>
-
 
     <!-- ================= PERFIL ================= -->
-<!-- ================= PERFIL ================= -->
-<div class="profile-container" *ngIf="selectedSection === 'perfil'">
+    <div class="profile-container" *ngIf="selectedSection === 'perfil'">
 
-  <!-- HEADER PERFIL -->
-  <div class="profile-header-card">
-    <div class="avatar">
-      {{ paciente?.nombre?.charAt(0) }}{{ paciente?.apPaterno?.charAt(0) }}
-    </div>
-    <div class="header-info">
-      <h2>
-        {{ paciente?.nombre }}
-        {{ paciente?.apPaterno }}
-        {{ paciente?.apMaterno }}
-      </h2>
-      <p class="sub-info">NSS: {{ paciente?.nss }}</p>
-      <p class="sub-info">{{ paciente?.correo }}</p>
-      <span class="status-badge"
-            [class.active]="paciente?.estadoUsuario === 'Activo'"
+      <!-- HEADER PERFIL -->
+      <div class="profile-header-card" [class.edit-mode]="editandoContacto">
+        <div class="avatar">
+          {{ paciente?.nombre?.charAt(0) }}{{ paciente?.apPaterno?.charAt(0) }}
+        </div>
+        <div class="header-info">
+          <h2>{{ paciente?.nombre }} {{ paciente?.apPaterno }} {{ paciente?.apMaterno }}</h2>
+          <p class="sub-info">NSS: {{ paciente?.nss }}</p>
+          <p class="sub-info">{{ paciente?.correo }}</p>
+          <span class="status-badge" [class.active]="paciente?.estadoUsuario === 'Activo'"
             [class.inactive]="paciente?.estadoUsuario !== 'Activo'">
-        {{ paciente?.estadoUsuario || 'Activo' }}
-      </span>
+            {{ paciente?.estadoUsuario || 'Activo' }}
+          </span>
+        </div>
+
+        <!-- ✅ Botón igual que el del médico -->
+        <div class="header-actions">
+          <button class="btn-editar-perfil" (click)="toggleEdicionContacto()">
+            <mat-icon>{{ editandoContacto ? 'close' : 'edit' }}</mat-icon>
+            {{ editandoContacto ? 'Cancelar' : 'Editar Perfil' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN PERSONAL -->
+      <div class="section-card" [class.edit-mode]="editandoContacto">
+        <h3>Información Personal</h3>
+        <div class="info-grid">
+
+          <div><label>Nombre</label>
+            <p>{{ paciente?.nombre }}</p>
+          </div>
+          <div><label>Apellido Paterno</label>
+            <p>{{ paciente?.apPaterno }}</p>
+          </div>
+          <div><label>Apellido Materno</label>
+            <p>{{ paciente?.apMaterno }}</p>
+          </div>
+          <div><label>Edad</label>
+            <p>{{ calcularEdad(paciente?.fechaNacimiento) }} años</p>
+          </div>
+          <div><label>CURP</label>
+            <p>{{ paciente?.curp }}</p>
+          </div>
+          <div><label>Tipo de Sangre</label>
+            <p>{{ paciente?.tipoSangre }}</p>
+          </div>
+
+          <!-- ✅ Teléfono: editable inline -->
+          <div>
+            <label>Teléfono</label>
+            <ng-container *ngIf="!editandoContacto; else editTelefono">
+              <p>{{ paciente?.telefono }}</p>
+            </ng-container>
+            <ng-template #editTelefono>
+              <input [(ngModel)]="contactoEdit.telefono" class="edit-input" type="tel" placeholder="10 dígitos"
+                maxlength="10" (input)="soloNumerosTelefono($event)">
+              <span class="input-hint"
+                [class.input-error-msg]="contactoEdit.telefono.length > 0 && contactoEdit.telefono.length < 10">
+                {{ contactoEdit.telefono.length }}/10 dígitos
+              </span>
+            </ng-template>
+          </div>
+
+          <!-- ✅ Teléfono emergencia: editable inline -->
+          <div>
+            <label>Teléfono Emergencia</label>
+            <ng-container *ngIf="!editandoContacto; else editTelEmergencia">
+              <p>{{ paciente?.telefonoEmergencias }}</p>
+            </ng-container>
+            <ng-template #editTelEmergencia>
+              <input [(ngModel)]="contactoEdit.telefonoEmergencias" class="edit-input" type="tel"
+                placeholder="10 dígitos" maxlength="10" (input)="soloNumerosEmergencia($event)">
+              <span class="input-hint"
+                [class.input-error-msg]="contactoEdit.telefonoEmergencias.length > 0 && contactoEdit.telefonoEmergencias.length < 10">
+                {{ contactoEdit.telefonoEmergencias.length }}/10 dígitos
+              </span>
+            </ng-template>
+          </div>
+
+        </div>
+
+        <!-- ✅ Botón guardar igual que el del médico -->
+        <div *ngIf="editandoContacto" class="edit-actions">
+          <button mat-raised-button color="primary" (click)="guardarContacto()">
+            Guardar Cambios
+          </button>
+        </div>
+
+        <div style="margin-top: 25px; display:flex; gap:15px;">
+          <button mat-raised-button color="primary" (click)="verMiExpediente()">
+            <mat-icon>folder_open</mat-icon>
+            Ver mi Expediente
+          </button>
+        </div>
+      </div>
+
+      <!-- UNIDAD MÉDICA -->
+      <div class="section-card" *ngIf="paciente?.unidadMedica">
+        <h3>
+          <mat-icon class="section-icon">local_hospital</mat-icon>
+          Unidad Médica Asignada
+        </h3>
+        <div class="info-grid">
+          <div><label>Clave</label>
+            <p>{{ paciente?.unidadMedica?.clave }}</p>
+          </div>
+          <div><label>Nombre</label>
+            <p>{{ paciente?.unidadMedica?.nombre }}</p>
+          </div>
+          <div><label>Municipio</label>
+            <p>{{ paciente?.unidadMedica?.municipio }}</p>
+          </div>
+          <div><label>Estado</label>
+            <p>{{ paciente?.unidadMedica?.estado }}</p>
+          </div>
+          <div><label>Delegación</label>
+            <p>{{ paciente?.unidadMedica?.delegacion }}</p>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-  </div>
-
-<!-- INFORMACIÓN PERSONAL -->
-<div class="section-card">
-  <h3>Información Personal</h3>
-  <div class="info-grid">
-    <div><label>Nombre</label><p>{{ paciente?.nombre }}</p></div>
-    <div><label>Apellido Paterno</label><p>{{ paciente?.apPaterno }}</p></div>
-    <div><label>Apellido Materno</label><p>{{ paciente?.apMaterno }}</p></div>
-    <div><label>Edad</label><p>{{ calcularEdad(paciente?.fechaNacimiento) }} años</p></div>
-    <div><label>CURP</label><p>{{ paciente?.curp }}</p></div>
-    <div><label>Tipo de Sangre</label><p>{{ paciente?.tipoSangre }}</p></div>
-    <div><label>Teléfono</label><p>{{ paciente?.telefono }}</p></div>
-    <div><label>Teléfono Emergencia</label><p>{{ paciente?.telefonoEmergencias }}</p></div>
-  </div>
-
-  <!-- ✅ BOTÓN AL FINAL DE LA CARD DE INFO PERSONAL -->
-  <div style="margin-top: 25px; display:flex; gap:15px;">
-<!-- ✅ Llama a verMiExpediente() en lugar de changeSection -->
-<button mat-raised-button color="primary"
-        (click)="verMiExpediente()">
-  <mat-icon>folder_open</mat-icon>
-  Ver mi Expediente
-</button>
-  </div>
-
-</div>
-
-  <!-- UNIDAD MÉDICA -->
-  <div class="section-card" *ngIf="paciente?.unidadMedica">
-    <h3>
-      <mat-icon class="section-icon">local_hospital</mat-icon>
-      Unidad Médica Asignada
-    </h3>
-    <div class="info-grid">
-      <div><label>Clave</label><p>{{ paciente?.unidadMedica?.clave }}</p></div>
-      <div><label>Nombre</label><p>{{ paciente?.unidadMedica?.nombre }}</p></div>
-      <div><label>Municipio</label><p>{{ paciente?.unidadMedica?.municipio }}</p></div>
-      <div><label>Estado</label><p>{{ paciente?.unidadMedica?.estado }}</p></div>
-      <div><label>Delegación</label><p>{{ paciente?.unidadMedica?.delegacion }}</p></div>
-    </div>
-  </div>
-
-
-</div>
-
   </main>
 </div>

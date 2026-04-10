@@ -72,5 +72,12 @@ obtenerHistorialPaciente(idPaciente: number) {
   );
 }
 
+crearExpediente(data: any) {
+  return this.http.post(
+    `http://localhost:8081/expedientes`,
+    data,
+    { withCredentials: true }
+  );
+}
 
 }

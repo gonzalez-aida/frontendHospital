@@ -5,6 +5,8 @@ import { PatientService } from '../../../core/services/patient.service';
 import { CitaService } from '../../../core/services/cita.service';
 import { jsPDF } from 'jspdf';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard-paciente',
@@ -14,9 +16,9 @@ import Swal from 'sweetalert2';
 export class DashboardPacienteComponent implements OnInit {
 
   // ================= UI =================
-  selectedSection: string = 'perfil';
+  selectedSection: string = 'citas';
   darkMode: boolean = false;
-  tituloSeccion: string = 'Mi Perfil';
+  tituloSeccion: string = 'Mis Citas';
 
   // ================= DATOS =================
   paciente: any = {};
@@ -29,7 +31,8 @@ export class DashboardPacienteComponent implements OnInit {
     private authService: AuthService,
     public connectivityService: ConnectivityService,
     private patientService: PatientService,
-    private citaService: CitaService
+    private citaService: CitaService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -65,24 +68,116 @@ cargarCitas() {
 
 
 cargarHistorial() {
-
-  if (!this.paciente?.idPaciente) {
-    console.log('Paciente aún no cargado');
-    return;
-  }
+  if (!this.paciente?.idPaciente) return;
 
   this.citaService.obtenerCitasPorPaciente(this.paciente.idPaciente)
     .subscribe({
       next: (data: any[]) => {
-        this.historial = data.map(c => ({
-          ...c,
-          expandida: false
-        }));
 
-        console.log('Historial cargado:', this.historial);
+        // Solo las completadas van al historial
+        const completadas = data.filter(c =>
+          c.estado?.toLowerCase() === 'completada'
+        );
+
+        // Cargar recetas y cruzarlas
+        this.citaService.obtenerMisRecetas().subscribe({
+          next: (recetas: any[]) => {
+            this.cargarContadoresDescarga();
+
+            this.historial = completadas.map(c => ({
+              ...c,
+              expandida: false,
+              receta: recetas.find(r => r.idCita === c.idCita) ?? null
+            }));
+
+            console.log('Historial con recetas:', this.historial);
+          },
+          error: () => {
+            // Si falla la carga de recetas, igual muestra el historial sin ellas
+            this.historial = completadas.map(c => ({
+              ...c,
+              expandida: false,
+              receta: null
+            }));
+          }
+        });
       },
       error: (err) => console.error('Error al cargar historial', err)
     });
+}
+
+// ================= EDITAR CONTACTO =================
+editandoContacto: boolean = false;
+contactoEdit = { telefono: '', telefonoEmergencias: '' };
+
+toggleEdicionContacto() {
+  this.editandoContacto = !this.editandoContacto;
+  if (this.editandoContacto) {
+    this.contactoEdit = {
+      telefono: this.paciente?.telefono || '',
+      telefonoEmergencias: this.paciente?.telefonoEmergencias || ''
+    };
+  }
+}
+
+guardarContacto() {
+  if (!this.contactoEdit.telefono.trim()) {
+    Swal.fire({ icon: 'warning', title: 'Campo requerido', text: 'El teléfono no puede estar vacío.' });
+    return;
+  }
+
+  // Construimos el payload con todos los datos actuales del paciente
+  // y solo sobreescribimos los dos campos editables
+  const payload = {
+    nombre: this.paciente.nombre,
+    apPaterno: this.paciente.apPaterno,
+    apMaterno: this.paciente.apMaterno,
+    fechaNacimiento: this.paciente.fechaNacimiento,
+    sexo: this.paciente.sexo,
+    tipoSangre: this.paciente.tipoSangre,
+    curp: this.paciente.curp,
+    nss: this.paciente.nss,
+    telefono: this.contactoEdit.telefono,
+    telefonoEmergencias: this.contactoEdit.telefonoEmergencias,
+    direccion: this.paciente.direccion ?? null,
+    usuario: null
+  };
+
+  // Usamos el idUsuario del token guardado en localStorage
+  const user = JSON.parse(localStorage.getItem('h-moscatti-user') || '{}');
+  const idUsuario = user?.idUsuario;
+
+  if (!idUsuario) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo identificar al usuario.' });
+    return;
+  }
+
+  this.http.put(
+    `${environment.apiUrl}/paciente/usuario/${idUsuario}`,
+    payload,
+    { withCredentials: true }
+  ).subscribe({
+    next: () => {
+      this.paciente.telefono = this.contactoEdit.telefono;
+      this.paciente.telefonoEmergencias = this.contactoEdit.telefonoEmergencias;
+      this.editandoContacto = false;
+      Swal.fire({ icon: 'success', title: 'Datos actualizados', timer: 2000, showConfirmButton: false });
+    },
+    error: () => {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar la información.' });
+    }
+  });
+}
+
+
+soloNumerosTelefono(event: Event) {
+  const input = event.target as HTMLInputElement;
+  this.contactoEdit.telefono = input.value.replace(/\D/g, '').slice(0, 10);
+}
+
+soloNumerosEmergencia(event: Event) {
+  const input = event.target as HTMLInputElement;
+  this.contactoEdit.telefonoEmergencias = input.value.replace(/\D/g, '').slice(0, 10);
 }
 
 
@@ -297,8 +392,33 @@ nuevaCita = {
 
 ultimaCitaAgendada: any = null;
 
+formatearFecha(fecha: string | null | undefined): string {
+  if (!fecha) return '';
+  const [year, month, day] = fecha.split('-');
+  return `${day}/${month}/${year}`;
+}
+
+abrirCalendario() {
+  const input = document.getElementById('inputFechaCita') as any;
+  if (input?.showPicker) {
+    input.showPicker();
+  } else {
+    input?.click();
+  }
+}
+
 // ✅ Agrega esta propiedad
-fechaMinima: string = new Date().toISOString().split('T')[0]; // "yyyy-MM-dd" de hoy
+// ✅ Usa la fecha local correcta
+fechaMinima: string = this.getFechaHoyLocal();
+
+getFechaHoyLocal(): string {
+  const hoy = new Date();
+  const year = hoy.getFullYear();
+  const month = String(hoy.getMonth() + 1).padStart(2, '0');
+  const day = String(hoy.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 
 // ✅ Agrega esta propiedad para el mensaje de error de hora
 horaInvalida: boolean = false;
@@ -311,10 +431,26 @@ validarHora() {
     return;
   }
 
+  const hoy = this.getFechaHoyLocal();
+
+  // Si la fecha seleccionada es futura, la hora siempre es válida
+  if (fecha > hoy) {
+    this.horaInvalida = false;
+    return;
+  }
+
+  // Si es hoy, comparar la hora seleccionada con la hora actual local
   const ahora = new Date();
-  const fechaHoraCita = new Date(`${fecha}T${hora}`);
-  this.horaInvalida = fechaHoraCita <= ahora;
+  const [horaSeleccionada, minutosSeleccionados] = hora.split(':').map(Number);
+  const horaActual = ahora.getHours();
+  const minutosActual = ahora.getMinutes();
+
+  const minutosSeleccionadosTotal = horaSeleccionada * 60 + minutosSeleccionados;
+  const minutosActualTotal = horaActual * 60 + minutosActual;
+
+  this.horaInvalida = minutosSeleccionadosTotal <= minutosActualTotal;
 }
+
 
 confirmarCita() {
   const { fecha, hora, motivo, tipo } = this.nuevaCita;
@@ -381,14 +517,19 @@ confirmarCita() {
 
       this.nuevaCita = { fecha: '', hora: '', motivo: '', tipo: 'PRIMERA VEZ' };
     },
-    error: (err) => {
-      console.error("Error al agendar:", err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo agendar la cita. Intenta de nuevo.'
-      });
-    }
+// En confirmarCita(), reemplaza el bloque error:
+error: (err) => {
+  console.error("Error al agendar:", err);
+  console.error("Error detalle:", err.error); // ✅ agrega esto
+  
+  const mensaje = err.error?.error || err.error?.message || 'No se pudo agendar la cita. Intenta de nuevo.';
+  
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: mensaje  // ✅ muestra el mensaje real del backend
+  });
+}
   });
 }
 
@@ -430,6 +571,175 @@ cancelarCita(idCita: number) {
   });
 }    
 
+
+// ================= RECETAS =================
+recetas: any[] = [];
+descargasPorReceta: { [idReceta: number]: number } = {};
+readonly MAX_DESCARGAS = 3;
+
+cargarRecetas() {
+  this.citaService.obtenerMisRecetas().subscribe({
+    next: (data: any[]) => {
+      this.recetas = data;
+      this.cargarContadoresDescarga();
+    },
+    error: (err) => console.error('Error al cargar recetas', err)
+  });
+}
+
+cargarContadoresDescarga() {
+  const guardado = localStorage.getItem('descargas-recetas');
+  this.descargasPorReceta = guardado ? JSON.parse(guardado) : {};
+}
+
+getDescargasRestantes(idReceta: number): number {
+  const usadas = this.descargasPorReceta[idReceta] ?? 0;
+  return this.MAX_DESCARGAS - usadas;
+}
+
+puedeDescargar(idReceta: number): boolean {
+  return this.getDescargasRestantes(idReceta) > 0;
+}
+
+descargarReceta(receta: any) {
+  const restantes = this.getDescargasRestantes(receta.idReceta);
+
+  if (restantes <= 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Límite alcanzado',
+      text: 'Has alcanzado el máximo de 3 descargas para esta receta.',
+      confirmButtonColor: '#1f3a5f'
+    });
+    return;
+  }
+
+  // Confirmar si le queda solo 1
+  if (restantes === 1) {
+    Swal.fire({
+      icon: 'warning',
+      title: '¡Última descarga!',
+      text: 'Esta es tu última descarga disponible para esta receta. ¿Deseas continuar?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, descargar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#1f3a5f',
+      cancelButtonColor: '#6b7280'
+    }).then(result => {
+      if (result.isConfirmed) this.ejecutarDescarga(receta);
+    });
+    return;
+  }
+
+  this.ejecutarDescarga(receta);
+}
+
+ejecutarDescarga(receta: any) {
+  // Incrementar contador
+  const usadas = this.descargasPorReceta[receta.idReceta] ?? 0;
+  this.descargasPorReceta[receta.idReceta] = usadas + 1;
+  localStorage.setItem('descargas-recetas', JSON.stringify(this.descargasPorReceta));
+
+  const restantesAhora = this.getDescargasRestantes(receta.idReceta);
+
+  this.generarPDFReceta(receta);
+
+  if (restantesAhora > 0) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Descarga realizada',
+      html: `Te quedan <strong>${restantesAhora}</strong> descarga(s) para esta receta. Guarda bien tu copia.`,
+      timer: 3000,
+      showConfirmButton: false
+    });
+  }
+}
+
+generarPDFReceta(receta: any) {
+  const doc = new jsPDF();
+  const pageW = doc.internal.pageSize.getWidth();
+  const safe = (v: any) => v ?? 'No especificado';
+  let y = 0;
+
+  // HEADER
+  doc.setFillColor(31, 58, 95);
+  doc.rect(0, 0, pageW, 42, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('RECETA MÉDICA', 14, 16);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text(`Folio: ${safe(receta.folio)}`, 14, 26);
+  doc.text(`Fecha: ${safe(receta.fecha)}`, 14, 33);
+  doc.text(`Vencimiento: ${safe(receta.vencimiento)}`, pageW - 14, 26, { align: 'right' });
+  doc.text(`Estado: ${safe(receta.estado)}`, pageW - 14, 33, { align: 'right' });
+
+  // PACIENTE
+  doc.setFillColor(238, 243, 249);
+  doc.rect(10, 48, pageW - 20, 18, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(31, 58, 95);
+  doc.text('Paciente:', 14, 57);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(30, 30, 30);
+  doc.text(
+    `${this.paciente.nombre} ${this.paciente.apPaterno} ${this.paciente.apMaterno}  |  NSS: ${this.paciente.nss}`,
+    50, 57
+  );
+  doc.setFontSize(9);
+  doc.text(`Médico tratante: Dr. registrado en sistema`, 14, 63);
+
+  y = 78;
+
+  // MEDICAMENTOS
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(31, 58, 95);
+  doc.text('Medicamentos prescritos', 14, y);
+  y += 6;
+  doc.setDrawColor(31, 58, 95);
+  doc.setLineWidth(0.5);
+  doc.line(14, y, pageW - 14, y);
+  y += 8;
+
+  if (receta.medicamentos?.length) {
+    receta.medicamentos.forEach((med: any, i: number) => {
+      doc.setFillColor(i % 2 === 0 ? 248 : 255, i % 2 === 0 ? 250 : 255, i % 2 === 0 ? 252 : 255);
+      doc.rect(10, y - 5, pageW - 20, 28, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(31, 58, 95);
+      doc.text(`${i + 1}. ${safe(med.nombre)}`, 14, y);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60, 60, 60);
+      doc.setFontSize(9);
+      doc.text(`Presentación: ${safe(med.presentacion)}   |   Vía: ${safe(med.via)}`, 18, y + 7);
+      doc.text(`Dosis: ${safe(med.dosis)}   |   Frecuencia: ${safe(med.frecuencia)}   |   Duración: ${safe(med.duracion)}   |   Cantidad: ${safe(med.cantidad)}`, 18, y + 14);
+
+      y += 32;
+    });
+  } else {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(150);
+    doc.text('Sin medicamentos registrados.', 14, y);
+    y += 12;
+  }
+
+  // FOOTER
+  doc.setFontSize(8);
+  doc.setTextColor(150);
+  doc.text('Este documento es de uso personal. No compartir.', pageW / 2, 278, { align: 'center' });
+  doc.text('Sistema Hospitalario H+ Medical', pageW / 2, 284, { align: 'center' });
+
+  window.open(doc.output('bloburl').toString());
+}
+
+
 // ================= UI =================
 
 changeSection(section: string) {
@@ -450,6 +760,7 @@ case 'expediente':
     case 'historial':
       this.tituloSeccion = 'Historial de Consultas';
       this.cargarHistorial();
+      this.cargarRecetas();
       break;
 
     case 'perfil':
