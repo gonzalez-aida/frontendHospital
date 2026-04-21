@@ -78,20 +78,20 @@
   text-shadow: 0 0 6px rgba(70, 170, 255, 0.3);
 }
 
-.code-col:nth-child(1)  { left: 3%;    animation-duration: 14s; animation-delay: -2s;   color: rgba(60,160,255,0.35); }
-.code-col:nth-child(2)  { left: 9%;    animation-duration: 10s; animation-delay: -6s;   color: rgba(80,180,255,0.55); font-size: 12px; }
-.code-col:nth-child(3)  { left: 16%;   animation-duration: 17s; animation-delay: -1s;   color: rgba(60,160,255,0.30); font-size: 10px; }
-.code-col:nth-child(4)  { left: 23%;   animation-duration: 12s; animation-delay: -9s;   color: rgba(70,170,255,0.48); }
-.code-col:nth-child(5)  { left: 30%;   animation-duration: 9s;  animation-delay: -3s;   color: rgba(120,210,255,0.60); font-size: 12px; }
-.code-col:nth-child(6)  { left: 38%;   animation-duration: 15s; animation-delay: -11s;  color: rgba(60,160,255,0.35); font-size: 10px; }
-.code-col:nth-child(7)  { left: 46%;   animation-duration: 11s; animation-delay: -4s;   color: rgba(80,180,255,0.52); }
-.code-col:nth-child(8)  { left: 54%;   animation-duration: 13s; animation-delay: -7s;   color: rgba(60,160,255,0.33); font-size: 10px; }
-.code-col:nth-child(9)  { left: 62%;   animation-duration: 8s;  animation-delay: -13s;  color: rgba(70,170,255,0.45); }
-.code-col:nth-child(10) { left: 69%;   animation-duration: 16s; animation-delay: -5s;   color: rgba(80,175,255,0.42); }
-.code-col:nth-child(11) { left: 76%;   animation-duration: 10s; animation-delay: -8s;   color: rgba(100,200,255,0.55); font-size: 12px; }
-.code-col:nth-child(12) { left: 82%;   animation-duration: 12s; animation-delay: -2s;   color: rgba(70,170,255,0.45); }
-.code-col:nth-child(13) { left: 89%;   animation-duration: 14s; animation-delay: -15s;  color: rgba(60,160,255,0.32); font-size: 10px; }
-.code-col:nth-child(14) { left: 95%;   animation-duration: 9s;  animation-delay: -6s;   color: rgba(80,180,255,0.48); }
+.code-col:nth-child(1)  { left: 3%;  animation-duration: 14s; animation-delay: -2s;  color: rgba(60,160,255,0.35); }
+.code-col:nth-child(2)  { left: 9%;  animation-duration: 10s; animation-delay: -6s;  color: rgba(80,180,255,0.55); font-size: 12px; }
+.code-col:nth-child(3)  { left: 16%; animation-duration: 17s; animation-delay: -1s;  color: rgba(60,160,255,0.30); font-size: 10px; }
+.code-col:nth-child(4)  { left: 23%; animation-duration: 12s; animation-delay: -9s;  color: rgba(70,170,255,0.48); }
+.code-col:nth-child(5)  { left: 30%; animation-duration: 9s;  animation-delay: -3s;  color: rgba(120,210,255,0.60); font-size: 12px; }
+.code-col:nth-child(6)  { left: 38%; animation-duration: 15s; animation-delay: -11s; color: rgba(60,160,255,0.35); font-size: 10px; }
+.code-col:nth-child(7)  { left: 46%; animation-duration: 11s; animation-delay: -4s;  color: rgba(80,180,255,0.52); }
+.code-col:nth-child(8)  { left: 54%; animation-duration: 13s; animation-delay: -7s;  color: rgba(60,160,255,0.33); font-size: 10px; }
+.code-col:nth-child(9)  { left: 62%; animation-duration: 8s;  animation-delay: -13s; color: rgba(70,170,255,0.45); }
+.code-col:nth-child(10) { left: 69%; animation-duration: 16s; animation-delay: -5s;  color: rgba(80,175,255,0.42); }
+.code-col:nth-child(11) { left: 76%; animation-duration: 10s; animation-delay: -8s;  color: rgba(100,200,255,0.55); font-size: 12px; }
+.code-col:nth-child(12) { left: 82%; animation-duration: 12s; animation-delay: -2s;  color: rgba(70,170,255,0.45); }
+.code-col:nth-child(13) { left: 89%; animation-duration: 14s; animation-delay: -15s; color: rgba(60,160,255,0.32); font-size: 10px; }
+.code-col:nth-child(14) { left: 95%; animation-duration: 9s;  animation-delay: -6s;  color: rgba(80,180,255,0.48); }
 
 /* ─── Resplandores ─── */
 .bg-glow {
@@ -101,14 +101,12 @@
   z-index: 3;
   filter: blur(80px);
 }
-
 .bg-glow-1 {
   width: 550px; height: 550px;
   top: -180px; left: -180px;
   background: radial-gradient(circle, rgba(25, 75, 180, 0.55) 0%, transparent 70%);
   animation: glowFloat 9s ease-in-out infinite;
 }
-
 .bg-glow-2 {
   width: 450px; height: 450px;
   bottom: -130px; right: -130px;
@@ -118,20 +116,17 @@
 
 /* ═══════════════════════════════════════
    CARD
-   max-height + overflow-y: auto = scroll
-   El contenido termina donde termina,
-   sin espacio extra
 ═══════════════════════════════════════ */
 .register-card {
   position: relative;
   z-index: 10;
   width: 100%;
   max-width: 580px;
-max-height: 90vh;
-height: auto;  
+  height: fit-content;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;          /* ← el card NO scrollea, lo hace el content interno */
+  overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { display: none; }
@@ -182,7 +177,7 @@ height: auto;
   }
 }
 
-/* ─── Título ─── */
+/* ─── Encabezado de la card ─── */
 .card-header {
   flex-shrink: 0;
   padding: 32px 52px 0;
@@ -201,13 +196,13 @@ height: auto;
 
   .register-stepper,
   .mat-stepper-horizontal {
+    min-height: auto !important;
     background: transparent !important;
   }
 
-  /* Header sticky — título del paso siempre visible */
   .mat-horizontal-stepper-header-container {
-    position: sticky !important;
-    top: 0 !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
     z-index: 5 !important;
     background: rgba(6, 14, 32, 0.96) !important;
     backdrop-filter: blur(12px) !important;
@@ -219,30 +214,30 @@ height: auto;
     border-top-color: rgba(70, 160, 255, 0.18) !important;
   }
 
-  /*
-   * CLAVE DEL FIX:
-   * overflow: hidden corta cualquier espacio
-   * extra que Material genere internamente.
-   * El padding-bottom: 0 evita espacio sobrante.
-   */
   .mat-horizontal-content-container {
-    overflow-x: hidden !important;
-    padding: 20px 52px 0 !important;
-    /*
-     * max-height = 92vh (card) - título (~100px) - stepper header (~60px)
-     * Esto limita exactamente la zona scrolleable
-     * y el scroll termina donde termina el contenido real
-     */
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    padding-top: 0 !important;
   }
 
   .mat-horizontal-content-container::-webkit-scrollbar {
     display: none !important;
   }
 
+  .mat-horizontal-stepper-content.mat-active {
+    display: block !important;
+  }
+
   .mat-horizontal-stepper-content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
 
   /* Iconos de paso */
@@ -251,27 +246,23 @@ height: auto;
     color: rgba(130, 190, 255, 0.65) !important;
     border: 1px solid rgba(70, 160, 255, 0.25);
   }
-
   .mat-step-header .mat-step-icon-selected {
     background: linear-gradient(135deg, #1855b0, #2070d8) !important;
     color: #ffffff !important;
     border-color: rgba(100, 180, 255, 0.5);
     box-shadow: 0 0 16px rgba(30, 100, 220, 0.55) !important;
   }
-
   .mat-step-header .mat-step-icon-state-done,
   .mat-step-header .mat-step-icon-state-edit {
     background-color: rgba(25, 75, 180, 0.65) !important;
     color: #90d0ff !important;
     border-color: rgba(70, 160, 255, 0.45);
   }
-
   .mat-step-label {
     color: rgba(130, 185, 240, 0.55) !important;
     font-size: 12px !important;
     font-weight: 500 !important;
   }
-
   .mat-step-label-selected {
     color: rgba(170, 215, 255, 0.95) !important;
     font-weight: 600 !important;
@@ -302,33 +293,213 @@ height: auto;
 }
 
 /* ═══════════════════════════════════════
-   STEP-FORM y STEP-ACTIONS
+   STEP-FIELDS — PASO 1
 ═══════════════════════════════════════ */
-.step-form {
-  display: flex;
-  flex-direction: column;
-  max-height: calc(90vh - 230px);
+.step-fields {
+  max-height: calc(90vh - 360px);
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 20px 52px 8px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar { display: none; }
 }
 
+/* ── PASO 2: margin-top negativo restaurado ── */
+.step-fields-contact {
+  max-height: calc(90vh - 360px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 20px 52px 8px;
+  margin-top: -530px !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ── PASO 3: margin-top negativo restaurado ── */
+.step-fields-direccion {
+  max-height: calc(90vh - 360px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 52px 8px !important;
+  margin-top: -550px !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   STEP-FOOTER — siempre visible abajo
+═══════════════════════════════════════ */
+.step-footer {
+  flex-shrink: 0;
+  padding: 0 52px 0;
+  border-top: 1px solid rgba(70, 160, 255, 0.10);
+  background: rgba(6, 14, 32, 0.92);
+}
+
+/* ═══════════════════════════════════════
+   STEP-ACTIONS
+═══════════════════════════════════════ */
 .step-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  padding: 12px 0 0;
+}
+
+/* ═══════════════════════════════════════
+   GRIDS
+═══════════════════════════════════════ */
+.full-width { width: 100%; }
+
+.fecha-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Grid No. Exterior / No. Interior */
+.num-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   margin-bottom: 0;
-  padding-bottom: 0;
+}
+
+/* ═══════════════════════════════════════
+   BARRA DE CONTRASEÑA (sin etiqueta texto)
+═══════════════════════════════════════ */
+.password-bar {
+  height: 5px;
+  background: rgba(20, 50, 110, 0.6);
+  border-radius: 5px;
+  margin-top: -4px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(70, 160, 255, 0.10);
+}
+
+.password-strength {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 8px rgba(70, 160, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════
+   SUFIJO DOS ÍCONOS (info + ojo)
+═══════════════════════════════════════ */
+.suffix-icons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.info-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.info-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(120, 185, 255, 0.55) !important;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: rgba(120, 185, 255, 0.90) !important;
+  }
+}
+
+/* ─── Tooltip de requisitos de contraseña ─── */
+.password-tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 240px;
+  background: rgba(6, 14, 35, 0.97);
+  border: 1px solid rgba(70, 160, 255, 0.35);
+  border-radius: 12px;
+  padding: 14px 16px;
+  z-index: 999;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.60),
+    0 0 0 1px rgba(70, 160, 255, 0.08),
+    0 0 20px rgba(30, 100, 220, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .tooltip-arrow {
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    width: 10px;
+    height: 10px;
+    background: rgba(6, 14, 35, 0.97);
+    border-left: 1px solid rgba(70, 160, 255, 0.35);
+    border-top: 1px solid rgba(70, 160, 255, 0.35);
+    transform: rotate(45deg);
+  }
+
+  .tooltip-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(170, 215, 255, 0.85);
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: rgba(130, 175, 240, 0.55);
+    transition: color 0.2s ease;
+
+    mat-icon {
+      font-size: 14px !important;
+      width: 14px !important;
+      height: 14px !important;
+      color: rgba(100, 150, 220, 0.40) !important;
+      flex-shrink: 0;
+    }
+
+    &.met {
+      color: rgba(100, 220, 130, 0.90);
+      mat-icon {
+        color: rgba(80, 210, 110, 0.90) !important;
+      }
+    }
+  }
 }
 
 /* ═══════════════════════════════════════
    INPUTS / FORM FIELDS
 ═══════════════════════════════════════ */
-.full-width { width: 100%; }
-
 ::ng-deep .register-card {
 
   mat-form-field {
@@ -390,7 +561,6 @@ height: auto;
 
   .mat-select-placeholder { color: rgba(165, 210, 255, 0.70) !important; }
   .mat-select-arrow       { color: rgba(120, 185, 255, 0.62) !important; }
-
   .mat-select-trigger     { display: inline-table !important; }
   .mat-select-arrow-wrapper { transform: translateY(0) !important; }
 }
@@ -438,36 +608,6 @@ height: auto;
 }
 
 /* ═══════════════════════════════════════
-   FECHA GRID
-═══════════════════════════════════════ */
-.fecha-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(80px, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-/* ═══════════════════════════════════════
-   BARRA DE CONTRASEÑA
-═══════════════════════════════════════ */
-.password-bar {
-  height: 5px;
-  background: rgba(20, 50, 110, 0.6);
-  border-radius: 5px;
-  margin-top: -4px;
-  margin-bottom: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(70, 160, 255, 0.10);
-}
-
-.password-strength {
-  height: 100%;
-  border-radius: 5px;
-  transition: width 0.3s ease, background 0.3s ease;
-  box-shadow: 0 0 8px rgba(70, 160, 255, 0.4);
-}
-
-/* ═══════════════════════════════════════
    BOTONES
 ═══════════════════════════════════════ */
 ::ng-deep .register-card {
@@ -478,7 +618,6 @@ height: auto;
     font-weight: 600;
     border-radius: 10px !important;
     letter-spacing: 1px;
-    margin-top: 8px;
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, #1855b0 0%, #2070d8 50%, #1855b0 100%) !important;
@@ -505,20 +644,9 @@ height: auto;
     }
   }
 
-  .mat-horizontal-stepper-content:not(.mat-horizontal-stepper-content-inactive) {
-  height: auto !important;
-  min-height: 0 !important;
-}
-
-.mat-step-body {
-  height: auto !important;
-  min-height: 0 !important;
-}
-
   .mat-button {
     color: rgba(130, 190, 255, 0.68) !important;
     font-weight: 500 !important;
-    margin-top: 8px;
     margin-right: 10px;
     border-radius: 8px !important;
 
@@ -530,16 +658,11 @@ height: auto;
 }
 
 /* ═══════════════════════════════════════
-   LOGIN LINK
-   padding-bottom: 20px es el espacio
-   final del card — el scroll termina aquí
+   LOGIN LINK — consistente en los 3 pasos
 ═══════════════════════════════════════ */
 .login-link {
   text-align: center;
-  margin-top: 8px;
-padding: 8px 0 12px; // antes era padding: 8px 0 20px
-  margin-bottom: 0;   
-    border-top: 1px solid rgba(70, 160, 255, 0.10);
+  padding: 8px 0 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -649,7 +772,7 @@ padding: 8px 0 12px; // antes era padding: 8px 0 20px
 }
 
 @keyframes codeRain {
-  0%   { transform: translateY(0);     opacity: 0; }
+  0%   { transform: translateY(0);  opacity: 0; }
   3%   { opacity: 1; }
   90%  { opacity: 0.7; }
   100% { transform: translateY(220vh); opacity: 0; }
@@ -693,14 +816,32 @@ padding: 8px 0 12px; // antes era padding: 8px 0 20px
   .register-card      { max-height: 95vh; }
   .card-header        { padding: 28px 24px 0; }
   .fecha-grid         { grid-template-columns: 1fr; gap: 0; }
+  .num-grid           { grid-template-columns: 1fr; gap: 0; }
   .code-col:nth-child(even) { display: none; }
+  .step-fields        { padding: 16px 24px 8px; max-height: calc(95vh - 260px); }
+  .step-fields-contact   { padding: 16px 24px 8px !important; }
+  .step-fields-direccion { padding: 16px 24px 8px !important; }
+  .step-footer        { padding: 0 24px; }
 
   ::ng-deep .register-card {
     .mat-horizontal-stepper-header-container { padding: 14px 24px !important; }
-    .mat-horizontal-content-container        { padding: 16px 24px 0 !important; }
+  }
+
+  .password-tooltip {
+    right: -60px;
+    width: 210px;
   }
 }
 
 .fade-in {
   animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+::ng-deep .mat-horizontal-stepper-content {
+  display: block !important;
+  height: auto !important;
+}
+
+::ng-deep .mat-horizontal-content-container {
+  padding: 0 !important;
 }
