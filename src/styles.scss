@@ -18,8 +18,23 @@ body {
     color: $text-primary;
     background-color: $bg-secondary;
     margin: 0;
-  overflow: hidden;
+    overflow: hidden; // ← se queda para desktop
 }
+
+/* ← AGREGA ESTO justo debajo */
+@media (max-width: 900px) {
+  html, body {
+    height: auto !important;
+    min-height: 100%;
+    overflow: visible !important;
+  }
+
+  app-root {
+    display: block;
+    height: auto;
+  }
+}
+
 
 /* Scroll personalizado */
 * {
