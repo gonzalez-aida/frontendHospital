@@ -19,6 +19,7 @@ export class DashboardPacienteComponent implements OnInit {
   selectedSection: string = 'citas';
   darkMode: boolean = false;
   tituloSeccion: string = 'Mis Citas';
+  isMobile: boolean = false;      
 
   // ================= DATOS =================
   paciente: any = {};
@@ -36,10 +37,20 @@ export class DashboardPacienteComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.checkMobile();                                              
+  window.addEventListener('resize', () => this.checkMobile());   
     this.cargarPerfilPaciente();
+
   }
 
+  // ← AGREGA ESTE MÉTODO AQUÍ
+checkMobile() {
+  this.isMobile = window.innerWidth <= 900;
+}
+
+
   // ================= PERFIL =================
+
 
 cargarPerfilPaciente() {
   this.authService.obtenerPerfilPaciente().subscribe({
@@ -793,4 +804,5 @@ case 'expediente':
     return edad;
   }
 
+  
 }

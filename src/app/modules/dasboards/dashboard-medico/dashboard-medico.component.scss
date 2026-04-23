@@ -998,3 +998,328 @@ mat-paginator {
   color: #64748b !important;
   -webkit-text-fill-color: #64748b !important;
 }
+
+
+/* =================================================
+   RESPONSIVE MÉDICO — agregar al FINAL del scss
+   ================================================= */
+
+/* ---- Mobile base (clase desde TS) ---- */
+.dashboard-container.mobile {
+  flex-direction: column;
+  height: auto !important;
+  min-height: 100vh;
+  overflow: visible !important;
+}
+
+.dashboard-container.mobile .content {
+  height: auto !important;
+  overflow: visible !important;
+  padding: 20px 16px;
+  width: 100%;
+}
+
+/* El div interno que tiene overflow-y: auto — quitarlo en móvil */
+.dashboard-container.mobile .content > div {
+  overflow-y: visible !important;
+  flex: none !important;
+}
+
+.dashboard-container.mobile .sidebar {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  overflow-y: visible;
+}
+
+.dashboard-container.mobile .sidebar .logo span {
+  display: none;
+}
+
+.dashboard-container.mobile .sidebar nav {
+  flex-direction: row;
+  margin-top: 0;
+  gap: 4px;
+}
+
+.dashboard-container.mobile .sidebar nav a {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 10px;
+  font-size: 11px;
+  transform: none !important;
+}
+
+.dashboard-container.mobile .sidebar nav a:hover {
+  transform: none !important;
+}
+
+.dashboard-container.mobile .logout-btn {
+  margin-top: 0;
+}
+
+/* =================================================
+   TABLET (≤ 900px) — media query para grids y forms
+   ================================================= */
+@media (max-width: 900px) {
+
+  /* Stats grid: 2 columnas en tablet */
+  .medical-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  /* Tabla con scroll horizontal */
+  .table-container {
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-scroll {
+    max-height: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-container table,
+  .pacientes-table {
+    min-width: 560px;
+  }
+
+  /* Formulario consulta */
+  .form-consulta-container {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    padding: 16px;
+
+    .form-scroll {
+      overflow-y: visible;
+      max-height: none;
+    }
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+
+    mat-form-field {
+      width: 100% !important;
+      flex: 1 1 100% !important;
+    }
+  }
+
+  .campo-ancho,
+  .campo-ancho-diagnostico,
+  .campo-medicamentos {
+    width: 100% !important;
+  }
+
+  /* Buscador de pacientes */
+  .search-wrapper {
+    justify-content: flex-start;
+  }
+
+  .custom-search {
+    width: 100%;
+  }
+
+  /* Perfil médico header */
+  .profile-header-card {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  /* Info grid: 2 columnas */
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Acciones citas */
+  .acciones-wrapper {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn-accion {
+    width: 100%;
+    min-width: unset !important;
+  }
+
+  /* Header top */
+  .top-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .top-header h1 {
+    font-size: 20px;
+  }
+
+  /* Historial header */
+  .historial-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Scroll expediente */
+  .form-scroll-expediente {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* Pacientes botones */
+  .pacientes-table td:last-child {
+    white-space: normal;
+  }
+
+  .btn-paciente-accion {
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+}
+
+/* =================================================
+   MÓVIL (≤ 600px)
+   ================================================= */
+@media (max-width: 600px) {
+
+  /* Stats: 1 columna */
+  .medical-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-card h3 {
+    font-size: 22px;
+  }
+
+  /* Top header */
+  .top-header h1 {
+    font-size: 17px;
+  }
+
+  .top-header p {
+    font-size: 12px;
+  }
+
+  .header-right span {
+    display: none;
+  }
+
+  /* Tabla container */
+  .table-container {
+    padding: 10px;
+    border-radius: 14px;
+    margin-top: 16px;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  /* Perfil header apilado */
+  .profile-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+
+  .header-info h2 {
+    font-size: 16px;
+  }
+
+  /* Info grid: 1 columna */
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Section card */
+  .section-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  /* Edit actions */
+  .edit-actions button {
+    width: 100%;
+  }
+
+  /* Medicamento card */
+  .medicamento-card {
+    padding: 14px;
+  }
+
+  /* Botones acción pacientes: full width */
+  .btn-paciente-accion {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 6px;
+    display: block;
+    text-align: center;
+  }
+
+  .pacientes-table td:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    white-space: normal;
+    width: 100%;
+    padding: 10px 8px;
+  }
+
+  /* Buscador full width */
+  .custom-search {
+    width: 100%;
+  }
+
+  /* Formulario consulta */
+  .form-consulta-container {
+    padding: 12px;
+
+    h2 {
+      font-size: 16px;
+    }
+
+    fieldset {
+      padding: 12px 10px;
+    }
+  }
+
+  /* Historial header */
+  .historial-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Acciones tabla */
+  .acciones-cell {
+    padding: 10px 6px;
+  }
+
+  .acciones-wrapper {
+    gap: 6px;
+  }
+}

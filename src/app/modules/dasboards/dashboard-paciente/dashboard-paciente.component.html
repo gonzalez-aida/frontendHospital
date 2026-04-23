@@ -1,4 +1,4 @@
-<div class="dashboard-container" [class.dark-mode]="darkMode">
+<div class="dashboard-container" [class.dark-mode]="darkMode" [class.mobile]="isMobile">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -228,12 +228,18 @@
         <!-- HEADER -->
         <div class="historial-header">
 
-          <div>
-            <h3>{{ consulta.fecha }}</h3>
-            <p class="doctor-name">
-              Dr. {{ consulta.medico?.nombre }}
-            </p>
-          </div>
+<div class="fecha-titulo">
+  <mat-icon>event</mat-icon>
+
+  <div class="fecha-info">
+    <span>{{ consulta.fecha }}</span>
+    <p class="doctor-name">
+      Dr. {{ consulta.medico?.nombre }}
+    </p>
+  </div>
+</div>
+
+
 
           <div class="historial-actions">
             <span class="badge-dx">
